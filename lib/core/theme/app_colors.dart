@@ -15,6 +15,17 @@ abstract final class AppColors {
   static const Color green = Color(0xFF1E5B3C);
   static const Color mint = Color(0xFFE4F2D2);
 
+  // Logo + splash (charcoal ground with mint glow)
+  static const Color charcoal = Color(0xFF1E2020);
+  static const Color logoTile = Color(0xFF1D201F);
+  static const Color logoTileMid = Color(0xFF1F2A25);
+  static const Color logoTileGreen = Color(0xFF2C8A60);
+  static const Color logoTileMint = Color(0xFF43F0A2);
+  static const Color glowGreen = Color(0xFF2EBE7A);
+  static const Color glowGrey = Color(0xFF5A5C60);
+  static const Color signal = Color(0xFF3EE89B);
+  static const Color softOnCharcoal = Color(0xFFC9D2CD);
+
   // Neutrals (light)
   static const Color canvas = Color(0xFFF3F6F1);
   static const Color white = Color(0xFFFFFFFF);

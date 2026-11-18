@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 
-/// Pager indicator: lime pill for the current page, faint dots otherwise.
+/// Pager indicator: accent pill for the current page, faint dots otherwise.
 class PageDots extends StatelessWidget {
   const PageDots({
     super.key,
@@ -12,6 +12,8 @@ class PageDots extends StatelessWidget {
     this.activeWidth = 28,
     this.height = 8,
     this.semanticLabel,
+    this.activeColor = AppColors.lime,
+    this.inactiveAlpha = 0.28,
   });
 
   final int count;
@@ -19,6 +21,8 @@ class PageDots extends StatelessWidget {
   final double activeWidth;
   final double height;
   final String? semanticLabel;
+  final Color activeColor;
+  final double inactiveAlpha;
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +40,8 @@ class PageDots extends StatelessWidget {
               height: height,
               decoration: BoxDecoration(
                 color: i == current
-                    ? AppColors.lime
-                    : AppColors.white.withValues(alpha: 0.28),
+                    ? activeColor
+                    : AppColors.white.withValues(alpha: inactiveAlpha),
                 borderRadius: AppRadii.pillAll,
               ),
             ),

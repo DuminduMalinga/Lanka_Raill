@@ -44,8 +44,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Scaffold(
-      backgroundColor: AppColors.forest,
+      backgroundColor: AppColors.charcoal,
       body: ForestBackground(
+        color: AppColors.charcoal,
         child: Semantics(
           button: true,
           label: l10n.splashContinue,
@@ -54,23 +55,54 @@ class _SplashScreenState extends State<SplashScreen> {
             onTap: _continue,
             child: Stack(
               children: [
-                const Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: 300,
-                  child: _TrackPerspective(),
+                const Positioned.fill(child: _GlowBackground()),
+                const Align(
+                  alignment: Alignment(0, -0.22),
+                  child: _BrandBlock(),
                 ),
-                const Center(child: _BrandBlock()),
                 Positioned(
                   left: 0,
                   right: 0,
-                  bottom: AppSpacing.huge + AppSpacing.xl,
+                  bottom: AppSpacing.huge + AppSpacing.md,
                   child: _Footer(label: l10n.appSubtitle),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Mint glows top-left and bottom-right, a grey haze top-right.
+class _GlowBackground extends StatelessWidget {
+  const _GlowBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _glow(const Alignment(-1, -0.76), AppColors.glowGreen, 0.85, 0.84),
+          _glow(const Alignment(1, -1), AppColors.glowGrey, 0.75, 0.8),
+          _glow(const Alignment(0.7, 1), AppColors.glowGreen, 0.8, 0.9),
+        ],
+      ),
+    );
+  }
+
+  Widget _glow(Alignment center, Color color, double alpha, double radius) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          center: center,
+          radius: radius,
+          colors: [
+            color.withValues(alpha: alpha),
+            color.withValues(alpha: 0),
+          ],
         ),
       ),
     );
@@ -88,19 +120,23 @@ class _BrandBlock extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const AppLogoMark(size: 96),
-          const SizedBox(height: AppSpacing.s22),
+          const AppLogoMark(size: 150, glow: true),
+          const SizedBox(height: 26),
           Text(
             l10n.appName,
             textAlign: TextAlign.center,
-            style: AppTextStyles.splashBrand.copyWith(color: AppColors.white),
+            style: AppTextStyles.splashBrand.copyWith(
+              color: AppColors.white,
+              fontSize: 40,
+              letterSpacing: -0.8,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.appTagline,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.mutedOnDark,
+              color: AppColors.softOnCharcoal,
             ),
           ),
         ],
@@ -118,68 +154,38 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const PageDots(count: 3, current: 0, activeWidth: 24, height: 6),
+        const PageDots(
+          count: 3,
+          current: 0,
+          activeWidth: 24,
+          height: 6,
+          activeColor: AppColors.signal,
+          inactiveAlpha: 0.35,
+        ),
         const SizedBox(height: AppSpacing.s14),
-        Text(
-          label.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: AppTextStyles.caption.copyWith(
-            color: AppColors.mutedOnDark,
-            letterSpacing: 0.96,
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0x8C141616),
+            borderRadius: AppRadii.pillAll,
+            border: Border.all(color: AppColors.signal.withValues(alpha: 0.45)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.sm,
+            ),
+            child: Text(
+              label.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: AppTextStyles.captionStrong.copyWith(
+                color: AppColors.signal,
+                fontSize: 11,
+                letterSpacing: 0.88,
+              ),
+            ),
           ),
         ),
       ],
     );
   }
-}
-
-/// Decorative rails + sleepers converging into the distance.
-class _TrackPerspective extends StatelessWidget {
-  const _TrackPerspective();
-
-  @override
-  Widget build(BuildContext context) {
-    return const ExcludeSemantics(child: CustomPaint(painter: _TrackPainter()));
-  }
-}
-
-class _TrackPainter extends CustomPainter {
-  const _TrackPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final sx = size.width / 390;
-    final sy = size.height / 300;
-    final rails = Paint()
-      ..color = AppColors.lime.withValues(alpha: 0.35)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-    final sleepers = Paint()
-      ..color = AppColors.lime.withValues(alpha: 0.14)
-      ..strokeWidth = 6
-      ..style = PaintingStyle.stroke;
-
-    canvas
-      ..drawLine(Offset(150 * sx, 0), Offset(40 * sx, 300 * sy), rails)
-      ..drawLine(Offset(240 * sx, 0), Offset(350 * sx, 300 * sy), rails);
-
-    const rows = <(double, double, double)>[
-      (140, 30, 110),
-      (128, 70, 134),
-      (112, 115, 166),
-      (94, 165, 202),
-      (72, 225, 246),
-      (50, 290, 290),
-    ];
-    for (final (x, y, w) in rows) {
-      canvas.drawLine(
-        Offset(x * sx, y * sy),
-        Offset((x + w) * sx, y * sy),
-        sleepers,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

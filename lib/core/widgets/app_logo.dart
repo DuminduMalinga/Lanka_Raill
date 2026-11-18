@@ -6,34 +6,85 @@ import '../l10n/l10n.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
-/// Lime rounded square with the rail-track mark.
+/// App icon tile: a white speeding train on a charcoal-to-mint gradient.
 class AppLogoMark extends StatelessWidget {
-  const AppLogoMark({super.key, this.size = 32});
+  const AppLogoMark({super.key, this.size = 32, this.glow = false});
 
   final double size;
 
+  /// Adds the soft mint halo used on the splash screen.
+  final bool glow;
+
   @override
   Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(size * 0.24);
     return ExcludeSemantics(
       child: Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: AppColors.lime,
-          borderRadius: BorderRadius.circular(size * 0.29),
+          borderRadius: radius,
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.logoTile,
+              AppColors.logoTileMid,
+              AppColors.logoTileGreen,
+              AppColors.logoTileMint,
+            ],
+            stops: [0, 0.38, 0.72, 1],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0x59000000),
+              blurRadius: size * 0.12,
+              offset: Offset(0, size * 0.04),
+            ),
+            if (glow)
+              BoxShadow(
+                color: AppColors.signal.withValues(alpha: 0.28),
+                blurRadius: size * 0.5,
+                offset: Offset(0, size * 0.1),
+              ),
+          ],
         ),
-        alignment: Alignment.center,
-        child: SvgPicture.asset(
-          AppAssets.logoMark,
-          width: size * 0.6,
-          height: size * 0.6,
+        child: ClipRRect(
+          borderRadius: radius,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Dark core that keeps the glyph readable over the gradient.
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0, -0.24),
+                      radius: 0.72,
+                      colors: [
+                        AppColors.logoTile,
+                        AppColors.logoTile,
+                        AppColors.logoTile.withValues(alpha: 0),
+                      ],
+                      stops: const [0, 0.5, 1],
+                    ),
+                  ),
+                ),
+              ),
+              SvgPicture.asset(
+                AppAssets.logoMark,
+                width: size * 0.74,
+                height: size * 0.74,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Logo mark + "CeylonGO" wordmark.
+/// Logo mark + app-name wordmark.
 class AppBrand extends StatelessWidget {
   const AppBrand({
     super.key,
