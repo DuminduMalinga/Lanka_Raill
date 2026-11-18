@@ -2,6 +2,12 @@
 abstract final class AppAssets {
   static const String nineArchBridge = 'assets/images/nine_arch_bridge.jpg';
   static const String mistyHillTrain = 'assets/images/misty_hill_train.jpg';
+  static const String onboardingBridge =
+      'assets/images/onboarding_nine_arch_bridge.jpg';
+  static const String onboardingStation =
+      'assets/images/onboarding_misty_station.jpg';
+  static const String onboardingTeaCountry =
+      'assets/images/onboarding_tea_country_train.jpg';
   static const String logoMark = 'assets/icons/logo_mark.svg';
 }
 

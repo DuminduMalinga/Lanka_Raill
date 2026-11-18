@@ -290,30 +290,6 @@ abstract class AppLocalizations {
   /// **'Main'**
   String get mainNavigation;
 
-  /// No description provided for @previewState.
-  ///
-  /// In en, this message translates to:
-  /// **'UI state: {state}'**
-  String previewState(String state);
-
-  /// No description provided for @previewContent.
-  ///
-  /// In en, this message translates to:
-  /// **'Content'**
-  String get previewContent;
-
-  /// No description provided for @previewEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Empty'**
-  String get previewEmpty;
-
-  /// No description provided for @previewLoading.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading'**
-  String get previewLoading;
-
   /// No description provided for @loading.
   ///
   /// In en, this message translates to:
@@ -530,23 +506,23 @@ abstract class AppLocalizations {
   /// **'Get official schedule changes and save your favourite trains, stations and places for quick access.'**
   String get onboardingBody3;
 
-  /// No description provided for @onboardingNextStop.
+  /// No description provided for @onboardingImageAlt1.
   ///
   /// In en, this message translates to:
-  /// **'Next stop'**
-  String get onboardingNextStop;
+  /// **'Blue train crossing the Nine Arch Bridge through misty forest'**
+  String get onboardingImageAlt1;
 
-  /// No description provided for @onboardingNextStopValue.
+  /// No description provided for @onboardingImageAlt2.
   ///
   /// In en, this message translates to:
-  /// **'Ella · 12 min'**
-  String get onboardingNextStopValue;
+  /// **'Hill-country railway station beside a misty pine forest'**
+  String get onboardingImageAlt2;
 
-  /// No description provided for @onboardingDistance.
+  /// No description provided for @onboardingImageAlt3.
   ///
   /// In en, this message translates to:
-  /// **'Nine Arch Bridge · 2.1 km'**
-  String get onboardingDistance;
+  /// **'Passenger train curving through green tea country'**
+  String get onboardingImageAlt3;
 
   /// No description provided for @onboardingStep.
   ///

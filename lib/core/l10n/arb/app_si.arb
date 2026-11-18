@@ -36,10 +36,6 @@
   "navProfile": "පැතිකඩ",
   "mainNavigation": "ප්‍රධාන",
 
-  "previewState": "UI තත්ත්වය: {state}",
-  "previewContent": "අන්තර්ගතය",
-  "previewEmpty": "හිස්",
-  "previewLoading": "පූරණය වෙමින්",
   "loading": "පූරණය වෙමින්",
 
   "emptyTrainsTitle": "මෙම තේරීමට සෘජු දුම්රිය නැත",
@@ -80,9 +76,9 @@
   "onboardingBody2": "නවආරුක්කු පාලමේ සිට ගාලු කොටුව දක්වා, එක් එක් දුම්රිය ස්ථානය අසල ගමනාන්ත වේදිකාවේ සිට ඇවිදින කාලය සමඟ සොයා ගන්න.",
   "onboardingTitle3": "තහවුරු කළ නිවේදන",
   "onboardingBody3": "නිල කාලසටහන් වෙනස්කම් ලබා ගෙන, ඔබ කැමති දුම්රිය, ස්ථාන සහ ගමනාන්ත ඉක්මන් ප්‍රවේශය සඳහා සුරකින්න.",
-  "onboardingNextStop": "ඊළඟ නැවතුම",
-  "onboardingNextStopValue": "ඇල්ල · මිනිත්තු 12",
-  "onboardingDistance": "නවආරුක්කු පාලම · කි.මී. 2.1",
+  "onboardingImageAlt1": "මීදුම සහිත වනය මැදින් නවආරුක්කු පාලම හරහා යන නිල් දුම්රියක්",
+  "onboardingImageAlt2": "මීදුම සහිත පයින් වනයක් අසල උඩරට දුම්රිය ස්ථානයක්",
+  "onboardingImageAlt3": "කොළ පැහැති තේ වතු හරහා වංගු වී යන මගී දුම්රියක්",
   "onboardingStep": "පියවර {current} / {total}",
   "chooseLanguage": "භාෂාව තෝරන්න",
 

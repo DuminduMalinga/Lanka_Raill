@@ -108,20 +108,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainNavigation => 'Main';
 
   @override
-  String previewState(String state) {
-    return 'UI state: $state';
-  }
-
-  @override
-  String get previewContent => 'Content';
-
-  @override
-  String get previewEmpty => 'Empty';
-
-  @override
-  String get previewLoading => 'Loading';
-
-  @override
   String get loading => 'Loading';
 
   @override
@@ -241,13 +227,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Get official schedule changes and save your favourite trains, stations and places for quick access.';
 
   @override
-  String get onboardingNextStop => 'Next stop';
+  String get onboardingImageAlt1 =>
+      'Blue train crossing the Nine Arch Bridge through misty forest';
 
   @override
-  String get onboardingNextStopValue => 'Ella · 12 min';
+  String get onboardingImageAlt2 =>
+      'Hill-country railway station beside a misty pine forest';
 
   @override
-  String get onboardingDistance => 'Nine Arch Bridge · 2.1 km';
+  String get onboardingImageAlt3 =>
+      'Passenger train curving through green tea country';
 
   @override
   String onboardingStep(int current, int total) {

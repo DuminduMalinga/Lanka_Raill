@@ -108,20 +108,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get mainNavigation => 'ප්‍රධාන';
 
   @override
-  String previewState(String state) {
-    return 'UI තත්ත්වය: $state';
-  }
-
-  @override
-  String get previewContent => 'අන්තර්ගතය';
-
-  @override
-  String get previewEmpty => 'හිස්';
-
-  @override
-  String get previewLoading => 'පූරණය වෙමින්';
-
-  @override
   String get loading => 'පූරණය වෙමින්';
 
   @override
@@ -242,13 +228,16 @@ class AppLocalizationsSi extends AppLocalizations {
       'නිල කාලසටහන් වෙනස්කම් ලබා ගෙන, ඔබ කැමති දුම්රිය, ස්ථාන සහ ගමනාන්ත ඉක්මන් ප්‍රවේශය සඳහා සුරකින්න.';
 
   @override
-  String get onboardingNextStop => 'ඊළඟ නැවතුම';
+  String get onboardingImageAlt1 =>
+      'මීදුම සහිත වනය මැදින් නවආරුක්කු පාලම හරහා යන නිල් දුම්රියක්';
 
   @override
-  String get onboardingNextStopValue => 'ඇල්ල · මිනිත්තු 12';
+  String get onboardingImageAlt2 =>
+      'මීදුම සහිත පයින් වනයක් අසල උඩරට දුම්රිය ස්ථානයක්';
 
   @override
-  String get onboardingDistance => 'නවආරුක්කු පාලම · කි.මී. 2.1';
+  String get onboardingImageAlt3 =>
+      'කොළ පැහැති තේ වතු හරහා වංගු වී යන මගී දුම්රියක්';
 
   @override
   String onboardingStep(int current, int total) {

@@ -7,7 +7,6 @@ import 'core/router/app_router.dart';
 import 'core/router/app_routes.dart';
 import 'core/state/app_preferences.dart';
 import 'core/theme/app_theme.dart';
-import 'core/widgets/preview_state_switcher.dart';
 
 /// Root widget: theme, localisation and routing.
 class CeylonGoApp extends ConsumerStatefulWidget {
@@ -58,7 +57,7 @@ class _CeylonGoAppState extends ConsumerState<CeylonGoApp> {
             : media;
         return MediaQuery(
           data: scaled,
-          child: PreviewStateSwitcher(child: child ?? const SizedBox.shrink()),
+          child: child ?? const SizedBox.shrink(),
         );
       },
     );
