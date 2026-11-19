@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show AuthChangeEvent, AuthException, AuthState, OAuthProvider;
 
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -8,6 +12,7 @@ import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/page_scroll.dart';
 import '../../../../core/widgets/photo_backdrop.dart';
+import '../../data/auth_service.dart';
 
 /// Misty-railway backdrop + back/brand bar + bottom-weighted scroll body.
 /// Shared by language select, sign in, sign up and forgot password.
@@ -120,10 +125,60 @@ class AuthHeading extends StatelessWidget {
 }
 
 /// Google / Facebook buttons side by side.
-class SocialSignInRow extends StatelessWidget {
-  const SocialSignInRow({super.key, required this.onPressed});
+class SocialSignInRow extends StatefulWidget {
+  const SocialSignInRow({super.key, required this.onSignedIn});
 
-  final VoidCallback onPressed;
+  /// Called once Supabase reports a signed-in session.
+  final VoidCallback onSignedIn;
+
+  @override
+  State<SocialSignInRow> createState() => _SocialSignInRowState();
+}
+
+class _SocialSignInRowState extends State<SocialSignInRow> {
+  StreamSubscription<AuthState>? _sub;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = AuthService.onAuthStateChange.listen((state) {
+      if (!mounted) return;
+      if (state.event == AuthChangeEvent.signedIn && state.session != null) {
+        setState(() => _busy = false);
+        widget.onSignedIn();
+      }
+    }, onError: (Object error) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      final message = error is AuthException ? error.message : '$error';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign-in failed: $message')),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _signIn(OAuthProvider provider) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await AuthService.signInWith(provider);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign-in failed: $e')),
+      );
+    } finally {
+      // The browser has opened; re-enable buttons in case the user backs out.
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +192,7 @@ class SocialSignInRow extends StatelessWidget {
             badge: 'G',
             badgeColor: AppColors.white,
             badgeForeground: AppColors.google,
-            onPressed: onPressed,
+            onPressed: () => _signIn(OAuthProvider.google),
           ),
         ),
         const SizedBox(width: AppSpacing.s10),
@@ -148,7 +203,7 @@ class SocialSignInRow extends StatelessWidget {
             badge: 'f',
             badgeColor: AppColors.facebook,
             badgeForeground: AppColors.white,
-            onPressed: onPressed,
+            onPressed: () => _signIn(OAuthProvider.facebook),
           ),
         ),
       ],

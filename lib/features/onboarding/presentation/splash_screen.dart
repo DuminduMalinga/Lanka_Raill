@@ -10,9 +10,11 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/photo_backdrop.dart';
+import '../../auth/data/auth_service.dart';
 import 'widgets/page_dots.dart';
 
-/// Brand splash. Advances to Welcome after a short delay or on tap.
+/// Brand splash. Advances to Home (signed in) or Welcome after a short delay
+/// or on tap.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -37,7 +39,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _continue() {
     _timer?.cancel();
-    if (mounted) context.go(AppRoutes.welcome);
+    if (!mounted) return;
+    final signedIn = AuthService.currentSession != null;
+    context.go(signedIn ? AppRoutes.home : AppRoutes.welcome);
   }
 
   @override

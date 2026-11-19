@@ -43,6 +43,9 @@ import 'package:lankarail/features/trains/presentation/classes_facilities_screen
 import 'package:lankarail/features/trains/presentation/stop_timeline_screen.dart';
 import 'package:lankarail/features/trains/presentation/train_details_screen.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'helpers/pump_app.dart';
 
 /// Route → screen type expected on top after navigating there.
@@ -115,6 +118,21 @@ const Set<String> _dataDriven = {
 };
 
 void main() {
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+    await Supabase.initialize(
+      url: 'https://example.supabase.co',
+      publishableKey: 'test-key',
+      authOptions: const FlutterAuthClientOptions(
+        localStorage: EmptyLocalStorage(),
+        autoRefreshToken: false,
+        detectSessionInUri: false,
+      ),
+      debug: false,
+    );
+  });
+
   test('every route has a screen test', () {
     final routed = {...fullScreenRoutes.keys, ...tabRoutes.keys};
     expect(routed, _screens.keys.toSet());
