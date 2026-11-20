@@ -23,5 +23,6 @@ class AuthService {
     );
   }
 
-  static Future<void> signOut() => _client.auth.signOut();
+  static Future<void> signOut() =>
+      _client.auth.signOut(scope: SignOutScope.local);
 }

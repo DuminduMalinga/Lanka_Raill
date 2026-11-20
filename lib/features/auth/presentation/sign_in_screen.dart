@@ -47,7 +47,7 @@ class _SignInScreenState extends State<SignInScreen> {
       children: [
         AuthHeading(title: l10n.signInTitle, body: l10n.signInBody),
         const SizedBox(height: AppSpacing.s14),
-        SocialSignInRow(onSignedIn: () => context.go(AppRoutes.home)),
+        const SocialSignInRow(),
         const SizedBox(height: AppSpacing.s14),
         OrDivider(text: l10n.signInDivider),
         const SizedBox(height: AppSpacing.s14),

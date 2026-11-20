@@ -126,10 +126,10 @@ class AuthHeading extends StatelessWidget {
 
 /// Google / Facebook buttons side by side.
 class SocialSignInRow extends StatefulWidget {
-  const SocialSignInRow({super.key, required this.onSignedIn});
+  const SocialSignInRow({super.key, this.onSignedIn});
 
   /// Called once Supabase reports a signed-in session.
-  final VoidCallback onSignedIn;
+  final VoidCallback? onSignedIn;
 
   @override
   State<SocialSignInRow> createState() => _SocialSignInRowState();
@@ -146,7 +146,7 @@ class _SocialSignInRowState extends State<SocialSignInRow> {
       if (!mounted) return;
       if (state.event == AuthChangeEvent.signedIn && state.session != null) {
         setState(() => _busy = false);
-        widget.onSignedIn();
+        widget.onSignedIn?.call();
       }
     }, onError: (Object error) {
       if (!mounted) return;

@@ -11,6 +11,7 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/settings_tiles.dart';
+import '../../auth/data/auth_service.dart';
 
 /// Profile tab: identity header with stats, shortcuts, sign out.
 class ProfileScreen extends StatelessWidget {
@@ -114,7 +115,14 @@ class ProfileScreen extends StatelessWidget {
                           icon: Icons.logout_rounded,
                           title: l10n.signOut,
                           destructive: true,
-                          onTap: () => context.go(AppRoutes.signIn),
+                          onTap: () async {
+                            try {
+                              await AuthService.signOut();
+                            } catch (_) {
+                              // Local session is cleared regardless.
+                            }
+                            if (context.mounted) context.go(AppRoutes.signIn);
+                          },
                         ),
                       ],
                     ),

@@ -75,7 +75,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       children: [
         AuthHeading(title: l10n.signUpTitle, body: l10n.signUpBody),
         const SizedBox(height: AppSpacing.s10),
-        SocialSignInRow(onSignedIn: () => context.go(AppRoutes.home)),
+        const SocialSignInRow(),
         const SizedBox(height: AppSpacing.s10),
         OrDivider(text: l10n.signUpDivider),
         const SizedBox(height: AppSpacing.s10),

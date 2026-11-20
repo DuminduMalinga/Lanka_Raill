@@ -37,7 +37,8 @@ class _CeylonGoAppState extends ConsumerState<CeylonGoApp> {
     _authSub = AuthService.onAuthStateChange.listen(
       (state) {
         if (state.event == AuthChangeEvent.signedIn && state.session != null) {
-          _router.go(AppRoutes.home);
+          final here = _router.routerDelegate.currentConfiguration.uri.path;
+          if (here != AppRoutes.home) _router.go(AppRoutes.home);
         }
       },
       onError: (Object _) {}, // shown by the sign-in screen
