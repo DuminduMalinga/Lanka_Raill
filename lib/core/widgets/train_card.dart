@@ -290,10 +290,17 @@ class TrainDepartureTile extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    time,
-                    style: AppTextStyles.timeMedium.copyWith(
-                      color: palette.textPrimary,
+                  // Scale down rather than wrap "04:00" onto two lines on
+                  // wide-digit fonts or larger text sizes.
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      time,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: AppTextStyles.timeMedium.copyWith(
+                        color: palette.textPrimary,
+                      ),
                     ),
                   ),
                   if (platform != null)
