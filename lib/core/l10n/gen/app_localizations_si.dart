@@ -505,7 +505,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get arrivalStation => 'පැමිණෙන ස්ථානය';
 
   @override
-  String get searchStationsHint => 'ස්ථාන 400+ ක් සොයන්න';
+  String get searchStationsHint => 'නම හෝ කේතය අනුව ස්ථාන සොයන්න';
 
   @override
   String get useMyLocation => 'මගේ ස්ථානය භාවිත කරන්න';
@@ -1387,4 +1387,17 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get allCategories => 'සියල්ල';
+
+  @override
+  String get searchHistoryCleared => 'සෙවුම් ඉතිහාසය මකා දැමුණි';
+
+  @override
+  String get feedbackSent => 'ස්තූතියි — ඔබගේ ප්‍රතිචාරය යවන ලදී.';
+
+  @override
+  String get feedbackEmpty => 'පළමුව පණිවිඩයක් ලියන්න.';
+
+  @override
+  String get feedbackFailed =>
+      'ප්‍රතිචාරය යැවිය නොහැකි විය. සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
 }

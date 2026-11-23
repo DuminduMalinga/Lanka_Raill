@@ -157,6 +157,15 @@ class FakeCeylonRepository implements CeylonRepository {
   Future<Profile?> profile() async => null;
   @override
   Future<void> updateProfile({String? displayName, String? language}) async {}
+
+  final sentFeedback = <String>[];
+
+  @override
+  Future<void> sendFeedback({
+    required int rating,
+    required String message,
+    String? appVersion,
+  }) async => sentFeedback.add(message);
   @override
   Future<Set<String>> favoriteTrainIds() async => {};
   @override

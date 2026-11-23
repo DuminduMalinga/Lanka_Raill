@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/state/app_preferences.dart';
 import '../../../core/theme/app_colors.dart';
@@ -13,6 +14,7 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
+import '../../../data/providers.dart';
 
 /// FAQ accordion, star rating and feedback form (UI only).
 class HelpFeedbackScreen extends ConsumerWidget {
@@ -151,11 +153,49 @@ class FaqTile extends StatelessWidget {
   }
 }
 
-class _FeedbackCard extends ConsumerWidget {
+class _FeedbackCard extends ConsumerStatefulWidget {
   const _FeedbackCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_FeedbackCard> createState() => _FeedbackCardState();
+}
+
+class _FeedbackCardState extends ConsumerState<_FeedbackCard> {
+  final _message = TextEditingController();
+  bool _sending = false;
+
+  @override
+  void dispose() {
+    _message.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final text = _message.text.trim();
+    if (text.isEmpty) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.feedbackEmpty)));
+      return;
+    }
+    setState(() => _sending = true);
+    try {
+      await ref.read(repositoryProvider).sendFeedback(
+        rating: ref.read(uiSelectionProvider(UiSelections.feedbackRating)),
+        message: text,
+        appVersion: AppConstants.version,
+      );
+      _message.clear();
+      messenger.showSnackBar(SnackBar(content: Text(l10n.feedbackSent)));
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.feedbackFailed)));
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final rating = ref.watch(uiSelectionProvider(UiSelections.feedbackRating));
     return AppCard(
@@ -191,33 +231,17 @@ class _FeedbackCard extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          AppTextArea(label: l10n.yourMessage, hint: l10n.messageHint),
+          AppTextArea(
+            label: l10n.yourMessage,
+            hint: l10n.messageHint,
+            controller: _message,
+          ),
           const SizedBox(height: AppSpacing.md),
           PrimaryButton(
             label: l10n.sendFeedback,
             icon: Icons.send_rounded,
             tone: PrimaryButtonTone.dark,
-            onPressed: () {},
-          ),
-          const SizedBox(height: AppSpacing.s10),
-          Row(
-            children: [
-              Expanded(
-                child: SecondaryButton(
-                  label: l10n.emailUs,
-                  icon: Icons.mail_outline_rounded,
-                  onPressed: () {},
-                ),
-              ),
-              const SizedBox(width: AppSpacing.s10),
-              Expanded(
-                child: SecondaryButton(
-                  label: l10n.chat,
-                  icon: Icons.chat_bubble_outline_rounded,
-                  onPressed: () {},
-                ),
-              ),
-            ],
+            onPressed: _sending ? null : _send,
           ),
         ],
       ),

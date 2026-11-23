@@ -155,7 +155,7 @@
   "recentSearches": "මෑත සෙවීම්",
   "departureStation": "පිටත්වන ස්ථානය",
   "arrivalStation": "පැමිණෙන ස්ථානය",
-  "searchStationsHint": "ස්ථාන 400+ ක් සොයන්න",
+  "searchStationsHint": "නම හෝ කේතය අනුව ස්ථාන සොයන්න",
   "useMyLocation": "මගේ ස්ථානය භාවිත කරන්න",
   "nearestStation": "ආසන්නතම: {name} · {distance}",
   "popular": "ජනප්‍රිය",
@@ -409,5 +409,9 @@
   "destinationsCount": "{count, plural, =1{ගමනාන්ත 1} other{ගමනාන්ත {count}}}",
   "fromTo": "{from} → {to}",
   "locationUnavailable": "සියලු ස්ථාන පෙන්වයි — ස්ථානය ලබාගත නොහැක.",
-  "allCategories": "සියල්ල"
+  "allCategories": "සියල්ල",
+  "searchHistoryCleared": "සෙවුම් ඉතිහාසය මකා දැමුණි",
+  "feedbackSent": "ස්තූතියි — ඔබගේ ප්‍රතිචාරය යවන ලදී.",
+  "feedbackEmpty": "පළමුව පණිවිඩයක් ලියන්න.",
+  "feedbackFailed": "ප්‍රතිචාරය යැවිය නොහැකි විය. සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න."
 }

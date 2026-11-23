@@ -193,7 +193,7 @@
   "recentSearches": "Recent searches",
   "departureStation": "Departure station",
   "arrivalStation": "Arrival station",
-  "searchStationsHint": "Search 400+ stations",
+  "searchStationsHint": "Search stations by name or code",
   "useMyLocation": "Use my location",
   "nearestStation": "Nearest: {name} · {distance}",
   "@nearestStation": {
@@ -673,5 +673,9 @@
     }
   },
   "locationUnavailable": "Showing all stations — location isn't available.",
-  "allCategories": "All"
+  "allCategories": "All",
+  "searchHistoryCleared": "Search history cleared",
+  "feedbackSent": "Thanks — your feedback was sent.",
+  "feedbackEmpty": "Write a message first.",
+  "feedbackFailed": "Couldn't send feedback. Check your connection and try again."
 }

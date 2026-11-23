@@ -1031,7 +1031,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchStationsHint.
   ///
   /// In en, this message translates to:
-  /// **'Search 400+ stations'**
+  /// **'Search stations by name or code'**
   String get searchStationsHint;
 
   /// No description provided for @useMyLocation.
@@ -2557,6 +2557,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get allCategories;
+
+  /// No description provided for @searchHistoryCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Search history cleared'**
+  String get searchHistoryCleared;
+
+  /// No description provided for @feedbackSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks — your feedback was sent.'**
+  String get feedbackSent;
+
+  /// No description provided for @feedbackEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message first.'**
+  String get feedbackEmpty;
+
+  /// No description provided for @feedbackFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send feedback. Check your connection and try again.'**
+  String get feedbackFailed;
 }
 
 class _AppLocalizationsDelegate

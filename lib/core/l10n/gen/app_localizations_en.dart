@@ -504,7 +504,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get arrivalStation => 'Arrival station';
 
   @override
-  String get searchStationsHint => 'Search 400+ stations';
+  String get searchStationsHint => 'Search stations by name or code';
 
   @override
   String get useMyLocation => 'Use my location';
@@ -1386,4 +1386,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allCategories => 'All';
+
+  @override
+  String get searchHistoryCleared => 'Search history cleared';
+
+  @override
+  String get feedbackSent => 'Thanks — your feedback was sent.';
+
+  @override
+  String get feedbackEmpty => 'Write a message first.';
+
+  @override
+  String get feedbackFailed =>
+      'Couldn\'t send feedback. Check your connection and try again.';
 }

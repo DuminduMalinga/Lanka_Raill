@@ -35,6 +35,7 @@ Future<void> pumpRoute(
   AppLanguage language = AppLanguage.english,
   Size size = const Size(390, 844),
   double textScale = 1,
+  FakeCeylonRepository? repository,
 }) async {
   tester.view.physicalSize = size * tester.view.devicePixelRatio;
   addTearDown(tester.view.resetPhysicalSize);
@@ -47,7 +48,9 @@ Future<void> pumpRoute(
         // No network tiles in tests.
         mapTileUrlProvider.overrideWithValue(null),
         // No backend in tests.
-        repositoryProvider.overrideWithValue(FakeCeylonRepository()),
+        repositoryProvider.overrideWithValue(
+          repository ?? FakeCeylonRepository(),
+        ),
         uiViewStateProvider.overrideWith(() => FixedViewState(state)),
         appLanguageProvider.overrideWith(() => FixedLanguage(language)),
       ],

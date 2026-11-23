@@ -33,6 +33,13 @@ abstract class CeylonRepository {
   Future<void> setFavoriteTrain(String trainId, bool saved);
   Future<void> setFavoriteStation(String stationId, bool saved);
   Future<void> setFavoriteDestination(String destinationId, bool saved);
+
+  /// Sends in-app feedback (works signed in or out).
+  Future<void> sendFeedback({
+    required int rating,
+    required String message,
+    String? appVersion,
+  });
 }
 
 /// Supabase implementation (public reads via RLS, user rows via auth.uid()).
@@ -232,6 +239,19 @@ class SupabaseCeylonRepository implements CeylonRepository {
       language: (row?['language'] as String?) ?? 'en',
       avatarUrl: (row?['avatar_url'] as String?) ?? (meta['avatar_url'] as String?),
     );
+  }
+
+  @override
+  Future<void> sendFeedback({
+    required int rating,
+    required String message,
+    String? appVersion,
+  }) async {
+    await _db.from('feedback').insert({
+      'rating': rating,
+      'message': message,
+      'app_version': ?appVersion,
+    });
   }
 
   @override
