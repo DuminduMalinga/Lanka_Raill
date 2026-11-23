@@ -2219,7 +2219,7 @@ abstract class AppLocalizations {
   /// No description provided for @faq1A.
   ///
   /// In en, this message translates to:
-  /// **'Times come from the official railway timetable. Delays and changes appear under Announcements once verified.'**
+  /// **'Times are compiled from published timetables (seat61.com and traintimetable.lk), as the official online schedule is unavailable. Services can change, especially after the 2025 cyclone damage — check at the station before you travel. Changes appear under Announcements.'**
   String get faq1A;
 
   /// No description provided for @faq2Q.

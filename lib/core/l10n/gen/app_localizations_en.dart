@@ -1162,7 +1162,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faq1A =>
-      'Times come from the official railway timetable. Delays and changes appear under Announcements once verified.';
+      'Times are compiled from published timetables (seat61.com and traintimetable.lk), as the official online schedule is unavailable. Services can change, especially after the 2025 cyclone damage — check at the station before you travel. Changes appear under Announcements.';
 
   @override
   String get faq2Q => 'Can I book tickets in CeylonGO?';
