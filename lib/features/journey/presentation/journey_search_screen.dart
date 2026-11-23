@@ -19,7 +19,8 @@ import '../../../core/widgets/journey_stations_card.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/providers.dart';
 
 /// "Plan a journey": stations, date, time slot, class, recent searches.
 class JourneySearchScreen extends ConsumerWidget {
@@ -36,6 +37,10 @@ class JourneySearchScreen extends ConsumerWidget {
     );
     void select(String id, int i) =>
         ref.read(uiSelectionProvider(id).notifier).select(i);
+    final journey = ref.watch(journeyProvider);
+    final from = ref.watch(stationByCodeProvider(journey.fromCode)).value;
+    final to = ref.watch(stationByCodeProvider(journey.toCode)).value;
+    final recent = ref.watch(recentSearchesProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -46,16 +51,16 @@ class JourneySearchScreen extends ConsumerWidget {
               child: PageScroll(
                 spacing: AppSpacing.s18,
                 children: [
-                  // Design preview content — selected stations come from state.
                   JourneyStationsCard(
                     fromLabel: l10n.from,
-                    from: 'Colombo Fort',
-                    fromCode: 'FOT',
+                    from: from?.name.of(context) ?? journey.fromCode,
+                    fromCode: journey.fromCode,
                     toLabel: l10n.to,
-                    to: 'Ella',
-                    toCode: 'ELL',
+                    to: to?.name.of(context) ?? journey.toCode,
+                    toCode: journey.toCode,
                     onFromTap: () => context.push(AppRoutes.departureStation),
                     onToTap: () => context.push(AppRoutes.arrivalStation),
+                    onSwap: () => ref.read(journeyProvider.notifier).swap(),
                   ),
                   _Labelled(title: l10n.travelDate, child: const _DateStrip()),
                   _Labelled(
@@ -92,13 +97,20 @@ class JourneySearchScreen extends ConsumerWidget {
                     label: l10n.searchTrains,
                     icon: Icons.search_rounded,
                     tone: PrimaryButtonTone.dark,
-                    onPressed: () => context.push(AppRoutes.searchResults),
+                    onPressed: () {
+                      ref
+                          .read(recentSearchesProvider.notifier)
+                          .add(journey.fromCode, journey.toCode);
+                      context.push(AppRoutes.searchResults);
+                    },
                   ),
                   _Labelled(
                     title: l10n.recentSearches,
-                    child: UiStateView(
+                    child: AsyncView<List<RecentSearch>>(
+                      value: recent,
                       state: viewState,
-                      content: (_) => const _RecentContent(),
+                      isEmpty: (r) => r.isEmpty,
+                      content: (_, r) => _RecentContent(searches: r),
                       empty: (_) => EmptyState(
                         icon: Icons.history_rounded,
                         title: l10n.emptyRecentTitle,
@@ -147,8 +159,9 @@ class _DateStrip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toLanguageTag();
-    final selected = ref.watch(uiSelectionProvider(UiSelections.travelDate));
+    final date = ref.watch(journeyProvider.select((q) => q.date));
     final days = DateLabels.upcomingDays(4);
+    final selected = days.indexWhere((d) => DateUtils.isSameDay(d, date));
     return Row(
       children: [
         Expanded(
@@ -164,11 +177,8 @@ class _DateStrip extends ConsumerWidget {
                         : DateLabels.weekday(days[i], locale),
                     day: DateLabels.day(days[i], locale),
                     selected: i == selected,
-                    onTap: () => ref
-                        .read(
-                          uiSelectionProvider(UiSelections.travelDate).notifier,
-                        )
-                        .select(i),
+                    onTap: () =>
+                        ref.read(journeyProvider.notifier).setDate(days[i]),
                   ),
                 ],
               ],
@@ -179,28 +189,44 @@ class _DateStrip extends ConsumerWidget {
         CircleIconButton(
           icon: Icons.calendar_month_outlined,
           semanticLabel: l10n.pickDate,
-          onPressed: () => showDatePicker(
-            context: context,
-            firstDate: days.first,
-            lastDate: days.first.add(const Duration(days: 60)),
-          ),
+          onPressed: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: date.isBefore(days.first) ? days.first : date,
+              firstDate: days.first,
+              lastDate: days.first.add(const Duration(days: 60)),
+            );
+            if (picked != null) {
+              ref.read(journeyProvider.notifier).setDate(picked);
+            }
+          },
         ),
       ],
     );
   }
 }
 
-class _RecentContent extends StatelessWidget {
-  const _RecentContent();
+class _RecentContent extends ConsumerWidget {
+  const _RecentContent({required this.searches});
+
+  final List<RecentSearch> searches;
 
   @override
-  Widget build(BuildContext context) {
-    // Design preview content.
-    return const Column(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String name(String code) =>
+        ref.watch(stationByCodeProvider(code)).value?.name.of(context) ?? code;
+    return Column(
       children: [
-        RecentSearchRow(route: 'Colombo Fort → Kandy', when: 'Yesterday'),
-        RecentSearchRow(route: 'Kandy → Ella', when: '12 Nov'),
-        RecentSearchRow(route: 'Colombo Fort → Galle', when: '2 Nov'),
+        for (final r in searches)
+          RecentSearchRow(
+            route: context.l10n.fromTo(name(r.fromCode), name(r.toCode)),
+            when: DateLabels.dayMonth(r.at, locale),
+            onTap: () {
+              ref.read(journeyProvider.notifier).set(r.fromCode, r.toCode);
+              context.push(AppRoutes.searchResults);
+            },
+          ),
       ],
     );
   }

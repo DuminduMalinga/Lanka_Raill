@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
@@ -8,9 +9,10 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
+import '../data/auth_service.dart';
 import 'widgets/auth_scaffold.dart';
 
-/// Username/email + password sign in (UI only — no auth calls).
+/// Email + password sign in (Supabase Auth), plus Google / Facebook.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
@@ -22,6 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _user = TextEditingController();
   final _password = TextEditingController();
   bool _submitted = false;
+  bool _busy = false;
 
   @override
   void dispose() {
@@ -33,10 +36,22 @@ class _SignInScreenState extends State<SignInScreen> {
   bool get _userInvalid => _submitted && _user.text.trim().isEmpty;
   bool get _passwordInvalid => _submitted && _password.text.isEmpty;
 
-  void _submit() {
+  Future<void> _submit() async {
     setState(() => _submitted = true);
-    if (_user.text.trim().isEmpty || _password.text.isEmpty) return;
-    context.go(AppRoutes.home);
+    if (_user.text.trim().isEmpty || _password.text.isEmpty || _busy) return;
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    try {
+      await AuthService.signInWithPassword(_user.text.trim(), _password.text);
+      if (mounted) context.go(AppRoutes.home);
+    } on AuthException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.authFailed(e.message))));
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.loadErrorBody)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -56,6 +71,7 @@ class _SignInScreenState extends State<SignInScreen> {
             children: [
               AppTextField(
                 label: l10n.usernameOrEmail,
+                keyboardType: TextInputType.emailAddress,
                 icon: Icons.person_outline_rounded,
                 controller: _user,
                 onChanged: (_) => setState(() {}),
@@ -89,12 +105,25 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Text(l10n.forgotPassword),
           ),
         ),
-        PrimaryButton(label: l10n.signIn, onPressed: _submit),
+        PrimaryButton(
+          label: l10n.signIn,
+          onPressed: _busy ? null : _submit,
+        ),
         const SizedBox(height: AppSpacing.xs),
         AuthSwitchPrompt(
           prompt: l10n.newToApp,
           action: l10n.createAccount,
           onTap: () => context.push(AppRoutes.signUp),
+        ),
+        Center(
+          child: TextButton(
+            onPressed: () => context.go(AppRoutes.home),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.softOnDark,
+              minimumSize: const Size(AppSizes.tapTarget, AppSizes.tapTarget),
+            ),
+            child: Text('${l10n.skip} · ${l10n.guest}'),
+          ),
         ),
       ],
     );

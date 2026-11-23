@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -12,16 +13,18 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
 /// Overview of every railway line.
-class RailwayLinesScreen extends StatelessWidget {
+class RailwayLinesScreen extends ConsumerWidget {
   const RailwayLinesScreen({super.key, this.viewState});
 
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     return Scaffold(
       body: SafeArea(
@@ -29,9 +32,12 @@ class RailwayLinesScreen extends StatelessWidget {
           children: [
             AppTopBar(title: l10n.railwayLines),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<List<RailwayLine>>(
+                value: ref.watch(linesProvider),
                 state: viewState,
-                content: (_) => const _LinesContent(),
+                isEmpty: (l) => l.isEmpty,
+                onRetry: () => ref.invalidate(linesProvider),
+                content: (_, l) => _LinesContent(lines: l),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.route_outlined,
@@ -52,62 +58,35 @@ class RailwayLinesScreen extends StatelessWidget {
 }
 
 class _LinesContent extends StatelessWidget {
-  const _LinesContent();
+  const _LinesContent({required this.lines});
+
+  final List<RailwayLine> lines;
 
   @override
   Widget build(BuildContext context) {
-    void open() => context.push(AppRoutes.lineDetails);
-    // Design preview content.
+    final l10n = context.l10n;
+    final sorted = [...lines]
+      ..sort((a, b) => b.stationCount.compareTo(a.stationCount));
     return PageScroll(
       spacing: AppSpacing.md,
       children: [
         LinesOverviewCard(
-          title: '9 lines across the island',
-          body: context.l10n.linesIntro,
-          legend: const [
-            ('Main', AppColors.lineMain),
-            ('Coastal', AppColors.lineCoastal),
-            ('Northern', AppColors.lineNorthern),
-            ('Batticaloa', AppColors.lineBatticaloa),
-            ('Trincomalee', AppColors.lineTrincomalee),
-            ('Puttalam', AppColors.mutedOnDark),
+          title: '${lines.length} · ${l10n.railwayLines}',
+          body: l10n.linesIntro,
+          legend: [
+            for (final l in sorted)
+              (l.name.of(context).replaceAll(' Line', ''), l.colorValue),
           ],
         ),
-        LineCard(
-          name: 'Main Line',
-          route: 'Colombo Fort → Badulla',
-          highlights: 'Tea country, Ella, Nine Arch Bridge',
-          color: AppColors.lineMain,
-          onTap: open,
-        ),
-        LineCard(
-          name: 'Coastal Line',
-          route: 'Colombo Fort → Beliatta',
-          highlights: 'Bentota, Hikkaduwa, Galle Fort',
-          color: AppColors.lineCoastal,
-          onTap: open,
-        ),
-        LineCard(
-          name: 'Northern Line',
-          route: 'Polgahawela → Kankesanthurai',
-          highlights: 'Anuradhapura, Jaffna',
-          color: AppColors.lineNorthern,
-          onTap: open,
-        ),
-        LineCard(
-          name: 'Batticaloa Line',
-          route: 'Maho → Batticaloa',
-          highlights: 'Polonnaruwa, east coast',
-          color: AppColors.lineBatticaloa,
-          onTap: open,
-        ),
-        LineCard(
-          name: 'Trincomalee Line',
-          route: 'Gal Oya → Trincomalee',
-          highlights: 'Beaches, whale watching',
-          color: AppColors.lineTrincomalee,
-          onTap: open,
-        ),
+        for (final l in sorted)
+          LineCard(
+            name: l.name.of(context),
+            route: l.description?.of(context) ?? '',
+            highlights: l10n.stationsCount(l.stationCount),
+            color: l.colorValue,
+            onTap: () =>
+                context.push(AppRoutes.withId(AppRoutes.lineDetails, l.id)),
+          ),
       ],
     );
   }

@@ -69,9 +69,9 @@ class AboutScreen extends StatelessWidget {
                     children: [
                       SettingsTile(
                         icon: Icons.dataset_outlined,
-                        title: l10n.dataSource,
-                        subtitle: l10n.dataSourceValue,
-                        onTap: () {},
+                        title: l10n.dataSourceTitle,
+                        subtitle: l10n.dataSourceBody,
+                        showChevron: false,
                       ),
                       SettingsTile(
                         icon: Icons.privacy_tip_outlined,

@@ -1,7 +1,7 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/constants/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/state/ui_view_state.dart';
@@ -15,18 +15,22 @@ import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/train_card.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../core/widgets/buttons.dart';
+import '../../../core/widgets/station_tile.dart';
+import '../../../data/providers.dart';
 
 /// Saved tab: counters, saved trains and saved places.
-class SavedScreen extends StatelessWidget {
+class SavedScreen extends ConsumerWidget {
   const SavedScreen({super.key, this.viewState});
 
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final palette = context.palette;
+    final signedIn = ref.watch(isSignedInProvider);
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -57,9 +61,24 @@ class SavedScreen extends StatelessWidget {
                 ),
               ],
             ),
-            UiStateView(
+            if (!signedIn && viewState == null)
+              EmptyState(
+                icon: Icons.lock_outline_rounded,
+                title: l10n.emptySavedTitle,
+                message: l10n.signInForSaved,
+                action: PrimaryButton(
+                  label: l10n.signIn,
+                  expand: false,
+                  onPressed: () => context.push(AppRoutes.signIn),
+                ),
+              )
+            else
+            AsyncView<SavedItems>(
+              value: ref.watch(savedItemsProvider),
               state: viewState,
-              content: (_) => const _SavedContent(),
+              isEmpty: (s) => s.isEmpty,
+              onRetry: () => ref.invalidate(savedItemsProvider),
+              content: (_, s) => _SavedContent(items: s),
               empty: (_) => EmptyState(
                 icon: Icons.bookmark_border_rounded,
                 title: l10n.emptySavedTitle,
@@ -75,15 +94,15 @@ class SavedScreen extends StatelessWidget {
   }
 }
 
-class _SavedContent extends StatelessWidget {
-  const _SavedContent();
+class _SavedContent extends ConsumerWidget {
+  const _SavedContent({required this.items});
+
+  final SavedItems items;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    void train() => context.push(AppRoutes.trainDetails);
-    void place() => context.push(AppRoutes.destinationDetails);
-    // Design preview content.
+    final routes = ref.watch(recentSearchesProvider).value?.length ?? 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -92,7 +111,7 @@ class _SavedContent extends StatelessWidget {
             Expanded(
               child: SavedCounter(
                 icon: Icons.train_outlined,
-                count: '3',
+                count: '${items.trains.length}',
                 label: l10n.statTrains,
                 onTap: () => context.push(AppRoutes.favoriteTrains),
               ),
@@ -101,16 +120,16 @@ class _SavedContent extends StatelessWidget {
             Expanded(
               child: SavedCounter(
                 icon: Icons.route_outlined,
-                count: '2',
+                count: '$routes',
                 label: l10n.statRoutes,
-                onTap: () => context.push(AppRoutes.favoriteTrains),
+                onTap: () => context.push(AppRoutes.journeySearch),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: SavedCounter(
                 icon: Icons.location_city_outlined,
-                count: '4',
+                count: '${items.stations.length}',
                 label: l10n.statStations,
                 onTap: () => context.push(AppRoutes.stationDirectory),
               ),
@@ -119,80 +138,86 @@ class _SavedContent extends StatelessWidget {
             Expanded(
               child: SavedCounter(
                 icon: Icons.place_outlined,
-                count: '5',
+                count: '${items.destinations.length}',
                 label: l10n.statPlaces,
                 onTap: () => context.push(AppRoutes.favoriteDestinations),
               ),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.xl),
-        SectionHeader(
-          title: l10n.savedTrains,
-          actionLabel: l10n.seeAll,
-          onAction: () => context.push(AppRoutes.favoriteTrains),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        SavedTrainTile(
-          trainName: 'Podi Menike #1005',
-          route: 'Colombo Fort → Badulla',
-          nextDepartureLabel: l10n.nextDeparture,
-          nextDepartureTime: '05:55',
-          onTap: train,
-        ),
-        const SizedBox(height: AppSpacing.s10),
-        SavedTrainTile(
-          trainName: 'Ruhunu Kumari #8058',
-          route: 'Maradana → Matara',
-          nextDepartureLabel: l10n.nextDeparture,
-          nextDepartureTime: '15:50',
-          onTap: train,
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        SectionHeader(
-          title: l10n.savedPlaces,
-          actionLabel: l10n.seeAll,
-          onAction: () => context.push(AppRoutes.favoriteDestinations),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 150,
-                child: DestinationGridTile(
-                  title: 'Nine Arch Bridge',
-                  subtitle: 'Ella',
-                  imageAsset: AppAssets.nineArchBridge,
-                  onTap: place,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              SizedBox(
-                width: 150,
-                child: DestinationGridTile(
-                  title: 'Galle Fort',
-                  subtitle: 'Galle',
-                  placeholderColor: AppColors.photoSea,
-                  onTap: place,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              SizedBox(
-                width: 150,
-                child: DestinationGridTile(
-                  title: 'Temple of the Tooth',
-                  subtitle: 'Kandy',
-                  placeholderColor: AppColors.photoEarth,
-                  onTap: place,
-                ),
-              ),
-            ],
+        if (items.trains.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          SectionHeader(
+            title: l10n.savedTrains,
+            actionLabel: l10n.seeAll,
+            onAction: () => context.push(AppRoutes.favoriteTrains),
           ),
-        ),
+          const SizedBox(height: AppSpacing.sm),
+          for (final t in items.trains.take(3)) ...[
+            SavedTrainTile(
+              trainName: '${t.name.of(context)} #${t.number}',
+              route: l10n.fromTo(
+                t.originName.of(context),
+                t.destinationName.of(context),
+              ),
+              nextDepartureLabel: l10n.nextDeparture,
+              nextDepartureTime: t.departTime,
+              onTap: () =>
+                  context.push(AppRoutes.withId(AppRoutes.trainDetails, t.id)),
+            ),
+            const SizedBox(height: AppSpacing.s10),
+          ],
+        ],
+        if (items.stations.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          SectionHeader(title: l10n.statStations),
+          const SizedBox(height: AppSpacing.sm),
+          for (final s in items.stations) ...[
+            StationTile(
+              code: s.code,
+              name: s.name.en,
+              nativeName: s.name.si,
+              subtitle: s.lineName?.of(context) ?? '',
+              showChevron: true,
+              onTap: () =>
+                  context.push(AppRoutes.withId(AppRoutes.stationDetails, s.id)),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ],
+        if (items.destinations.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          SectionHeader(
+            title: l10n.savedPlaces,
+            actionLabel: l10n.seeAll,
+            onAction: () => context.push(AppRoutes.favoriteDestinations),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final d in items.destinations) ...[
+                  SizedBox(
+                    width: 150,
+                    child: DestinationGridTile(
+                      title: d.name.of(context),
+                      subtitle: d.nearest?.station.name.of(context) ?? '',
+                      imageUrl: d.coverUrl,
+                      placeholderColor: AppColors.photoEarth,
+                      onTap: () => context.push(
+                        AppRoutes.withId(AppRoutes.destinationDetails, d.id),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                ],
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

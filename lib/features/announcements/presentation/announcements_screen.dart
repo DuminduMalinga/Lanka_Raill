@@ -17,7 +17,10 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/utils/date_labels.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
 /// Kind of railway notice; drives the tag colour.
 enum AnnouncementKind { scheduleChange, delay, service }
@@ -62,9 +65,23 @@ class AnnouncementsScreen extends ConsumerWidget {
                   .select(i),
             ),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<List<Announcement>>(
+                value: ref.watch(announcementsProvider).whenData(
+                  (all) => all
+                      .where(
+                        (a) => switch (filter) {
+                          1 => kindOf(a) == AnnouncementKind.delay,
+                          2 => kindOf(a) == AnnouncementKind.scheduleChange,
+                          3 => kindOf(a) == AnnouncementKind.service,
+                          _ => true,
+                        },
+                      )
+                      .toList(),
+                ),
                 state: viewState,
-                content: (_) => const _AnnouncementsContent(),
+                isEmpty: (a) => a.isEmpty,
+                onRetry: () => ref.invalidate(announcementsProvider),
+                content: (_, a) => _AnnouncementsContent(items: a),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.notifications_none_rounded,
@@ -84,13 +101,21 @@ class AnnouncementsScreen extends ConsumerWidget {
   }
 }
 
+/// Maps a notice's severity to the design's notice kinds.
+AnnouncementKind kindOf(Announcement a) => switch (a.severity) {
+  AnnouncementSeverity.critical => AnnouncementKind.delay,
+  AnnouncementSeverity.warning => AnnouncementKind.scheduleChange,
+  AnnouncementSeverity.info => AnnouncementKind.service,
+};
+
 class _AnnouncementsContent extends StatelessWidget {
-  const _AnnouncementsContent();
+  const _AnnouncementsContent({required this.items});
+
+  final List<Announcement> items;
 
   @override
   Widget build(BuildContext context) {
-    void open() => context.push(AppRoutes.announcementDetails);
-    // Design preview content.
+    final locale = Localizations.localeOf(context).toLanguageTag();
     return PageScroll(
       spacing: AppSpacing.md,
       padding: const EdgeInsets.fromLTRB(
@@ -100,42 +125,22 @@ class _AnnouncementsContent extends StatelessWidget {
         AppSpacing.xxl,
       ),
       children: [
-        AnnouncementCard(
-          kind: AnnouncementKind.scheduleChange,
-          line: 'Main Line',
-          time: '2h ago',
-          title: 'Weekend track maintenance between Nanu Oya and Ohiya',
-          unread: true,
-          onTap: open,
-        ),
-        AnnouncementCard(
-          kind: AnnouncementKind.delay,
-          line: 'Coastal Line',
-          time: '5h ago',
-          title: 'Ruhunu Kumari departing Maradana about 20 minutes late',
-          unread: true,
-          onTap: open,
-        ),
-        AnnouncementCard(
-          kind: AnnouncementKind.service,
-          line: 'Main Line',
-          time: 'Yesterday',
-          title: 'Extra coaches added to hill-country trains for the holiday season',
-          onTap: open,
-        ),
-        AnnouncementCard(
-          kind: AnnouncementKind.service,
-          line: 'All lines',
-          time: '12 Nov',
-          title: 'Observation saloon reservations open 30 days ahead',
-          onTap: open,
-        ),
+        for (final a in items)
+          AnnouncementCard(
+            kind: kindOf(a),
+            line: context.l10n.announcement,
+            time: DateLabels.dayMonth(a.startsAt, locale),
+            title: a.title.of(context),
+            unread: a.severity != AnnouncementSeverity.info,
+            onTap: () => context.push(
+              AppRoutes.withId(AppRoutes.announcementDetails, a.id),
+            ),
+          ),
       ],
     );
   }
 }
 
-/// Tag label + tone for an [AnnouncementKind].
 (String, StatusTone) announcementTag(BuildContext context, AnnouncementKind k) {
   final l10n = context.l10n;
   return switch (k) {

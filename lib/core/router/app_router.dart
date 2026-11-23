@@ -44,42 +44,48 @@ import 'app_shell.dart';
 /// Every full-screen (non-tab) route: path → screen builder.
 ///
 /// Exposed so widget tests can build each screen through the router.
-final Map<String, WidgetBuilder> fullScreenRoutes = {
-  AppRoutes.splash: (_) => const SplashScreen(),
-  AppRoutes.welcome: (_) => const WelcomeScreen(),
-  AppRoutes.onboarding: (_) => const OnboardingScreen(),
-  AppRoutes.languageSelect: (_) => const LanguageSelectScreen(),
-  AppRoutes.signIn: (_) => const SignInScreen(),
-  AppRoutes.signUp: (_) => const SignUpScreen(),
-  AppRoutes.forgotPassword: (_) => const ForgotPasswordScreen(),
-  AppRoutes.journeySearch: (_) => const JourneySearchScreen(),
-  AppRoutes.departureStation: (_) =>
+/// Builds a screen from the route state (`?id=` selects the item).
+typedef RouteScreenBuilder = Widget Function(BuildContext, GoRouterState);
+
+final Map<String, RouteScreenBuilder> fullScreenRoutes = {
+  AppRoutes.splash: (_, s) => const SplashScreen(),
+  AppRoutes.welcome: (_, s) => const WelcomeScreen(),
+  AppRoutes.onboarding: (_, s) => const OnboardingScreen(),
+  AppRoutes.languageSelect: (_, s) => const LanguageSelectScreen(),
+  AppRoutes.signIn: (_, s) => const SignInScreen(),
+  AppRoutes.signUp: (_, s) => const SignUpScreen(),
+  AppRoutes.forgotPassword: (_, s) => ForgotPasswordScreen(
+    updateMode: s.uri.queryParameters['mode'] == 'update',
+  ),
+  AppRoutes.journeySearch: (_, s) => const JourneySearchScreen(),
+  AppRoutes.departureStation: (_, s) =>
       const StationPickerScreen(kind: StationPickerKind.departure),
-  AppRoutes.arrivalStation: (_) =>
+  AppRoutes.arrivalStation: (_, s) =>
       const StationPickerScreen(kind: StationPickerKind.arrival),
-  AppRoutes.searchResults: (_) => const SearchResultsScreen(),
-  AppRoutes.trainDetails: (_) => const TrainDetailsScreen(),
-  AppRoutes.stopTimeline: (_) => const StopTimelineScreen(),
-  AppRoutes.routeMap: (_) => const RouteMapScreen(),
-  AppRoutes.classesFacilities: (_) => const ClassesFacilitiesScreen(),
-  AppRoutes.railwayLines: (_) => const RailwayLinesScreen(),
-  AppRoutes.lineDetails: (_) => const LineDetailsScreen(),
-  AppRoutes.stationDirectory: (_) => const StationDirectoryScreen(),
-  AppRoutes.stationDetails: (_) => const StationDetailsScreen(),
-  AppRoutes.nearbyStations: (_) => const NearbyStationsScreen(),
-  AppRoutes.destinationCategories: (_) => const DestinationCategoriesScreen(),
-  AppRoutes.destinationDetails: (_) => const DestinationDetailsScreen(),
-  AppRoutes.destinationGallery: (_) => const DestinationGalleryScreen(),
-  AppRoutes.favoriteTrains: (_) => const FavoriteTrainsScreen(),
-  AppRoutes.favoriteDestinations: (_) => const FavoriteDestinationsScreen(),
-  AppRoutes.announcements: (_) => const AnnouncementsScreen(),
-  AppRoutes.announcementDetails: (_) => const AnnouncementDetailsScreen(),
-  AppRoutes.settings: (_) => const SettingsScreen(),
-  AppRoutes.languageSettings: (_) => const LanguageSettingsScreen(),
-  AppRoutes.themeSettings: (_) => const ThemeSettingsScreen(),
-  AppRoutes.notificationSettings: (_) => const NotificationSettingsScreen(),
-  AppRoutes.helpFeedback: (_) => const HelpFeedbackScreen(),
-  AppRoutes.about: (_) => const AboutScreen(),
+  AppRoutes.searchResults: (_, s) => const SearchResultsScreen(),
+  AppRoutes.trainDetails: (_, s) => TrainDetailsScreen(trainId: s.uri.queryParameters['id']),
+  AppRoutes.stopTimeline: (_, s) => StopTimelineScreen(trainId: s.uri.queryParameters['id']),
+  AppRoutes.routeMap: (_, s) => RouteMapScreen(trainId: s.uri.queryParameters['id']),
+  AppRoutes.classesFacilities: (_, s) => ClassesFacilitiesScreen(trainId: s.uri.queryParameters['id']),
+  AppRoutes.railwayLines: (_, s) => const RailwayLinesScreen(),
+  AppRoutes.lineDetails: (_, s) => LineDetailsScreen(lineId: s.uri.queryParameters['id']),
+  AppRoutes.stationDirectory: (_, s) => const StationDirectoryScreen(),
+  AppRoutes.stationDetails: (_, s) => StationDetailsScreen(stationId: s.uri.queryParameters['id']),
+  AppRoutes.nearbyStations: (_, s) =>
+      NearbyStationsScreen(destinationId: s.uri.queryParameters['id']),
+  AppRoutes.destinationCategories: (_, s) => DestinationCategoriesScreen(categoryId: s.uri.queryParameters['id']),
+  AppRoutes.destinationDetails: (_, s) => DestinationDetailsScreen(destinationId: s.uri.queryParameters['id']),
+  AppRoutes.destinationGallery: (_, s) => DestinationGalleryScreen(destinationId: s.uri.queryParameters['id']),
+  AppRoutes.favoriteTrains: (_, s) => const FavoriteTrainsScreen(),
+  AppRoutes.favoriteDestinations: (_, s) => const FavoriteDestinationsScreen(),
+  AppRoutes.announcements: (_, s) => const AnnouncementsScreen(),
+  AppRoutes.announcementDetails: (_, s) => AnnouncementDetailsScreen(announcementId: s.uri.queryParameters['id']),
+  AppRoutes.settings: (_, s) => const SettingsScreen(),
+  AppRoutes.languageSettings: (_, s) => const LanguageSettingsScreen(),
+  AppRoutes.themeSettings: (_, s) => const ThemeSettingsScreen(),
+  AppRoutes.notificationSettings: (_, s) => const NotificationSettingsScreen(),
+  AppRoutes.helpFeedback: (_, s) => const HelpFeedbackScreen(),
+  AppRoutes.about: (_, s) => const AboutScreen(),
 };
 
 /// Bottom-navigation tabs in display order: path → screen builder.
@@ -116,7 +122,7 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.splash}) {
         GoRoute(
           path: entry.key,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => entry.value(context),
+          builder: (context, state) => entry.value(context, state),
         ),
     ],
   );

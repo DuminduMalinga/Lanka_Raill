@@ -55,4 +55,8 @@ abstract final class AppRoutes {
   static const String notificationSettings = '/settings/notifications';
   static const String helpFeedback = '/settings/help';
   static const String about = '/settings/about';
+
+  /// Detail route for one item, e.g. `AppRoutes.withId(trainDetails, id)`.
+  static String withId(String route, String id) =>
+      '$route?id=${Uri.encodeQueryComponent(id)}';
 }

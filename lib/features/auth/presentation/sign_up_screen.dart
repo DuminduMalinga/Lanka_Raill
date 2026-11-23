@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
@@ -10,6 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
+import '../data/auth_service.dart';
 import 'widgets/auth_scaffold.dart';
 
 /// Account creation form with inline UI validation (no auth calls).
@@ -28,6 +30,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
   bool _submitted = false;
+  bool _busy = false;
 
   @override
   void dispose() {
@@ -53,10 +56,33 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     return strong ? l10n.pwStrong : l10n.pwAddNumber;
   }
 
-  void _submit(bool agreed) {
+  Future<void> _submit(bool agreed) async {
     setState(() => _submitted = true);
-    if (_emailOk && _userOk && _passwordOk && _matches && agreed) {
-      context.go(AppRoutes.home);
+    if (!(_emailOk && _userOk && _passwordOk && _matches && agreed) || _busy) {
+      return;
+    }
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    try {
+      final started = await AuthService.signUp(
+        email: _email.text.trim(),
+        password: _password.text,
+        displayName: _user.text.trim(),
+      );
+      if (!mounted) return;
+      if (started) {
+        context.go(AppRoutes.home);
+      } else {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.checkEmailConfirm)));
+        context.go(AppRoutes.signIn);
+      }
+    } on AuthException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.authFailed(e.message))));
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.loadErrorBody)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -155,7 +181,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         const SizedBox(height: AppSpacing.s10),
         PrimaryButton(
           label: l10n.createAccount,
-          onPressed: () => _submit(agreed),
+          onPressed: _busy ? null : () => _submit(agreed),
         ),
         AuthSwitchPrompt(
           prompt: l10n.haveAccount,

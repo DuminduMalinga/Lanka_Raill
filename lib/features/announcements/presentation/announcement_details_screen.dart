@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -10,39 +11,54 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/buttons.dart';
-import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/utils/date_labels.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 import 'announcements_screen.dart';
 
-/// Full notice: verification banner, facts table, body, actions.
-class AnnouncementDetailsScreen extends StatelessWidget {
-  const AnnouncementDetailsScreen({super.key, this.viewState});
+/// Full notice: kind, title, date, body, actions.
+class AnnouncementDetailsScreen extends ConsumerWidget {
+  const AnnouncementDetailsScreen({
+    super.key,
+    this.announcementId,
+    this.viewState,
+  });
 
+  final String? announcementId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final id = ref.watch(announcementIdProvider(announcementId));
+    final all = ref.watch(announcementsProvider);
+    final item = resolved<Announcement>(
+      ref,
+      id,
+      (v) => all.whenData((list) {
+        for (final a in list) {
+          if (a.id == v) return a;
+        }
+        return null;
+      }),
+    );
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            AppTopBar(
-              title: l10n.announcement,
-              trailing: CircleIconButton(
-                icon: Icons.ios_share_rounded,
-                semanticLabel: l10n.share,
-                onPressed: () {},
-              ),
-            ),
+            AppTopBar(title: l10n.announcement),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<Announcement?>(
+                value: item,
                 state: viewState,
-                content: (_) => const _DetailsContent(),
+                isEmpty: (a) => a == null,
+                onRetry: () => ref.invalidate(announcementsProvider),
+                content: (_, a) => _DetailsContent(item: a!),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.notifications_none_rounded,
@@ -63,26 +79,21 @@ class AnnouncementDetailsScreen extends StatelessWidget {
 }
 
 class _DetailsContent extends StatelessWidget {
-  const _DetailsContent();
+  const _DetailsContent({required this.item});
+
+  final Announcement item;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
-    final (tagLabel, tagTone) = announcementTag(
-      context,
-      AnnouncementKind.scheduleChange,
-    );
-    // Design preview content.
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final (tagLabel, tagTone) = announcementTag(context, kindOf(item));
     return PageScroll(
       children: [
-        _VerifiedBanner(text: l10n.verifiedFromOfficial),
         Wrap(
           spacing: AppSpacing.s6,
-          children: [
-            StatusChip(label: tagLabel, tone: tagTone),
-            const StatusChip(label: 'Main Line', tone: StatusTone.neutral),
-          ],
+          children: [StatusChip(label: tagLabel, tone: tagTone)],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,43 +101,29 @@ class _DetailsContent extends StatelessWidget {
             Semantics(
               header: true,
               child: Text(
-                'Weekend track maintenance between Nanu Oya and Ohiya',
+                item.title.of(context),
                 style: AppTextStyles.h4.copyWith(color: palette.textPrimary),
               ),
             ),
             const SizedBox(height: AppSpacing.s6),
             Text(
-              'Published 15 Nov 2026, 14:10 · Updated 15:02',
+              DateLabels.dayMonth(item.startsAt, locale),
               style: AppTextStyles.caption.copyWith(color: palette.textMuted),
             ),
           ],
         ),
-        _FactsTable(
-          rows: [
-            (l10n.detailDates, 'Sat 21 – Sun 22 Nov'),
-            (l10n.detailSection, 'Nanu Oya → Ohiya'),
-            (l10n.detailAffectedTrains, '1005, 1015, 1045'),
-            (l10n.detailExpectedDelay, 'Up to 45 min'),
-          ],
-        ),
-        Text(
-          'Trains will run at reduced speed through the work zone. Passengers '
-          'travelling to Ella and Badulla should allow extra time for '
-          'connections. Reserved tickets remain valid.',
-          style: AppTextStyles.bodyLarge.copyWith(color: palette.textPrimary),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: () {},
-            style: TextButton.styleFrom(
-              foregroundColor: palette.primary,
-              minimumSize: const Size(AppSizes.tapTarget, AppSizes.tapTarget),
-              textStyle: AppTextStyles.chip,
-            ),
-            icon: const Icon(Icons.open_in_new_rounded, size: AppSizes.iconSm),
-            label: Text(l10n.viewOriginalNotice),
+        if (item.endsAt != null)
+          _FactsTable(
+            rows: [
+              (
+                l10n.detailDates,
+                '${DateLabels.dayMonth(item.startsAt, locale)} – ${DateLabels.dayMonth(item.endsAt!, locale)}',
+              ),
+            ],
           ),
+        Text(
+          item.body.of(context),
+          style: AppTextStyles.bodyLarge.copyWith(color: palette.textPrimary),
         ),
         Row(
           children: [
@@ -139,52 +136,14 @@ class _DetailsContent extends StatelessWidget {
             const SizedBox(width: AppSpacing.s10),
             Expanded(
               child: PrimaryButton(
-                label: l10n.notifyMe,
-                icon: Icons.notifications_active_outlined,
+                label: l10n.searchTrains,
                 tone: PrimaryButtonTone.dark,
-                onPressed: () => context.push(AppRoutes.notificationSettings),
+                onPressed: () => context.push(AppRoutes.journeySearch),
               ),
             ),
           ],
         ),
       ],
-    );
-  }
-}
-
-class _VerifiedBanner extends StatelessWidget {
-  const _VerifiedBanner({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: palette.tint,
-        borderRadius: AppRadii.cardAll,
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.verified_rounded,
-            size: AppSizes.icon,
-            color: palette.onTint,
-          ),
-          const SizedBox(width: AppSpacing.s10),
-          Expanded(
-            child: Text(
-              text,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: palette.onTint,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

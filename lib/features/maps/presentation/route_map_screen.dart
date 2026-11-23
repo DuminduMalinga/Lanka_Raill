@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,22 +13,34 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_map.dart';
 import '../../../core/widgets/buttons.dart';
-import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../core/widgets/map_layers.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 import 'widgets/map_top_bar.dart';
 
 /// Full-screen dark map for a train's route with a summary sheet.
-class RouteMapScreen extends StatelessWidget {
-  const RouteMapScreen({super.key, this.viewState});
+class RouteMapScreen extends ConsumerWidget {
+  const RouteMapScreen({super.key, this.trainId, this.viewState});
 
+  final String? trainId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = ref.watch(trainIdProvider(trainId));
+    final train = resolved(ref, id, (v) => ref.watch(trainProvider(v))).value;
+    final stops = resolved(ref, id, (v) => ref.watch(trainStopsProvider(v)));
+    final points = [
+      for (final s in stops.value ?? const <TrainStop>[])
+        if (s.station.hasLocation)
+          (LatLng(s.station.lat!, s.station.lng!), s.station.code),
+    ];
+    final (center, zoom) = fitPoints([for (final p in points) p.$1]);
+    final list = stops.value ?? const <TrainStop>[];
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
@@ -36,58 +50,46 @@ class RouteMapScreen extends StatelessWidget {
             Expanded(
               child: Stack(
                 children: [
-                  const Positioned.fill(
+                  Positioned.fill(
                     child: AppMap(
-                      controlsPadding: EdgeInsets.fromLTRB(
+                      key: ValueKey('${center.latitude},${center.longitude},$zoom'),
+                      center: center,
+                      zoom: zoom,
+                      controlsPadding: const EdgeInsets.fromLTRB(
                         AppSpacing.lg,
                         AppSpacing.lg,
                         AppSpacing.lg,
                         AppSpacing.xxl,
                       ),
                       controlsAlignment: Alignment.bottomRight,
+                      children: routeLayers(
+                        points,
+                        onTap: (i) => context.push(
+                          AppRoutes.withId(
+                            AppRoutes.stationDetails,
+                            list.where((s) => s.station.hasLocation).elementAt(i).station.id,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   SafeArea(
                     bottom: false,
-                    // Overlays clip (rather than overflow) on short screens.
-                    child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Design preview content.
-                          MapTopBar(
-                            title: 'Main Line · Podi Menike',
-                            fallbackRoute: AppRoutes.trainDetails,
-                            trailing: CircleIconButton(
-                              icon: Icons.layers_outlined,
-                              tone: CircleIconTone.glass,
-                              semanticLabel: l10n.mapLayers,
-                              onPressed: () {},
-                            ),
-                          ),
-                          if (viewState != UiViewState.empty)
-                            const Padding(
-                              padding: EdgeInsets.fromLTRB(
-                                AppSpacing.gutter,
-                                AppSpacing.xl,
-                                0,
-                                0,
-                              ),
-                              child: ScenicStretchCard(
-                                title: 'Nanu Oya → Ella',
-                                note: 'Sit on the right side for valley views',
-                              ),
-                            ),
-                        ],
-                      ),
+                    child: MapTopBar(
+                      title: train == null
+                          ? context.l10n.routeMap
+                          : '${train.name.of(context)} · #${train.number}',
+                      fallbackRoute: AppRoutes.trainDetails,
                     ),
                   ),
                 ],
               ),
             ),
-            _RouteSheet(viewState: viewState),
+            _RouteSheet(
+              viewState: viewState,
+              train: train,
+              stops: stops,
+            ),
           ],
         ),
       ),
@@ -95,72 +97,17 @@ class RouteMapScreen extends StatelessWidget {
   }
 }
 
-/// Small dark overlay card describing a scenic section of the route.
-class ScenicStretchCard extends StatelessWidget {
-  const ScenicStretchCard({super.key, required this.title, required this.note});
-
-  final String title;
-  final String note;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 170,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.forestDeep.withValues(alpha: 0.9),
-        borderRadius: AppRadii.cardAll,
-        border: Border.all(color: AppColors.hairlineOnDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.landscape_outlined,
-                size: 14,
-                color: AppColors.lime,
-              ),
-              const SizedBox(width: AppSpacing.s6),
-              Flexible(
-                child: Text(
-                  context.l10n.scenicStretch.toUpperCase(),
-                  style: AppTextStyles.overline.copyWith(
-                    color: AppColors.lime,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.s6),
-          Text(
-            title,
-            style: AppTextStyles.bodyStrong.copyWith(
-              color: AppColors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(
-            note,
-            style: AppTextStyles.caption.copyWith(color: AppColors.mutedOnDark),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _RouteSheet extends StatelessWidget {
-  const _RouteSheet({this.viewState});
+  const _RouteSheet({this.viewState, this.train, required this.stops});
 
   final UiViewState? viewState;
+  final TrainSummary? train;
+  final AsyncValue<List<TrainStop>?> stops;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final t = train;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.forestDeep.withValues(alpha: 0.96),
@@ -169,7 +116,6 @@ class _RouteSheet extends StatelessWidget {
           top: Radius.circular(AppRadii.sheet),
         ),
       ),
-      // Cap the sheet so the map stays visible; scroll when text is large.
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.62,
       ),
@@ -190,9 +136,11 @@ class _RouteSheet extends StatelessWidget {
                 children: [
                   const _SheetHandle(),
                   const SizedBox(height: AppSpacing.lg),
-                  UiStateView(
+                  AsyncView<List<TrainStop>?>(
+                    value: stops,
                     state: viewState,
-                    content: (_) => const _RouteSummary(),
+                    isEmpty: (s) => s == null || s.isEmpty || t == null,
+                    content: (_, s) => _RouteSummary(train: t!, stops: s!),
                     empty: (_) => EmptyState(
                       onDark: true,
                       icon: Icons.map_outlined,
@@ -214,7 +162,11 @@ class _RouteSheet extends StatelessWidget {
                           label: l10n.stopTimeline,
                           icon: Icons.timeline_rounded,
                           tone: SecondaryButtonTone.glass,
-                          onPressed: () => context.push(AppRoutes.stopTimeline),
+                          onPressed: t == null
+                              ? null
+                              : () => context.push(
+                                  AppRoutes.withId(AppRoutes.stopTimeline, t.id),
+                                ),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s10),
@@ -222,8 +174,7 @@ class _RouteSheet extends StatelessWidget {
                         child: PrimaryButton(
                           label: l10n.exploreStops,
                           icon: Icons.explore_outlined,
-                          onPressed: () =>
-                              context.push(AppRoutes.nearbyStations),
+                          onPressed: () => context.go(AppRoutes.explore),
                         ),
                       ),
                     ],
@@ -257,12 +208,14 @@ class _SheetHandle extends StatelessWidget {
 }
 
 class _RouteSummary extends StatelessWidget {
-  const _RouteSummary();
+  const _RouteSummary({required this.train, required this.stops});
+
+  final TrainSummary train;
+  final List<TrainStop> stops;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    // Design preview content.
     return Column(
       children: [
         Row(
@@ -280,14 +233,17 @@ class _RouteSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Colombo Fort → Badulla',
+                    l10n.fromTo(
+                      train.originName.of(context),
+                      train.destinationName.of(context),
+                    ),
                     style: AppTextStyles.cardTitle.copyWith(
                       color: AppColors.white,
                       fontSize: 16,
                     ),
                   ),
                   Text(
-                    'Climbs from sea level to 1,898 m at Pattipola',
+                    stops.map((s) => s.station.name.of(context)).join(' · '),
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.mutedOnDark,
                     ),
@@ -300,9 +256,17 @@ class _RouteSummary extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         EqualRow(
           children: [
-            StatTile(value: '≈290', label: l10n.km, onDark: true),
-            StatTile(value: '10h 25m', label: l10n.journeyLower, onDark: true),
-            StatTile(value: '10', label: l10n.majorStopsLower, onDark: true),
+            StatTile(value: train.departTime, label: l10n.departureTime, onDark: true),
+            StatTile(
+              value: formatDuration(train.durationMinutes),
+              label: l10n.journeyLower,
+              onDark: true,
+            ),
+            StatTile(
+              value: '${stops.length}',
+              label: l10n.majorStopsLower,
+              onDark: true,
+            ),
           ],
         ),
       ],

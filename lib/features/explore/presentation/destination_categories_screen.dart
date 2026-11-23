@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -13,98 +14,129 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../core/widgets/destination_card.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
-/// Grid of destination categories.
-class DestinationCategoriesScreen extends StatelessWidget {
-  const DestinationCategoriesScreen({super.key, this.viewState});
+/// Destination categories; with `categoryId`, the places in one category.
+class DestinationCategoriesScreen extends ConsumerWidget {
+  const DestinationCategoriesScreen({
+    super.key,
+    this.categoryId,
+    this.viewState,
+  });
 
+  final String? categoryId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final categories = ref.watch(categoriesProvider);
+    final id = categoryId;
+    DestinationCategory? current;
+    for (final c in categories.value ?? const <DestinationCategory>[]) {
+      if (c.id == id) current = c;
+    }
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            AppTopBar(title: l10n.destinationCategories),
+            AppTopBar(
+              title: current?.name.of(context) ?? l10n.destinationCategories,
+            ),
             Expanded(
-              child: UiStateView(
-                state: viewState,
-                content: (_) => const _CategoriesContent(),
-                empty: (_) => SingleChildScrollView(
-                  child: EmptyState(
-                    icon: Icons.category_outlined,
-                    title: l10n.emptyPlacesTitle,
-                    message: l10n.emptyPlacesBody,
-                  ),
-                ),
-                loading: (_) => const SingleChildScrollView(
-                  child: ShimmerList(itemCount: 4, itemHeight: 150),
-                ),
-              ),
+              child: id == null
+                  ? AsyncView<List<DestinationCategory>>(
+                      value: categories,
+                      state: viewState,
+                      isEmpty: (c) => c.every((x) => x.count == 0),
+                      onRetry: () => ref.invalidate(categoriesProvider),
+                      content: (_, c) => _CategoriesContent(
+                        categories: c.where((x) => x.count > 0).toList(),
+                      ),
+                      empty: (_) => _empty(context),
+                      loading: (_) => const SingleChildScrollView(
+                        child: ShimmerList(itemCount: 4, itemHeight: 150),
+                      ),
+                    )
+                  : AsyncView<List<Destination>>(
+                      value: ref.watch(destinationsProvider(id)),
+                      state: viewState,
+                      isEmpty: (d) => d.isEmpty,
+                      onRetry: () => ref.invalidate(destinationsProvider(id)),
+                      content: (_, d) => _PlacesContent(destinations: d),
+                      empty: (_) => _empty(context),
+                      loading: (_) => const SingleChildScrollView(
+                        child: ShimmerList(itemCount: 4, itemHeight: 120),
+                      ),
+                    ),
             ),
           ],
         ),
       ),
     );
   }
+
+  Widget _empty(BuildContext context) => SingleChildScrollView(
+    child: EmptyState(
+      icon: Icons.category_outlined,
+      title: context.l10n.emptyPlacesTitle,
+      message: context.l10n.emptyPlacesBody,
+    ),
+  );
 }
 
-class _CategoriesContent extends StatelessWidget {
-  const _CategoriesContent();
+class _CategoriesContent extends ConsumerWidget {
+  const _CategoriesContent({required this.categories});
+
+  final List<DestinationCategory> categories;
+
+  static const _colors = [
+    AppColors.photoLeaf,
+    AppColors.photoSea,
+    AppColors.photoSand,
+    AppColors.photoEarth,
+    AppColors.forestRaised,
+  ];
 
   @override
-  Widget build(BuildContext context) {
-    void open() => context.push(AppRoutes.destinationDetails);
-    // Design preview content.
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final all = ref.watch(destinationsProvider(null)).value ?? const [];
+    String? coverFor(String id) {
+      for (final d in all) {
+        if (d.categoryId == id && d.coverUrl != null) return d.coverUrl;
+      }
+      return null;
+    }
+
+    void open(DestinationCategory c) => context.push(
+      AppRoutes.withId(AppRoutes.destinationCategories, c.id),
+    );
     final tiles = <Widget>[
-      CategoryTile(
-        title: 'Hill country & tea',
-        subtitle: 'Main Line · Hatton to Ella',
-        icon: Icons.eco_outlined,
-        color: AppColors.photoLeaf,
-        onTap: open,
-      ),
-      CategoryTile(
-        title: 'Beaches & coast',
-        subtitle: 'Coastal Line · Bentota to Matara',
-        icon: Icons.beach_access_outlined,
-        color: AppColors.photoSea,
-        onTap: open,
-      ),
-      CategoryTile(
-        title: 'Ancient cities',
-        subtitle: 'Anuradhapura, Polonnaruwa',
-        icon: Icons.account_balance_outlined,
-        color: AppColors.photoSand,
-        onTap: open,
-      ),
-      CategoryTile(
-        title: 'Wildlife & nature',
-        subtitle: 'Horton Plains, Minneriya',
-        icon: Icons.pets_outlined,
-        color: AppColors.photoEarth,
-        onTap: open,
-      ),
-      CategoryTile(
-        title: 'Northern culture',
-        subtitle: 'Northern Line · Jaffna',
-        icon: Icons.temple_hindu_outlined,
-        color: AppColors.forestRaised,
-        onTap: open,
-      ),
+      for (var i = 1; i < categories.length; i++)
+        CategoryTile(
+          title: categories[i].name.of(context),
+          subtitle: l10n.placesCount(categories[i].count),
+          icon: categories[i].iconData,
+          imageUrl: coverFor(categories[i].id),
+          color: _colors[i % _colors.length],
+          onTap: () => open(categories[i]),
+        ),
     ];
+    final first = categories.first;
     return PageScroll(
       spacing: AppSpacing.md,
       children: [
         CategoryTile(
-          title: 'Scenic bridges & views',
-          subtitle: 'Nine Arch, Demodara loop',
-          imageAsset: AppAssets.nineArchBridge,
+          title: first.name.of(context),
+          subtitle: l10n.placesCount(first.count),
+          imageUrl: coverFor(first.id),
+          imageAsset: coverFor(first.id) == null ? AppAssets.nineArchBridge : null,
           wide: true,
-          onTap: open,
+          onTap: () => open(first),
         ),
         for (var i = 0; i < tiles.length; i += 2)
           Row(
@@ -118,6 +150,38 @@ class _CategoriesContent extends StatelessWidget {
                     : const SizedBox.shrink(),
               ),
             ],
+          ),
+      ],
+    );
+  }
+}
+
+class _PlacesContent extends StatelessWidget {
+  const _PlacesContent({required this.destinations});
+
+  final List<Destination> destinations;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return PageScroll(
+      spacing: AppSpacing.md,
+      children: [
+        for (final d in destinations)
+          DestinationCard(
+            title: d.name.of(context),
+            description: d.description?.of(context) ?? '',
+            stationLabel: d.nearest == null
+                ? null
+                : [
+                    d.nearest!.station.name.of(context),
+                    if (d.nearest!.km != null)
+                      l10n.approxKm(d.nearest!.km!.toStringAsFixed(1)),
+                  ].join(' · '),
+            imageUrl: d.coverUrl,
+            onTap: () => context.push(
+              AppRoutes.withId(AppRoutes.destinationDetails, d.id),
+            ),
           ),
       ],
     );

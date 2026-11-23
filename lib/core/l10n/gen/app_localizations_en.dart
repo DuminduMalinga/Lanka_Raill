@@ -579,6 +579,7 @@ class AppLocalizationsEn extends AppLocalizations {
       locale: localeName,
       other: '$count stops',
       one: '1 stop',
+      zero: 'Direct',
     );
     return '$_temp0';
   }
@@ -1228,4 +1229,161 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notOfficial =>
       'Not an official Sri Lanka Railways app · © 2026 CeylonGO';
+
+  @override
+  String get loadErrorTitle => 'Couldn\'t load this';
+
+  @override
+  String get loadErrorBody => 'Check your internet connection and try again.';
+
+  @override
+  String get retry => 'Try again';
+
+  @override
+  String timetableSourceNote(String source) {
+    return 'Times from $source. Always check at the station.';
+  }
+
+  @override
+  String photoCredit(String credit) {
+    return 'Photo: $credit';
+  }
+
+  @override
+  String get signInToSave => 'Sign in to save trains, stations and places.';
+
+  @override
+  String get savedToast => 'Saved';
+
+  @override
+  String get removedToast => 'Removed from saved';
+
+  @override
+  String runsOn(String days) {
+    return 'Runs $days';
+  }
+
+  @override
+  String get nextDayShort => '+1 day';
+
+  @override
+  String get notRunningOnDate => 'Doesn\'t run on this day';
+
+  @override
+  String stationsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stations',
+      one: '1 station',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String placesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count places',
+      one: '1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String approxKm(String km) {
+    return '≈$km km';
+  }
+
+  @override
+  String get facilitiesNotListed =>
+      'Facilities for this station aren\'t listed yet.';
+
+  @override
+  String get noDeparturesTitle => 'No departures listed';
+
+  @override
+  String get noDeparturesBody =>
+      'No trains in our timetable depart from this station.';
+
+  @override
+  String authFailed(String message) {
+    return 'Couldn\'t sign in: $message';
+  }
+
+  @override
+  String get checkEmailConfirm =>
+      'Account created. Check your email to confirm it, then sign in.';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'If an account exists for $email, a reset link is on its way.';
+  }
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get signInForSaved =>
+      'Sign in to keep your saved trains and places on every device.';
+
+  @override
+  String get classesNotListed => 'Seat classes aren\'t listed for this train.';
+
+  @override
+  String get reservedSeats => 'Reserved';
+
+  @override
+  String get unreservedSeats => 'Unreserved';
+
+  @override
+  String get noStationsMatch => 'No stations match your search';
+
+  @override
+  String get enterEmailPassword => 'Enter your email and password.';
+
+  @override
+  String get passwordsDontMatch => 'Passwords don\'t match.';
+
+  @override
+  String get passwordTooShort => 'Use at least 6 characters.';
+
+  @override
+  String trainNumber(String number) {
+    return 'Train #$number';
+  }
+
+  @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get dataSourceTitle => 'Data and photos';
+
+  @override
+  String get dataSourceBody =>
+      'Timetables: seat61.com (updated 10 June 2026), main stations only. Photos: Wikimedia Commons, credited on each photo. Station coordinates are approximate.';
+
+  @override
+  String destinationsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count destinations',
+      one: '1 destination',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String fromTo(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get locationUnavailable =>
+      'Showing all stations — location isn\'t available.';
+
+  @override
+  String get allCategories => 'All';
 }

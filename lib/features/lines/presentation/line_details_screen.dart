@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -16,42 +17,80 @@ import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/train_card.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
+
+/// Stations of a line in route order (taken from its longest train).
+final _lineStationsProvider = FutureProvider.family<List<Station>, String>((
+  ref,
+  lineId,
+) async {
+  final stations = await ref.watch(stationsProvider.future);
+  final trains = await ref.watch(trainsProvider.future);
+  final onLine = stations.where((s) => s.lineId == lineId).toList();
+  final lineTrains = trains.where((t) => t.lineId == lineId).toList()
+    ..sort((a, b) => b.stopCount.compareTo(a.stopCount));
+  if (lineTrains.isEmpty) return onLine;
+  final stops = await ref.watch(trainStopsProvider(lineTrains.first.id).future);
+  final ordered = [
+    for (final s in stops)
+      if (s.station.lineId == lineId) s.station,
+  ];
+  final seen = ordered.map((s) => s.id).toSet();
+  return [...ordered, ...onLine.where((s) => !seen.contains(s.id))];
+});
 
 /// A single railway line: stats, key stations, trains, places.
-class LineDetailsScreen extends StatelessWidget {
-  const LineDetailsScreen({super.key, this.viewState});
+class LineDetailsScreen extends ConsumerWidget {
+  const LineDetailsScreen({super.key, this.lineId, this.viewState});
 
+  final String? lineId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final id = ref.watch(lineIdProvider(lineId));
+    final lines = ref.watch(linesProvider);
+    final line = resolved<RailwayLine>(
+      ref,
+      id,
+      (v) => lines.whenData((all) {
+        for (final l in all) {
+          if (l.id == v) return l;
+        }
+        return null;
+      }),
+    );
+    final l = line.value;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Design preview content.
             PhotoHeader(
               imageAsset: AppAssets.nineArchBridge,
               semanticLabel: l10n.welcomeImageAlt,
               height: 280,
-              title: 'Main Line',
-              subtitle: 'Colombo Fort → Badulla',
-              tags: [StatusChip(label: l10n.mostScenic, tone: StatusTone.lime)],
-              actions: [
-                HeaderAction(
-                  icon: Icons.bookmark_border_rounded,
-                  label: l10n.saveLine,
-                ),
+              title: l?.name.of(context) ?? '',
+              subtitle: l?.description?.of(context),
+              tags: [
+                if (l != null)
+                  StatusChip(
+                    label: l10n.stationsCount(l.stationCount),
+                    tone: StatusTone.lime,
+                  ),
               ],
             ),
             DetailBody(
               child: MaxWidth(
-                child: UiStateView(
+                child: AsyncView<RailwayLine?>(
+                  value: line,
                   state: viewState,
-                  content: (_) => const _LineContent(),
+                  isEmpty: (v) => v == null,
+                  onRetry: () => ref.invalidate(linesProvider),
+                  content: (_, v) => _LineContent(line: v!),
                   empty: (_) => EmptyState(
                     icon: Icons.route_outlined,
                     title: l10n.emptyDetailsTitle,
@@ -69,80 +108,81 @@ class LineDetailsScreen extends StatelessWidget {
   }
 }
 
-class _LineContent extends StatelessWidget {
-  const _LineContent();
+class _LineContent extends ConsumerWidget {
+  const _LineContent({required this.line});
+
+  final RailwayLine line;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    void train() => context.push(AppRoutes.trainDetails);
-    // Design preview content.
+    final stations = ref.watch(_lineStationsProvider(line.id)).value ?? const [];
+    final trains = (ref.watch(trainsProvider).value ?? const <TrainSummary>[])
+        .where((t) => t.lineId == line.id)
+        .toList();
+    final stationIds = stations.map((s) => s.id).toSet();
+    final places = (ref.watch(destinationsProvider(null)).value ?? const [])
+        .where((d) => d.nearestStations.any((n) => stationIds.contains(n.station.id)))
+        .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         EqualRow(
           children: [
-            StatTile(value: '≈290 km', label: l10n.lineLength),
-            StatTile(value: '1,898 m', label: l10n.highestPoint),
-            StatTile(value: '1864', label: l10n.firstSection),
+            StatTile(value: '${stations.length}', label: l10n.allStations),
+            StatTile(value: '${trains.length}', label: l10n.trainsOnLine),
+            StatTile(value: '${places.length}', label: l10n.placesAlongLine),
           ],
         ),
-        const SizedBox(height: AppSpacing.xl),
-        SectionHeader(
-          title: l10n.keyStations,
-          actionLabel: l10n.allStations,
-          onAction: () => context.push(AppRoutes.stationDirectory),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        StationPath(
-          stations: const [
-            'Colombo Fort',
-            'Peradeniya',
-            'Hatton',
-            'Nanu Oya',
-            'Ella',
-            'Badulla',
+        if (stations.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          SectionHeader(
+            title: l10n.keyStations,
+            actionLabel: l10n.allStations,
+            onAction: () => context.push(AppRoutes.stationDirectory),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          StationPath(
+            stations: [for (final s in stations) s.name.of(context)],
+            onStationTap: (i) => context.push(
+              AppRoutes.withId(AppRoutes.stationDetails, stations[i].id),
+            ),
+          ),
+        ],
+        if (trains.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          SectionHeader(title: l10n.trainsOnLine),
+          const SizedBox(height: AppSpacing.sm),
+          for (final t in trains) ...[
+            TrainDepartureTile(
+              time: t.departTime,
+              trainName: t.name.of(context),
+              subtitle:
+                  '#${t.number} · ${l10n.toStation(t.destinationName.of(context))}',
+              showChevron: true,
+              onTap: () =>
+                  context.push(AppRoutes.withId(AppRoutes.trainDetails, t.id)),
+            ),
+            const SizedBox(height: AppSpacing.s10),
           ],
-          onStationTap: (_) => context.push(AppRoutes.stationDetails),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        SectionHeader(title: l10n.trainsOnLine),
-        const SizedBox(height: AppSpacing.sm),
-        TrainDepartureTile(
-          time: '05:55',
-          trainName: 'Podi Menike',
-          subtitle: '#1005 · to Badulla',
-          showChevron: true,
-          onTap: train,
-        ),
-        const SizedBox(height: AppSpacing.s10),
-        TrainDepartureTile(
-          time: '08:30',
-          trainName: 'Udarata Menike',
-          subtitle: '#1015 · to Badulla',
-          showChevron: true,
-          onTap: train,
-        ),
-        const SizedBox(height: AppSpacing.s10),
-        TrainDepartureTile(
-          time: '20:00',
-          trainName: 'Night Mail',
-          subtitle: '#1045 · to Badulla',
-          showChevron: true,
-          onTap: train,
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        SectionLabel(l10n.placesAlongLine),
-        const Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            StatusChip(label: 'Nuwara Eliya'),
-            StatusChip(label: 'Horton Plains'),
-            StatusChip(label: 'Haputale'),
-            StatusChip(label: 'Ella'),
-          ],
-        ),
+        ],
+        if (places.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          SectionLabel(l10n.placesAlongLine),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              for (final d in places)
+                ActionChip(
+                  label: Text(d.name.of(context)),
+                  onPressed: () => context.push(
+                    AppRoutes.withId(AppRoutes.destinationDetails, d.id),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ],
     );
   }

@@ -17,18 +17,58 @@ import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/station_tile.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
+
+/// Stations that have a tourist destination nearby.
+final _touristStationIdsProvider = FutureProvider<Set<String>>((ref) async {
+  final dests = await ref.watch(destinationsProvider(null).future);
+  return {
+    for (final d in dests)
+      for (final n in d.nearestStations) n.station.id,
+  };
+});
 
 /// A–Z station directory with search, line filters and a letter index.
-class StationDirectoryScreen extends ConsumerWidget {
+class StationDirectoryScreen extends ConsumerStatefulWidget {
   const StationDirectoryScreen({super.key, this.viewState});
 
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StationDirectoryScreen> createState() =>
+      _StationDirectoryScreenState();
+}
+
+class _StationDirectoryScreenState
+    extends ConsumerState<StationDirectoryScreen> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final filter = ref.watch(uiSelectionProvider(UiSelections.stationFilter));
+    final tourist = ref.watch(_touristStationIdsProvider).value ?? const {};
+    final stations = ref.watch(stationsProvider).whenData((all) {
+      final q = _query.toLowerCase();
+      return all.where((s) {
+        final line = s.lineName?.en ?? '';
+        final lineOk = switch (filter) {
+          1 => line == 'Main Line' || line == 'Matale Line',
+          2 => line == 'Coastal Line',
+          3 => line == 'Northern Line' || line == 'Mannar Line',
+          4 => tourist.contains(s.id),
+          _ => true,
+        };
+        final textOk =
+            q.isEmpty ||
+            s.name.en.toLowerCase().contains(q) ||
+            (s.name.si ?? '').contains(_query) ||
+            s.code.toLowerCase() == q;
+        return lineOk && textOk;
+      }).toList();
+    });
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -37,7 +77,10 @@ class StationDirectoryScreen extends ConsumerWidget {
             Padding(
               padding: AppSpacing.page,
               child: MaxWidth(
-                child: AppSearchBar(hint: l10n.searchByNameOrCode),
+                child: AppSearchBar(
+                  hint: l10n.searchByNameOrCode,
+                  onChanged: (v) => setState(() => _query = v.trim()),
+                ),
               ),
             ),
             ChoicePillRow(
@@ -56,14 +99,20 @@ class StationDirectoryScreen extends ConsumerWidget {
                   .select(i),
             ),
             Expanded(
-              child: UiStateView(
-                state: viewState,
-                content: (_) => const _DirectoryContent(),
+              child: AsyncView<List<Station>>(
+                value: stations,
+                state: widget.viewState,
+                isEmpty: (s) => s.isEmpty,
+                onRetry: () => ref.invalidate(stationsProvider),
+                content: (_, s) =>
+                    _DirectoryContent(stations: s, tourist: tourist),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.search_off_rounded,
                     title: l10n.emptyStationsTitle,
-                    message: l10n.emptyStationsBody,
+                    message: _query.isEmpty
+                        ? l10n.emptyStationsBody
+                        : l10n.noStationsMatch,
                   ),
                 ),
                 loading: (_) => const SingleChildScrollView(
@@ -82,31 +131,26 @@ class StationDirectoryScreen extends ConsumerWidget {
   }
 }
 
-class _DirectoryContent extends StatelessWidget {
-  const _DirectoryContent();
+class _DirectoryContent extends StatefulWidget {
+  const _DirectoryContent({required this.stations, required this.tourist});
 
-  static const List<String> _letters = [
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'G',
-    'H',
-    'J',
-    'K',
-    'M',
-    'N',
-    'P',
-    'R',
-    'T',
-    'V', //
-  ];
+  final List<Station> stations;
+  final Set<String> tourist;
+
+  @override
+  State<_DirectoryContent> createState() => _DirectoryContentState();
+}
+
+class _DirectoryContentState extends State<_DirectoryContent> {
+  final Map<String, GlobalKey> _keys = {};
 
   @override
   Widget build(BuildContext context) {
-    void open() => context.push(AppRoutes.stationDetails);
-    // Design preview content.
+    final byLetter = <String, List<Station>>{};
+    for (final s in widget.stations) {
+      byLetter.putIfAbsent(s.name.en[0].toUpperCase(), () => []).add(s);
+    }
+    final letters = byLetter.keys.toList()..sort();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,72 +164,52 @@ class _DirectoryContent extends StatelessWidget {
               AppSpacing.xxl,
             ),
             children: [
-              const SectionLabel('A'),
-              StationTile(
-                name: 'Aluthgama',
-                nativeName: 'අළුත්ගම',
-                subtitle: 'Coastal Line',
-                showChevron: true,
-                onTap: open,
-              ),
-              StationTile(
-                name: 'Anuradhapura',
-                nativeName: 'අනුරාධපුරය',
-                subtitle: 'Northern Line',
-                showChevron: true,
-                onTap: open,
-              ),
-              const SectionLabel('B'),
-              StationTile(
-                name: 'Badulla',
-                nativeName: 'බදුල්ල',
-                subtitle: 'Main Line · terminus',
-                showChevron: true,
-                onTap: open,
-              ),
-              StationTile(
-                name: 'Bandarawela',
-                nativeName: 'බණ්ඩාරවෙල',
-                subtitle: 'Main Line',
-                showChevron: true,
-                onTap: open,
-              ),
-              StationTile(
-                name: 'Bentota',
-                nativeName: 'බෙන්තොට',
-                subtitle: 'Coastal Line',
-                showChevron: true,
-                onTap: open,
-              ),
-              const SectionLabel('C'),
-              StationTile(
-                name: 'Colombo Fort',
-                nativeName: 'කොළඹ කොටුව',
-                subtitle: 'All lines · central hub',
-                showChevron: true,
-                onTap: open,
-              ),
-              const SectionLabel('E'),
-              StationTile(
-                name: 'Ella',
-                nativeName: 'ඇල්ල',
-                subtitle: 'Main Line · tourist stop',
-                showChevron: true,
-                onTap: open,
-              ),
+              for (final letter in letters) ...[
+                SectionLabel(
+                  letter,
+                  key: _keys.putIfAbsent(letter, GlobalKey.new),
+                ),
+                for (final s in byLetter[letter]!)
+                  StationTile(
+                    code: s.code,
+                    name: s.name.en,
+                    nativeName: s.name.si,
+                    subtitle: [
+                      s.lineName?.of(context),
+                      if (widget.tourist.contains(s.id))
+                        context.l10n.touristStop,
+                    ].whereType<String>().join(' · '),
+                    showChevron: true,
+                    onTap: () => context.push(
+                      AppRoutes.withId(AppRoutes.stationDetails, s.id),
+                    ),
+                  ),
+              ],
             ],
           ),
         ),
-        const _LetterIndex(letters: _letters),
+        _LetterIndex(
+          letters: letters,
+          onTap: (l) {
+            final ctx = _keys[l]?.currentContext;
+            if (ctx != null) {
+              Scrollable.ensureVisible(
+                ctx,
+                duration: const Duration(milliseconds: 250),
+              );
+            }
+          },
+        ),
       ],
     );
   }
 }
 
 class _LetterIndex extends StatelessWidget {
-  const _LetterIndex({required this.letters});
+  const _LetterIndex({required this.letters, required this.onTap});
 
   final List<String> letters;
+  final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +225,7 @@ class _LetterIndex extends StatelessWidget {
                 label: context.l10n.jumpToLetter(letter),
                 excludeSemantics: true,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () => onTap(letter),
                   borderRadius: AppRadii.cardAll,
                   child: SizedBox(
                     width: 24,

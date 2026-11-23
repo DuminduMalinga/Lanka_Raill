@@ -8,17 +8,19 @@ import '../../../core/state/app_preferences.dart';
 import '../../../core/state/ui_view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/date_labels.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/choice_pills.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
-import '../../../core/widgets/settings_tiles.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/train_card.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
 /// Saved trains and saved routes, with an alerts toggle.
 class FavoriteTrainsScreen extends ConsumerWidget {
@@ -30,6 +32,9 @@ class FavoriteTrainsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final tab = ref.watch(uiSelectionProvider(UiSelections.favoriteTab));
+    final saved = ref.watch(savedItemsProvider);
+    final recent = ref.watch(recentSearchesProvider).value ?? const [];
+    final trainCount = saved.value?.trains.length ?? 0;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -39,8 +44,10 @@ class FavoriteTrainsScreen extends ConsumerWidget {
               padding: AppSpacing.page,
               child: MaxWidth(
                 child: SegmentedTabs(
-                  // Counts are design preview content.
-                  labels: [l10n.tabTrainsCount(3), l10n.tabRoutesCount(2)],
+                  labels: [
+                    l10n.tabTrainsCount(trainCount),
+                    l10n.tabRoutesCount(recent.length),
+                  ],
                   selectedIndex: tab,
                   onSelected: (i) => ref
                       .read(
@@ -51,10 +58,14 @@ class FavoriteTrainsScreen extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<SavedItems>(
+                value: saved,
                 state: viewState,
-                content: (_) =>
-                    tab == 0 ? const _TrainsTab() : const _RoutesTab(),
+                isEmpty: (s) => tab == 0 ? s.trains.isEmpty : recent.isEmpty,
+                onRetry: () => ref.invalidate(savedItemsProvider),
+                content: (_, s) => tab == 0
+                    ? _TrainsTab(trains: s.trains)
+                    : _RoutesTab(routes: recent),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.bookmark_border_rounded,
@@ -75,15 +86,14 @@ class FavoriteTrainsScreen extends ConsumerWidget {
   }
 }
 
-class _TrainsTab extends ConsumerWidget {
-  const _TrainsTab();
+class _TrainsTab extends StatelessWidget {
+  const _TrainsTab({required this.trains});
+
+  final List<TrainSummary> trains;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final alerts = ref.watch(uiToggleProvider(UiToggles.savedTrainAlerts));
-    void open() => context.push(AppRoutes.trainDetails);
-    // Design preview content.
     return PageScroll(
       spacing: AppSpacing.s10,
       padding: const EdgeInsets.fromLTRB(
@@ -93,53 +103,32 @@ class _TrainsTab extends ConsumerWidget {
         AppSpacing.xxl,
       ),
       children: [
-        SavedTrainTile(
-          trainName: 'Podi Menike #1005',
-          route: 'Colombo Fort → Badulla',
-          nextDepartureLabel: l10n.nextDeparture,
-          nextDepartureTime: '05:55',
-          onTap: open,
-        ),
-        SavedTrainTile(
-          trainName: 'Ruhunu Kumari #8058',
-          route: 'Maradana → Matara',
-          nextDepartureLabel: l10n.nextDeparture,
-          nextDepartureTime: '15:50',
-          onTap: open,
-        ),
-        SavedTrainTile(
-          trainName: 'Yal Devi #4001',
-          route: 'Colombo Fort → Kankesanthurai',
-          nextDepartureLabel: l10n.nextDeparture,
-          nextDepartureTime: '05:45',
-          onTap: open,
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        SettingsSection(
-          children: [
-            SettingsSwitchTile(
-              icon: Icons.notifications_active_outlined,
-              title: l10n.alertsForSavedTrains,
-              subtitle: l10n.savedAlertsBody,
-              value: alerts,
-              onChanged: (v) => ref
-                  .read(uiToggleProvider(UiToggles.savedTrainAlerts).notifier)
-                  .set(v),
+        for (final t in trains)
+          SavedTrainTile(
+            trainName: '${t.name.of(context)} #${t.number}',
+            route: l10n.fromTo(
+              t.originName.of(context),
+              t.destinationName.of(context),
             ),
-          ],
-        ),
+            nextDepartureLabel: l10n.nextDeparture,
+            nextDepartureTime: t.departTime,
+            onTap: () =>
+                context.push(AppRoutes.withId(AppRoutes.trainDetails, t.id)),
+          ),
       ],
     );
   }
 }
 
-class _RoutesTab extends StatelessWidget {
-  const _RoutesTab();
+class _RoutesTab extends ConsumerWidget {
+  const _RoutesTab({required this.routes});
+
+  final List<RecentSearch> routes;
 
   @override
-  Widget build(BuildContext context) {
-    void open() => context.push(AppRoutes.searchResults);
-    // Design preview content.
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    Station? st(String code) => ref.watch(stationByCodeProvider(code)).value;
     return PageScroll(
       spacing: AppSpacing.s10,
       padding: const EdgeInsets.fromLTRB(
@@ -149,21 +138,17 @@ class _RoutesTab extends StatelessWidget {
         AppSpacing.xxl,
       ),
       children: [
-        SavedRouteCard(
-          from: 'Colombo Fort',
-          to: 'Kandy',
-          line: 'Main Line',
-          note: 'Weekdays',
-          onTap: open,
-        ),
-        SavedRouteCard(
-          from: 'Kandy',
-          to: 'Ella',
-          line: 'Main Line',
-          note: 'Scenic',
-          noteTone: StatusTone.lime,
-          onTap: open,
-        ),
+        for (final r in routes)
+          SavedRouteCard(
+            from: st(r.fromCode)?.name.of(context) ?? r.fromCode,
+            to: st(r.toCode)?.name.of(context) ?? r.toCode,
+            line: st(r.toCode)?.lineName?.of(context) ?? '',
+            note: DateLabels.dayMonth(r.at, locale),
+            onTap: () {
+              ref.read(journeyProvider.notifier).set(r.fromCode, r.toCode);
+              context.push(AppRoutes.searchResults);
+            },
+          ),
       ],
     );
   }

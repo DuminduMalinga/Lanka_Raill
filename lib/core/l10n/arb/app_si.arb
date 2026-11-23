@@ -1,10 +1,8 @@
 {
   "@@locale": "si",
-
   "appName": "CeylonGO",
   "appTagline": "ශ්‍රී ලංකාව ගවේෂණය කරන්න. දුම්රියෙන් යන්න.",
   "appSubtitle": "ශ්‍රී ලංකා දුම්රිය සහායකයා",
-
   "back": "ආපසු",
   "share": "බෙදාගන්න",
   "save": "සුරකින්න",
@@ -28,16 +26,13 @@
   "km": "කි.මී.",
   "arrow": "→",
   "openItem": "{name} විවෘත කරන්න",
-
   "navHome": "මුල් පිටුව",
   "navTrains": "දුම්රිය",
   "navExplore": "ගවේෂණය",
   "navSaved": "සුරැකි",
   "navProfile": "පැතිකඩ",
   "mainNavigation": "ප්‍රධාන",
-
   "loading": "පූරණය වෙමින්",
-
   "emptyTrainsTitle": "මෙම තේරීමට සෘජු දුම්රිය නැත",
   "emptyTrainsBody": "වෙනත් දිනයක් හෝ වේලාවක් උත්සාහ කරන්න, නැතහොත් කොළඹ කොටුවෙන් හෝ පොල්ගහවෙලින් මාරු වන්න.",
   "emptyStationsTitle": "දුම්රිය ස්ථාන හමු නොවීය",
@@ -58,9 +53,7 @@
   "emptyRecentBody": "ඔබේ අවසන් ගමන් මෙහි දිස්වේ.",
   "emptyStopsTitle": "පෙන්වීමට නැවතුම් නැත",
   "emptyStopsBody": "මෙම දුම්රියේ නැවතුම් වේලාවන් මෙහි දිස්වේ.",
-
   "splashContinue": "පිළිගැනීමට ඉදිරියට යන්න",
-
   "welcomePhotoPlace": "නවආරුක්කු පාලම, ඇල්ල",
   "welcomePhotoLine": "ප්‍රධාන මාර්ගය",
   "welcomeLanguageChip": "EN · සිං",
@@ -69,7 +62,6 @@
   "getStarted": "ආරම්භ කරන්න",
   "welcomeImageAlt": "ඇල්ල අසල නවආරුක්කු පාලම හරහා යන නිල් දුම්රියක්",
   "mistyImageAlt": "වංගු සහිත රේල් පීලි අසල නතර වූ දුම්රියක් සහිත මීදුමෙන් වැසුණු කඳුකර දුම්රිය මාර්ගය",
-
   "onboardingTitle1": "සෑම දුම්රියක්ම, සෑම ස්ථානයක්ම",
   "onboardingBody1": "කොළඹ කොටුවේ සිට බදුල්ල, යාපනය සහ මාතර දක්වා ශ්‍රී ලංකාවේ දුම්රිය මාර්ග පුරා කාලසටහන් සොයන්න.",
   "onboardingTitle2": "සුන්දර මාර්ගවල ගමන් කරන්න",
@@ -81,7 +73,6 @@
   "onboardingImageAlt3": "කොළ පැහැති තේ වතු හරහා වංගු වී යන මගී දුම්රියක්",
   "onboardingStep": "පියවර {current} / {total}",
   "chooseLanguage": "භාෂාව තෝරන්න",
-
   "languageTitle": "ඔබේ භාෂාව තෝරන්න",
   "languageTitleAlt": "Choose your language",
   "languageBody": "දුම්රිය ස්ථාන නාම, කාලසටහන් සහ නිවේදන මෙම භාෂාවෙන් දිස්වේ. සැකසුම් තුළ ඕනෑම වේලාවක වෙනස් කළ හැක.",
@@ -93,7 +84,6 @@
   "languageTamilSub": "දෙමළ",
   "languageTamilNote": "දෙමළ සහාය අනාගත නිකුතුවක් සඳහා සැලසුම් කර ඇත",
   "appLanguage": "යෙදුමේ භාෂාව",
-
   "signInTitle": "නැවත සාදරයෙන් පිළිගනිමු",
   "signInBody": "ඔබේ සුරැකි දුම්රිය, ස්ථාන සහ ඇඟවීම් සමමුහුර්ත කිරීමට පුරනය වන්න.",
   "google": "Google",
@@ -110,7 +100,6 @@
   "createAccount": "ගිණුමක් සාදන්න",
   "errUsernameOrEmail": "ඔබේ පරිශීලක නාමය හෝ ඊමේල් ඇතුළත් කරන්න",
   "errPassword": "ඔබේ මුරපදය ඇතුළත් කරන්න",
-
   "signUpTitle": "ඔබේ ගිණුම සාදන්න",
   "signUpBody": "දුම්රිය සුරකින්න, තහවුරු කළ දුම්රිය ඇඟවීම් ලබා ගන්න.",
   "signUpDivider": "හෝ ඊමේල් සමඟ ලියාපදිංචි වන්න",
@@ -128,7 +117,6 @@
   "pwAddNumber": "වඩා ශක්තිමත් කිරීමට අංකයක් එක් කරන්න",
   "haveAccount": "දැනටමත් ගිණුමක් තිබේද?",
   "backToSignIn": "පුරනය වීමට ආපසු",
-
   "resetTitle": "ඔබේ මුරපදය යළි සකසන්න",
   "resetBody": "ඔබේ පරිශීලක නාමය හෝ ඊමේල් ඇතුළත් කර, නව මුරපදයක් තෝරන්න.",
   "newPassword": "නව මුරපදය",
@@ -137,7 +125,6 @@
   "remembered": "මතක් වුණාද?",
   "passwordUpdated": "මුරපදය යාවත්කාලීන විය",
   "passwordUpdatedBody": "දැන් ඔබට නව මුරපදය සමඟ පුරනය විය හැක.",
-
   "greeting": "ආයුබෝවන්,",
   "homeTitle": "ඊළඟට කොහෙද?",
   "findTrains": "දුම්රිය සොයන්න",
@@ -150,7 +137,6 @@
   "departingFrom": "{station} සිට පිටත්වන",
   "platformShort": "වේදිකා {number}",
   "travelDateLabel": "ගමන් දිනය: {date}",
-
   "planJourney": "ගමනක් සැලසුම් කරන්න",
   "travelDate": "ගමන් දිනය",
   "departureTime": "පිටත්වීමේ වේලාව",
@@ -167,7 +153,6 @@
   "pickDate": "දිනයක් තෝරන්න",
   "searchTrains": "දුම්රිය සොයන්න",
   "recentSearches": "මෑත සෙවීම්",
-
   "departureStation": "පිටත්වන ස්ථානය",
   "arrivalStation": "පැමිණෙන ස්ථානය",
   "searchStationsHint": "ස්ථාන 400+ ක් සොයන්න",
@@ -176,7 +161,6 @@
   "popular": "ජනප්‍රිය",
   "allStations": "සියලුම ස්ථාන",
   "confirmStation": "ස්ථානය තහවුරු කරන්න",
-
   "filters": "පෙරහන්",
   "sortEarliest": "මුලින්ම",
   "sortFastest": "වේගවත්ම",
@@ -184,18 +168,16 @@
   "sortObservation": "නිරීක්ෂණ",
   "trainsCount": "{count, plural, =1{දුම්රිය 1} other{දුම්රිය {count}}}",
   "dateAndCount": "{date} · {count}",
-
   "trainsEyebrow": "දුම්රිය",
   "findAvailableTrains": "ලබා ගත හැකි දුම්රිය සොයන්න",
   "fromYourStation": "සිට · ඔබේ ස්ථානය",
   "toDestination": "දක්වා · ගමනාන්තය",
   "departed": "පිටත් විය",
   "direct": "සෘජු",
-  "stopsCount": "{count, plural, =1{නැවතුම් 1} other{නැවතුම් {count}}}",
+  "stopsCount": "{count, plural, =0{සෘජු} =1{නැවතුම් 1} other{නැවතුම් {count}}}",
   "nextDay": "+1 දින",
   "sameStationError": "ඔබේ ස්ථානයට වඩා වෙනස් ගමනාන්තයක් තෝරන්න.",
   "stillToDepart": "අද තවත් {count}ක් පිටත් වීමට ඇත",
-
   "saveTrain": "දුම්රිය සුරකින්න",
   "duration": "කාලය",
   "distance": "දුර",
@@ -206,12 +188,10 @@
   "routeMap": "මාර්ග සිතියම",
   "classesFacilities": "පන්ති සහ පහසුකම්",
   "scenicHighlights": "සුන්දර දසුන්",
-
   "allStops": "සියලුම නැවතුම්",
   "touristStop": "සංචාරක නැවතුම",
   "highestPoint": "උසම ස්ථානය",
   "terminus": "අවසාන ස්ථානය",
-
   "mapLayers": "සිතියම් ස්තර",
   "scenicStretch": "සුන්දර කොටස",
   "journeyLower": "ගමන",
@@ -222,7 +202,6 @@
   "recenterMap": "සිතියම නැවත කේන්ද්‍රගත කරන්න",
   "mapAttribution": "© OpenStreetMap දායකයින්",
   "mapLabel": "ශ්‍රී ලංකා සිතියම",
-
   "onThisTrain": "මෙම දුම්රියේ ඇත",
   "notOnThisTrain": "මෙම දුම්රියේ නැත",
   "facilitiesOnBoard": "දුම්රියේ පහසුකම්",
@@ -233,10 +212,8 @@
   "facilityCharging": "ආරෝපණය",
   "facilityStepFree": "පඩි රහිත ප්‍රවේශය",
   "facilityAirCon": "වායුසමීකරණ",
-
   "railwayLines": "දුම්රිය මාර්ග",
   "linesIntro": "සෑම මාර්ගයක්ම කොළඹ ජාලයෙන් ආරම්භ වේ. ස්ථාන සහ දුම්රිය සඳහා මාර්ගයක් තට්ටු කරන්න.",
-
   "saveLine": "මාර්ගය සුරකින්න",
   "lineLength": "දිග",
   "firstSection": "පළමු කොටස",
@@ -244,7 +221,6 @@
   "trainsOnLine": "මෙම මාර්ගයේ දුම්රිය",
   "placesAlongLine": "මෙම මාර්ගය දිගේ ස්ථාන",
   "mostScenic": "වඩාත් සුන්දර",
-
   "stationDirectory": "දුම්රිය ස්ථාන නාමාවලිය",
   "searchByNameOrCode": "නම හෝ කේතය අනුව සොයන්න",
   "filterAll": "සියල්ල",
@@ -253,17 +229,14 @@
   "filterNorthern": "උතුරු",
   "filterTouristStops": "සංචාරක නැවතුම්",
   "jumpToLetter": "{letter} වෙත යන්න",
-
   "saveStation": "ස්ථානය සුරකින්න",
   "nextDepartures": "ඊළඟ පිටත්වීම්",
   "toStation": "{station} දක්වා",
   "nearbyPlaces": "අසල ස්ථාන",
   "timetable": "කාලසටහන",
   "directions": "මඟ පෙන්වීම",
-
   "nearPlace": "{place} අසල",
   "nearbyRailwayStations": "අසල දුම්රිය ස්ථාන",
-
   "exploreEyebrow": "ගවේෂණය",
   "exploreTitle": "ගමනට වටිනා ස්ථාන",
   "searchPlaces": "ස්ථාන සොයන්න",
@@ -274,15 +247,12 @@
   "featured": "විශේෂාංග",
   "planTrip": "ගමන සැලසුම් කරන්න",
   "easyByTrain": "කොළඹ සිට දුම්රියෙන් පහසුවෙන්",
-
   "destinationCategories": "ගමනාන්ත කාණ්ඩ",
-
   "savePlace": "ස්ථානය සුරකින්න",
   "gallery": "ගැලරිය",
   "nearestStationLabel": "ආසන්නතම ස්ථානය",
   "moreCount": "තවත් {count}",
   "trainsTo": "{station} වෙත දුම්රිය",
-
   "galleryCount": "ගැලරිය · {count, plural, =1{ඡායාරූප 1} other{ඡායාරූප {count}}}",
   "galleryAll": "සියල්ල",
   "galleryTrains": "දුම්රිය",
@@ -290,7 +260,6 @@
   "galleryTravellers": "සංචාරකයින්",
   "yourPhoto": "ඔබේ ඡායාරූපය",
   "addYourPhoto": "ඔබේ ඡායාරූපය එක් කරන්න",
-
   "savedTitle": "සුරැකි",
   "savedSubtitle": "ඔබේ දුම්රිය, මාර්ග සහ ස්ථාන එක තැනක",
   "statTrains": "දුම්රිය",
@@ -300,19 +269,16 @@
   "savedTrains": "සුරැකි දුම්රිය",
   "savedPlaces": "සුරැකි ගමනාන්ත",
   "nextDeparture": "ඊළඟ පිටත්වීම",
-
   "favoriteTrainsTitle": "ප්‍රියතම දුම්රිය සහ මාර්ග",
   "tabTrainsCount": "දුම්රිය · {count}",
   "tabRoutesCount": "මාර්ග · {count}",
   "savedAlertsBody": "සුරැකි දුම්රියක් ප්‍රමාද වූ විට හෝ කාලසටහන වෙනස් වූ විට තහවුරු කළ ඇඟවීම් ලබා ගන්න",
   "alertsForSavedTrains": "සුරැකි දුම්රිය සඳහා ඇඟවීම්",
-
   "favoriteDestinationsTitle": "ප්‍රියතම ගමනාන්ත",
   "gridView": "ජාල දසුන",
   "allCount": "සියල්ල · {count}",
   "catCoast": "වෙරළ",
   "planTripSaved": "සුරැකි ස්ථාන වෙත ගමනක් සැලසුම් කරන්න",
-
   "notificationSettings": "දැනුම්දීම් සැකසුම්",
   "filterDelays": "ප්‍රමාද",
   "filterSchedule": "කාලසටහන් වෙනස්කම්",
@@ -321,7 +287,6 @@
   "typeScheduleChange": "කාලසටහන් වෙනස",
   "typeDelay": "ප්‍රමාදය",
   "typeService": "සේවාව",
-
   "announcement": "නිවේදනය",
   "verifiedFromOfficial": "ශ්‍රී ලංකා දුම්රිය සේවයේ නිල නිවේදනයෙන් තහවුරු කර ඇත",
   "detailDates": "දින",
@@ -330,7 +295,6 @@
   "detailExpectedDelay": "අපේක්ෂිත ප්‍රමාදය",
   "viewOriginalNotice": "මුල් නිවේදනය බලන්න",
   "notifyMe": "මට දැනුම් දෙන්න",
-
   "settings": "සැකසුම්",
   "editProfile": "පැතිකඩ සංස්කරණය",
   "homeStationLabel": "නිවසට ආසන්න ස්ථානය · {station}",
@@ -342,7 +306,6 @@
   "helpFeedback": "උදව් සහ ප්‍රතිපෝෂණ",
   "aboutApp": "CeylonGO ගැන",
   "signOut": "ඉවත් වන්න",
-
   "sectionPreferences": "මනාප",
   "language": "භාෂාව",
   "theme": "තේමාව",
@@ -357,25 +320,21 @@
   "clearSearchHistory": "සෙවීම් ඉතිහාසය මකන්න",
   "sectionSupport": "සහාය",
   "versionShort": "v{version}",
-
   "themeLight": "ආලෝකමත්",
   "themeDark": "අඳුරු",
   "themeSystem": "පද්ධතිය",
-
   "sectionDisplay": "සංදර්ශකය",
   "bilingualNames": "ස්ථාන නාම භාෂා දෙකෙන්ම පෙන්වන්න",
   "bilingualNamesSub": "උදා. Ella · ඇල්ල",
   "translateAnnouncements": "නිවේදන පරිවර්තනය කරන්න",
   "translateAnnouncementsSub": "නිල නිවේදන ඔබේ යෙදුම් භාෂාවෙන් පෙන්වන්න",
   "officialNamesNote": "නිල ස්ථාන නාම ශ්‍රී ලංකා දුම්රිය සේවයේ නාම පුවරු අනුගමනය කරයි.",
-
   "themeNote": "පද්ධතිය ඔබේ දුරකථනයේ සැකසුම අනුගමනය කරයි. එළිමහනේ පැහැදිලිව පෙනීම සඳහා සිතියම් සහ මාර්ග දසුන් සැමවිටම අඳුරු වන වර්ණ භාවිත කරයි.",
   "sectionComfort": "සුවපහසුව",
   "largerText": "විශාල අකුරු",
   "largerTextSub": "විශාල කාලසටහන් වේලාවන් සහ ස්ථාන නාම",
   "highContrast": "ඉහළ වෙනස්කම් ප්‍රකාරය",
   "highContrastSub": "දීප්තිමත් වේදිකා සඳහා ශක්තිමත් වර්ණ",
-
   "sectionRailwayUpdates": "දුම්රිය යාවත්කාලීන",
   "notifyVerified": "තහවුරු කළ නිවේදන",
   "notifyVerifiedSub": "ශ්‍රී ලංකා දුම්රිය සේවයේ නිල නිවේදන",
@@ -392,7 +351,6 @@
   "quietHoursRange": "22:00 – 06:00",
   "quietHoursSub": "හදිසි ප්‍රමාද තවමත් දැනුම් දෙනු ලැබේ",
   "quietHours": "නිහඬ පැය",
-
   "searchHelp": "උදව් ලිපි සොයන්න",
   "faq1Q": "කාලසටහන් කෙතරම් නිවැරදිද?",
   "faq1A": "වේලාවන් නිල දුම්රිය කාලසටහනෙන් ලැබේ. ප්‍රමාද සහ වෙනස්කම් තහවුරු වූ පසු නිවේදන යටතේ දිස්වේ.",
@@ -407,7 +365,6 @@
   "messageHint": "වැඩිදියුණු කළ යුතු දේ අපට කියන්න, නැතහොත් කාලසටහන් දෝෂයක් වාර්තා කරන්න",
   "emailUs": "අපට ඊමේල් කරන්න",
   "chat": "කතාබහ",
-
   "versionLabel": "අනුවාදය {version}",
   "aboutBody": "CeylonGO දේශීය මගීන්ට සහ සංචාරකයින්ට දුම්රිය සොයා ගැනීමට, මාර්ග තේරුම් ගැනීමට සහ එක් එක් දුම්රිය ස්ථානය අසල ස්ථාන සොයා ගැනීමට උදව් කරයි — නිල දුම්රිය නිවේදන සමඟ සසඳා තහවුරු කළ නිවේදන සමඟින්.",
   "dataSource": "කාලසටහන් දත්ත මූලාශ්‍රය",
@@ -415,5 +372,42 @@
   "privacyPolicy": "රහස්‍යතා ප්‍රතිපත්තිය",
   "termsOfUse": "භාවිත නියම",
   "rateApp": "CeylonGO ශ්‍රේණිගත කරන්න",
-  "notOfficial": "ශ්‍රී ලංකා දුම්රිය සේවයේ නිල යෙදුමක් නොවේ · © 2026 CeylonGO"
+  "notOfficial": "ශ්‍රී ලංකා දුම්රිය සේවයේ නිල යෙදුමක් නොවේ · © 2026 CeylonGO",
+  "loadErrorTitle": "මෙය පූරණය කළ නොහැක",
+  "loadErrorBody": "ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
+  "retry": "නැවත උත්සාහ කරන්න",
+  "timetableSourceNote": "වේලාවන් {source} වෙතින්. සෑම විටම දුම්රිය ස්ථානයේදී තහවුරු කරගන්න.",
+  "photoCredit": "ඡායාරූපය: {credit}",
+  "signInToSave": "දුම්රිය, ස්ථාන සහ ගමනාන්ත සුරැකීමට පුරනය වන්න.",
+  "savedToast": "සුරැකිණි",
+  "removedToast": "සුරැකි ලැයිස්තුවෙන් ඉවත් කළා",
+  "runsOn": "ධාවනය: {days}",
+  "nextDayShort": "+දින 1",
+  "notRunningOnDate": "මෙම දිනයේ ධාවනය නොවේ",
+  "stationsCount": "{count, plural, =1{ස්ථාන 1} other{ස්ථාන {count}}}",
+  "placesCount": "{count, plural, =1{ගමනාන්ත 1} other{ගමනාන්ත {count}}}",
+  "approxKm": "≈කි.මී. {km}",
+  "facilitiesNotListed": "මෙම දුම්රිය ස්ථානයේ පහසුකම් තවම ලැයිස්තුගත කර නැත.",
+  "noDeparturesTitle": "පිටත්වීම් ලැයිස්තුගත කර නැත",
+  "noDeparturesBody": "අපගේ කාලසටහනේ මෙම ස්ථානයෙන් පිටත් වන දුම්රිය නැත.",
+  "authFailed": "පුරනය විය නොහැක: {message}",
+  "checkEmailConfirm": "ගිණුම සෑදුවා. තහවුරු කිරීමට ඔබේ ඊමේල් පරීක්ෂා කර පසුව පුරනය වන්න.",
+  "resetLinkSent": "{email} සඳහා ගිණුමක් ඇත්නම්, යළි සැකසීමේ සබැඳියක් එවනු ලැබේ.",
+  "guest": "අමුත්තා",
+  "signInForSaved": "ඔබ සුරැකි දුම්රිය සහ ගමනාන්ත සෑම උපාංගයකම තබා ගැනීමට පුරනය වන්න.",
+  "classesNotListed": "මෙම දුම්රියේ ආසන පන්ති ලැයිස්තුගත කර නැත.",
+  "reservedSeats": "වෙන්කළ",
+  "unreservedSeats": "වෙන් නොකළ",
+  "noStationsMatch": "ඔබේ සෙවුමට ගැළපෙන ස්ථාන නැත",
+  "enterEmailPassword": "ඔබේ ඊමේල් සහ මුරපදය ඇතුළත් කරන්න.",
+  "passwordsDontMatch": "මුරපද නොගැළපේ.",
+  "passwordTooShort": "අවම වශයෙන් අක්ෂර 6ක් භාවිත කරන්න.",
+  "trainNumber": "දුම්රිය #{number}",
+  "viewOnMap": "සිතියමේ බලන්න",
+  "dataSourceTitle": "දත්ත සහ ඡායාරූප",
+  "dataSourceBody": "කාලසටහන්: seat61.com (2026 ජූනි 10 යාවත්කාලීන), ප්‍රධාන ස්ථාන පමණි. ඡායාරූප: Wikimedia Commons, එක් එක් ඡායාරූපයේ හිමිකම් දක්වා ඇත. ස්ථාන ඛණ්ඩාංක ආසන්න අගයන් වේ.",
+  "destinationsCount": "{count, plural, =1{ගමනාන්ත 1} other{ගමනාන්ත {count}}}",
+  "fromTo": "{from} → {to}",
+  "locationUnavailable": "සියලු ස්ථාන පෙන්වයි — ස්ථානය ලබාගත නොහැක.",
+  "allCategories": "සියල්ල"
 }

@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -12,40 +13,50 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
-import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
-/// Availability of a facility on board.
-enum FacilityLevel { yes, limited, no }
+/// Travel classes on a train.
+class ClassesFacilitiesScreen extends ConsumerWidget {
+  const ClassesFacilitiesScreen({super.key, this.trainId, this.viewState});
 
-/// Travel classes on a train and the facilities on board.
-class ClassesFacilitiesScreen extends StatelessWidget {
-  const ClassesFacilitiesScreen({super.key, this.viewState});
-
+  final String? trainId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final id = ref.watch(trainIdProvider(trainId));
+    final train = resolved(ref, id, (v) => ref.watch(trainProvider(v))).value;
+    final classes = resolved(
+      ref,
+      id,
+      (v) => ref.watch(trainClassesProvider(v)),
+    );
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             AppTopBar(
               title: l10n.classesFacilities,
-              subtitle: 'Podi Menike · #1005',
+              subtitle: train == null
+                  ? null
+                  : '${train.name.of(context)} · #${train.number}',
             ),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<List<TrainClass>?>(
+                value: classes,
                 state: viewState,
-                content: (_) => const _ClassesContent(),
+                isEmpty: (c) => c == null || c.isEmpty,
+                content: (_, c) => _ClassesContent(classes: c!),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.event_seat_outlined,
                     title: l10n.emptyDetailsTitle,
-                    message: l10n.emptyDetailsBody,
+                    message: l10n.classesNotListed,
                   ),
                 ),
                 loading: (_) => const SingleChildScrollView(
@@ -61,56 +72,38 @@ class ClassesFacilitiesScreen extends StatelessWidget {
 }
 
 class _ClassesContent extends StatelessWidget {
-  const _ClassesContent();
+  const _ClassesContent({required this.classes});
+
+  final List<TrainClass> classes;
+
+  static String _describe(String name) {
+    if (name.startsWith('Observation')) {
+      return 'Observation saloon at the end of the train with large windows.';
+    }
+    if (name.startsWith('Sleeper')) {
+      return 'Night Mail sleeping berths and reclining sleeperettes.';
+    }
+    if (name.startsWith('1st')) return 'Air-conditioned or upholstered 1st class seats.';
+    if (name.startsWith('2nd')) return 'Padded seats with fans and opening windows.';
+    return 'Bench seating with fans; busiest on weekends and holidays.';
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    // Design preview content.
     return PageScroll(
       spacing: AppSpacing.md,
       children: [
-        const ClassCard(
-          title: '1st Class · Observation Saloon',
-          available: false,
-          description: 'Rear-facing panoramic windows. Reserved seats only — book early for the hill country.',
-          tags: ['Reserved', 'Panoramic'],
-          fare: 'LKR [FARE]',
-        ),
-        const ClassCard(
-          title: '2nd Class · Reserved',
-          available: true,
-          description: 'Padded seats with fans and opening windows. The favourite for photos of the hills.',
-          tags: ['Reserved', 'Fan', 'Window'],
-          fare: 'LKR [FARE]',
-        ),
-        const ClassCard(
-          title: '3rd Class',
-          available: true,
-          description:
-              'Unreserved bench seating. Busy on weekends and holidays.',
-          tags: ['Unreserved', 'Fan'],
-          fare: 'LKR [FARE]',
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        SectionLabel(l10n.facilitiesOnBoard),
-        _FacilitiesGrid(
-          items: [
-            (Icons.restaurant_outlined, l10n.facilityFood, FacilityLevel.yes),
-            (Icons.wc_outlined, l10n.facilityToilets, FacilityLevel.yes),
-            (Icons.luggage_outlined, l10n.facilityLuggage, FacilityLevel.yes),
-            (
-              Icons.power_outlined,
-              l10n.facilityCharging,
-              FacilityLevel.limited,
-            ),
-            (
-              Icons.accessible_rounded,
-              l10n.facilityStepFree,
-              FacilityLevel.limited,
-            ),
-            (Icons.ac_unit_rounded, l10n.facilityAirCon, FacilityLevel.no),
-          ],
+        for (final c in classes)
+          ClassCard(
+            title: c.name,
+            available: true,
+            description: _describe(c.name),
+            tags: [c.reservable ? l10n.reservedSeats : l10n.unreservedSeats],
+          ),
+        Text(
+          l10n.timetableSourceNote('seat61.com'),
+          style: AppTextStyles.caption.copyWith(color: context.palette.textMuted),
         ),
         const SizedBox(height: AppSpacing.sm),
         PrimaryButton(
@@ -206,85 +199,6 @@ class ClassCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _FacilitiesGrid extends StatelessWidget {
-  const _FacilitiesGrid({required this.items});
-
-  final List<(IconData, String, FacilityLevel)> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final rows = <Widget>[];
-    for (var i = 0; i < items.length; i += 2) {
-      rows.add(
-        EqualRow(
-          children: [
-            _FacilityTile(item: items[i]),
-            if (i + 1 < items.length)
-              _FacilityTile(item: items[i + 1])
-            else
-              const SizedBox.shrink(),
-          ],
-        ),
-      );
-    }
-    return Column(
-      children: [
-        for (var i = 0; i < rows.length; i++) ...[
-          if (i > 0) const SizedBox(height: AppSpacing.sm),
-          rows[i],
-        ],
-      ],
-    );
-  }
-}
-
-class _FacilityTile extends StatelessWidget {
-  const _FacilityTile({required this.item});
-
-  final (IconData, String, FacilityLevel) item;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final palette = context.palette;
-    final (icon, label, level) = item;
-    final (String value, Color color) = switch (level) {
-      FacilityLevel.yes => (l10n.yes, palette.primary),
-      FacilityLevel.limited => (l10n.limited, AppColors.amberChipFg),
-      FacilityLevel.no => (l10n.no, palette.textMuted),
-    };
-    return AppCard(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Row(
-        children: [
-          IconTile(icon: icon, size: 34),
-          const SizedBox(width: AppSpacing.s10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: AppTextStyles.captionStrong.copyWith(
-                    color: palette.textPrimary,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: AppTextStyles.caption.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

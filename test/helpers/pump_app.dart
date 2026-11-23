@@ -4,7 +4,10 @@ import 'package:lankarail/app.dart';
 import 'package:lankarail/core/state/app_preferences.dart';
 import 'package:lankarail/core/state/ui_view_state.dart';
 import 'package:lankarail/core/widgets/app_map.dart';
+import 'package:lankarail/data/providers.dart';
 import 'package:material_ui/material_ui.dart';
+
+import 'fake_repository.dart';
 
 /// Pins the global preview state for a test.
 class FixedViewState extends UiViewStateNotifier {
@@ -43,6 +46,8 @@ Future<void> pumpRoute(
       overrides: [
         // No network tiles in tests.
         mapTileUrlProvider.overrideWithValue(null),
+        // No backend in tests.
+        repositoryProvider.overrideWithValue(FakeCeylonRepository()),
         uiViewStateProvider.overrideWith(() => FixedViewState(state)),
         appLanguageProvider.overrideWith(() => FixedLanguage(language)),
       ],

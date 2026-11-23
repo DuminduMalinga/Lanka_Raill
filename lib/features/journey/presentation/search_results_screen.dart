@@ -9,6 +9,7 @@ import '../../../core/state/ui_view_state.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../core/widgets/app_top_bar.dart';
+import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/choice_pills.dart';
 import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -16,7 +17,22 @@ import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/train_card.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
+
+/// Classes for every train in the current results (for labels and filters).
+final _resultClassesProvider = FutureProvider<Map<String, List<TrainClass>>>((
+  ref,
+) async {
+  final results = await ref.watch(journeyResultsProvider.future);
+  final repo = ref.watch(repositoryProvider);
+  final entries = await Future.wait(
+    results.map(
+      (r) async => MapEntry(r.trainId, await repo.trainClasses(r.trainId)),
+    ),
+  );
+  return Map.fromEntries(entries);
+});
 
 /// Results for a From → To search with sort pills.
 class SearchResultsScreen extends ConsumerWidget {
@@ -29,22 +45,84 @@ class SearchResultsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final sort = ref.watch(uiSelectionProvider(UiSelections.resultsSort));
-    final date = DateLabels.weekdayDayMonth(DateTime.now(), locale);
-    // Design preview content: route + result count come from the search.
-    const route = 'Colombo Fort → Ella';
-    const count = 3;
+    final slot = ref.watch(uiSelectionProvider(UiSelections.departureSlot));
+    final travelClass = ref.watch(
+      uiSelectionProvider(UiSelections.travelClass),
+    );
+    final journey = ref.watch(journeyProvider);
+    final from = ref.watch(stationByCodeProvider(journey.fromCode)).value;
+    final to = ref.watch(stationByCodeProvider(journey.toCode)).value;
+    final results = ref.watch(journeyResultsProvider);
+    final classes = ref.watch(_resultClassesProvider).value ?? const {};
+    final date = DateLabels.weekdayDayMonth(journey.date, locale);
+    final fromName = from?.name.of(context) ?? journey.fromCode;
+    final toName = to?.name.of(context) ?? journey.toCode;
+
+    bool hasClass(JourneyOption o, bool Function(String) test) =>
+        (classes[o.trainId] ?? const <TrainClass>[]).any((c) => test(c.name));
+
+    List<JourneyOption> shape(List<JourneyOption> all) {
+      bool slotOk(JourneyOption o) {
+        final m = o.departMinutes;
+        return switch (slot) {
+          1 => m < 12 * 60,
+          2 => m >= 12 * 60 && m < 18 * 60,
+          3 => m >= 18 * 60,
+          _ => true,
+        };
+      }
+
+      bool classOk(JourneyOption o) => switch (travelClass) {
+        1 => hasClass(
+          o,
+          (n) => n.startsWith('1st') || n.startsWith('Observation'),
+        ),
+        2 => hasClass(o, (n) => n.startsWith('2nd')),
+        3 => hasClass(o, (n) => n.startsWith('3rd')),
+        _ => true,
+      };
+
+      int byTime(JourneyOption a, JourneyOption b) =>
+          a.departMinutes.compareTo(b.departMinutes);
+      int rank(bool first) => first ? 0 : 1;
+
+      final list = all.where((o) => slotOk(o) && classOk(o)).toList();
+      list.sort(switch (sort) {
+        1 => (a, b) => a.durationMinutes.compareTo(b.durationMinutes),
+        2 => (a, b) {
+          final d =
+              rank(a.trainType != 'Train') - rank(b.trainType != 'Train');
+          return d != 0 ? d : byTime(a, b);
+        },
+        3 => (a, b) {
+          final d =
+              rank(hasClass(a, (n) => n.startsWith('Observation'))) -
+              rank(hasClass(b, (n) => n.startsWith('Observation')));
+          return d != 0 ? d : byTime(a, b);
+        },
+        _ => byTime,
+      });
+      // Trains that don't run on the chosen day go last (stable sort).
+      final running = list.where((o) => o.runsOnDate(journey.date));
+      final notRunning = list.where((o) => !o.runsOnDate(journey.date));
+      return [...running, ...notRunning];
+    }
+
+    final shaped = results.whenData(shape);
+    final runningCount =
+        shaped.value?.where((o) => o.runsOnDate(journey.date)).length ?? 0;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             AppTopBar(
-              title: route,
-              subtitle: l10n.dateAndCount(date, l10n.trainsCount(count)),
+              title: l10n.fromTo(fromName, toName),
+              subtitle: l10n.dateAndCount(date, l10n.trainsCount(runningCount)),
               trailing: CircleIconButton(
                 icon: Icons.tune_rounded,
                 semanticLabel: l10n.filters,
-                onPressed: () {},
+                onPressed: () => context.push(AppRoutes.journeySearch),
               ),
             ),
             ChoicePillRow(
@@ -60,9 +138,18 @@ class SearchResultsScreen extends ConsumerWidget {
                   .select(i),
             ),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<List<JourneyOption>>(
+                value: shaped,
                 state: viewState,
-                content: (_) => const _ResultsContent(),
+                isEmpty: (r) => r.isEmpty,
+                onRetry: () => ref.invalidate(journeyResultsProvider),
+                content: (_, r) => _ResultsContent(
+                  options: r,
+                  fromName: fromName,
+                  toName: toName,
+                  date: journey.date,
+                  classes: classes,
+                ),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.train_outlined,
@@ -84,13 +171,29 @@ class SearchResultsScreen extends ConsumerWidget {
 }
 
 class _ResultsContent extends StatelessWidget {
-  const _ResultsContent();
+  const _ResultsContent({
+    required this.options,
+    required this.fromName,
+    required this.toName,
+    required this.date,
+    required this.classes,
+  });
+
+  final List<JourneyOption> options;
+  final String fromName;
+  final String toName;
+  final DateTime date;
+  final Map<String, List<TrainClass>> classes;
+
+  static String _short(String c) => c
+      .replaceAll(' reserved', ' res.')
+      .replaceAll(' unreserved', '')
+      .replaceAll(' class', '');
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void open() => context.push(AppRoutes.trainDetails);
-    // Design preview content.
+    final firstRunning = options.indexWhere((o) => o.runsOnDate(date));
     return PageScroll(
       spacing: AppSpacing.md,
       padding: const EdgeInsets.fromLTRB(
@@ -100,44 +203,42 @@ class _ResultsContent extends StatelessWidget {
         AppSpacing.xxl,
       ),
       children: [
-        TrainCard(
-          highlighted: true,
-          trainName: 'Podi Menike',
-          trainMeta: '#1005 · Express',
-          tag: TrainTag(l10n.scenic, tone: StatusTone.lime),
-          departTime: '05:55',
-          from: 'Colombo Fort',
-          duration: '9h 20m',
-          arriveTime: '15:15',
-          to: 'Ella',
-          classes: const ['2nd', '3rd', 'Reserved'],
-          onTap: open,
-        ),
-        TrainCard(
-          trainName: 'Udarata Menike',
-          trainMeta: '#1015 · Express',
-          tag: TrainTag(l10n.sortObservation),
-          departTime: '08:30',
-          from: 'Colombo Fort',
-          duration: '9h 25m',
-          arriveTime: '17:55',
-          to: 'Ella',
-          classes: const ['1st Observation', '2nd', '3rd'],
-          onTap: open,
-        ),
-        TrainCard(
-          trainName: 'Night Mail',
-          trainMeta: '#1045 · Mail',
-          tag: const TrainTag('Overnight', tone: StatusTone.blue),
-          departTime: '20:00',
-          from: 'Colombo Fort',
-          duration: '10h 40m',
-          arriveTime: '06:40',
-          to: 'Ella',
-          classes: const ['1st Sleeper', '2nd', '3rd'],
-          onTap: open,
+        for (var i = 0; i < options.length; i++)
+          _card(context, options[i], highlighted: i == firstRunning),
+        Text(
+          l10n.timetableSourceNote('seat61.com'),
+          style: Theme.of(context).textTheme.labelSmall,
+          textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+
+  Widget _card(BuildContext context, JourneyOption o, {required bool highlighted}) {
+    final l10n = context.l10n;
+    final running = o.runsOnDate(date);
+    final cls = classes[o.trainId] ?? const <TrainClass>[];
+    return TrainCard(
+      highlighted: highlighted,
+      dimmed: !running,
+      trainName: o.trainName.of(context),
+      trainMeta: '#${o.trainNumber} · ${o.trainType}',
+      tag: switch (o.trainType) {
+        'Night Mail' => TrainTag(o.trainType, tone: StatusTone.blue),
+        'Express' => TrainTag(o.trainType, tone: StatusTone.lime),
+        _ => null,
+      },
+      departTime: o.departTime,
+      from: fromName,
+      duration: formatDuration(o.durationMinutes),
+      arriveTime: o.arriveTime,
+      arriveNote: o.arriveDay > o.departDay ? l10n.nextDayShort : null,
+      to: toName,
+      stopsLabel: l10n.stopsCount(o.stopsBetween),
+      classes: {for (final c in cls) _short(c.name)}.toList(),
+      footer: running ? l10n.runsOn(o.runsOn) : l10n.notRunningOnDate,
+      onTap: () =>
+          context.push(AppRoutes.withId(AppRoutes.trainDetails, o.trainId)),
     );
   }
 }

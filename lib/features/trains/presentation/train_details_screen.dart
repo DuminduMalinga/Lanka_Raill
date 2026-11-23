@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,6 +10,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_card.dart';
+import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/photo_header.dart';
@@ -16,45 +18,74 @@ import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/settings_tiles.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
-/// Train overview: hero, times, stats, links, scenic highlights.
-class TrainDetailsScreen extends StatelessWidget {
-  const TrainDetailsScreen({super.key, this.viewState});
+/// Train overview: hero, times, stats, links.
+class TrainDetailsScreen extends ConsumerWidget {
+  const TrainDetailsScreen({super.key, this.trainId, this.viewState});
 
+  final String? trainId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final id = ref.watch(trainIdProvider(trainId));
+    final train = resolved(ref, id, (v) => ref.watch(trainProvider(v)));
+    final t = train.value;
+    final saved =
+        t != null &&
+        (ref.watch(favoritesProvider(FavoriteKind.train)).value?.contains(t.id) ??
+            false);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Design preview content — train identity comes from data.
             PhotoHeader(
-              imageAsset: AppAssets.nineArchBridge,
-              semanticLabel: l10n.welcomeImageAlt,
-              title: 'Podi Menike',
-              subtitle: 'Train #1005 · Daily',
-              tags: const [
-                StatusChip(label: 'Express', tone: StatusTone.lime),
-                StatusChip(label: 'Main Line', tone: StatusTone.glass),
+              imageAsset: t?.photoUrl == null ? AppAssets.nineArchBridge : null,
+              imageUrl: t?.photoUrl,
+              semanticLabel: t?.name.of(context) ?? l10n.welcomeImageAlt,
+              title: t?.name.of(context) ?? '',
+              subtitle: t == null
+                  ? null
+                  : '${l10n.trainNumber(t.number)} · ${t.runsOn}',
+              tags: [
+                if (t != null)
+                  StatusChip(
+                    label: t.type,
+                    tone: t.type == 'Night Mail'
+                        ? StatusTone.blue
+                        : StatusTone.lime,
+                  ),
               ],
               actions: [
-                HeaderAction(icon: Icons.ios_share_rounded, label: l10n.share),
                 HeaderAction(
-                  icon: Icons.bookmark_border_rounded,
+                  icon: saved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
                   label: l10n.saveTrain,
+                  onPressed: t == null
+                      ? null
+                      : () => toggleFavorite(
+                          context,
+                          ref,
+                          FavoriteKind.train,
+                          t.id,
+                        ),
                 ),
               ],
             ),
             DetailBody(
               child: MaxWidth(
-                child: UiStateView(
+                child: AsyncView<TrainSummary?>(
+                  value: train,
                   state: viewState,
-                  content: (_) => const _TrainContent(),
+                  isEmpty: (v) => v == null,
+                  onRetry: () => ref.invalidate(trainsProvider),
+                  content: (_, v) => _TrainContent(train: v!),
                   empty: (_) => EmptyState(
                     icon: Icons.info_outline_rounded,
                     title: l10n.emptyDetailsTitle,
@@ -75,34 +106,50 @@ class TrainDetailsScreen extends StatelessWidget {
   }
 }
 
-class _TrainContent extends StatelessWidget {
-  const _TrainContent();
+class _TrainContent extends ConsumerWidget {
+  const _TrainContent({required this.train});
+
+  final TrainSummary train;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    // Design preview content.
+    final t = train;
+    final classes = ref.watch(trainClassesProvider(t.id)).value ?? const [];
+    final stops = ref.watch(trainStopsProvider(t.id)).value ?? const [];
+    String link(String route) => AppRoutes.withId(route, t.id);
+    final classSummary = classes.isEmpty
+        ? l10n.classesNotListed
+        : classes.map((c) => c.name).join(', ');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const TimesStrip(
-          departTime: '05:55',
-          from: 'Colombo Fort',
-          arriveTime: '16:20',
-          to: 'Badulla',
+        TimesStrip(
+          departTime: t.departTime,
+          from: t.originName.of(context),
+          arriveTime: t.arriveDay > 0
+              ? '${t.arriveTime} (${l10n.nextDayShort})'
+              : t.arriveTime,
+          to: t.destinationName.of(context),
         ),
         const SizedBox(height: AppSpacing.md),
         EqualRow(
           children: [
-            StatTile(value: '10h 25m', label: l10n.duration),
-            StatTile(value: '≈290 km', label: l10n.distance),
+            StatTile(
+              value: formatDuration(t.durationMinutes),
+              label: l10n.duration,
+            ),
+            StatTile(value: '${t.stopCount}', label: l10n.majorStops),
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
         EqualRow(
           children: [
-            StatTile(value: '10', label: l10n.majorStops),
-            StatTile(value: '3', label: l10n.classes),
+            StatTile(value: t.runsOn, label: l10n.runsOn('').trim()),
+            StatTile(
+              value: '${classes.map((c) => c.name.split(' ').first).toSet().length}',
+              label: l10n.classes,
+            ),
           ],
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -112,32 +159,41 @@ class _TrainContent extends StatelessWidget {
               icon: Icons.timeline_rounded,
               title: l10n.stopTimeline,
               subtitle: l10n.stopTimelineSub,
-              onTap: () => context.push(AppRoutes.stopTimeline),
+              onTap: () => context.push(link(AppRoutes.stopTimeline)),
             ),
             SettingsTile(
               icon: Icons.map_outlined,
               title: l10n.routeMap,
-              subtitle: 'Colombo Fort to Badulla, through the hill country',
-              onTap: () => context.push(AppRoutes.routeMap),
+              subtitle: stops.isEmpty
+                  ? null
+                  : stops.map((s) => s.station.name.of(context)).join(' · '),
+              onTap: () => context.push(link(AppRoutes.routeMap)),
             ),
             SettingsTile(
               icon: Icons.event_seat_outlined,
               title: l10n.classesFacilities,
-              subtitle: '2nd reserved, 3rd, buffet coach',
-              onTap: () => context.push(AppRoutes.classesFacilities),
+              subtitle: classSummary,
+              onTap: () => context.push(link(AppRoutes.classesFacilities)),
             ),
           ],
         ),
+        const SizedBox(height: AppSpacing.lg),
+        if (t.photoCredit != null) ...[
+          PhotoCredit(t.photoCredit),
+          const SizedBox(height: AppSpacing.xs),
+        ],
+        Text(
+          l10n.timetableSourceNote(t.source ?? 'seat61.com'),
+          style: AppTextStyles.caption.copyWith(color: context.palette.textMuted),
+        ),
         const SizedBox(height: AppSpacing.xl),
-        SectionLabel(l10n.scenicHighlights),
-        const Wrap(
+        SectionLabel(l10n.majorStops),
+        Wrap(
           spacing: AppSpacing.sm,
           runSpacing: AppSpacing.sm,
           children: [
-            StatusChip(label: 'Kadugannawa pass'),
-            StatusChip(label: 'Tea estates near Hatton'),
-            StatusChip(label: 'Pattipola summit'),
-            StatusChip(label: 'Nine Arch Bridge'),
+            for (final s in stops)
+              StatusChip(label: '${s.displayTime} ${s.station.name.of(context)}'),
           ],
         ),
       ],
@@ -173,7 +229,7 @@ class TimesStrip extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(departTime, style: time),
+                FittedBox(child: Text(departTime, style: time)),
                 Text(from, style: place),
               ],
             ),
@@ -195,8 +251,8 @@ class TimesStrip extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(arriveTime, style: time),
-                Text(to, style: place),
+                FittedBox(child: Text(arriveTime, style: time)),
+                Text(to, style: place, textAlign: TextAlign.end),
               ],
             ),
           ),

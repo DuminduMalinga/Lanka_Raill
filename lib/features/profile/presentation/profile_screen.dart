@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,33 +12,26 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/settings_tiles.dart';
+import '../../../data/providers.dart';
 import '../../auth/data/auth_service.dart';
 
 /// Profile tab: identity header with stats, shortcuts, sign out.
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({
-    super.key,
-    this.name = 'Malinga',
-    this.initials = 'MB',
-    this.homeStation = 'Colombo Fort',
-    this.savedTrains = 3,
-    this.savedPlaces = 5,
-    this.savedStations = 4,
-    this.unread = 2,
-  });
-
-  // Design preview defaults — replace with the signed-in user's data.
-  final String name;
-  final String initials;
-  final String homeStation;
-  final int savedTrains;
-  final int savedPlaces;
-  final int savedStations;
-  final int unread;
+class ProfileScreen extends ConsumerWidget {
+  const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final signedIn = ref.watch(isSignedInProvider);
+    final profile = ref.watch(profileProvider).value;
+    int count(FavoriteKind k) =>
+        ref.watch(favoritesProvider(k)).value?.length ?? 0;
+    final home = ref
+        .watch(stationByCodeProvider(ref.watch(journeyProvider).fromCode))
+        .value;
+    final unread = (ref.watch(announcementsProvider).value ?? const [])
+        .where((a) => a.severity.name != 'info')
+        .length;
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: AppSpacing.navClearance),
@@ -45,24 +39,27 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _ProfileHeader(
-              name: name,
-              initials: initials,
-              subtitle: l10n.homeStationLabel(homeStation),
+              name: profile?.label ?? l10n.guest,
+              initials: profile?.initials ?? 'G',
+              subtitle: signedIn
+                  ? (profile?.email ??
+                        l10n.homeStationLabel(home?.name.of(context) ?? ''))
+                  : l10n.signInForSaved,
               stats: [
                 (
-                  '$savedTrains',
+                  '${count(FavoriteKind.train)}',
                   l10n.statSavedTrains,
                   AppRoutes.favoriteTrains,
                 ),
                 (
-                  '$savedPlaces',
+                  '${count(FavoriteKind.destination)}',
                   l10n.statSavedPlaces,
                   AppRoutes.favoriteDestinations,
                 ),
                 (
-                  '$savedStations',
+                  '${count(FavoriteKind.station)}',
                   l10n.statStations,
-                  AppRoutes.stationDirectory,
+                  AppRoutes.saved,
                 ),
               ],
             ),
@@ -111,19 +108,26 @@ class ProfileScreen extends StatelessWidget {
                           title: l10n.aboutApp,
                           onTap: () => context.push(AppRoutes.about),
                         ),
-                        SettingsTile(
-                          icon: Icons.logout_rounded,
-                          title: l10n.signOut,
-                          destructive: true,
-                          onTap: () async {
-                            try {
-                              await AuthService.signOut();
-                            } catch (_) {
-                              // Local session is cleared regardless.
-                            }
-                            if (context.mounted) context.go(AppRoutes.signIn);
-                          },
-                        ),
+                        if (signedIn)
+                          SettingsTile(
+                            icon: Icons.logout_rounded,
+                            title: l10n.signOut,
+                            destructive: true,
+                            onTap: () async {
+                              try {
+                                await AuthService.signOut();
+                              } catch (_) {
+                                // Local session is cleared regardless.
+                              }
+                              if (context.mounted) context.go(AppRoutes.signIn);
+                            },
+                          )
+                        else
+                          SettingsTile(
+                            icon: Icons.login_rounded,
+                            title: l10n.signIn,
+                            onTap: () => context.push(AppRoutes.signIn),
+                          ),
                       ],
                     ),
                   ],

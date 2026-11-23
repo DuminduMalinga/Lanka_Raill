@@ -36,6 +36,10 @@ class _CeylonGoAppState extends ConsumerState<CeylonGoApp> {
     // Coming back from the Google/Facebook browser login → go to Home.
     _authSub = AuthService.onAuthStateChange.listen(
       (state) {
+        if (state.event == AuthChangeEvent.passwordRecovery) {
+          _router.go('${AppRoutes.forgotPassword}?mode=update');
+          return;
+        }
         if (state.event == AuthChangeEvent.signedIn && state.session != null) {
           final here = _router.routerDelegate.currentConfiguration.uri.path;
           if (here != AppRoutes.home) _router.go(AppRoutes.home);

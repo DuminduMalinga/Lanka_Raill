@@ -3,12 +3,9 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/app_routes.dart';
-import '../../../core/state/app_preferences.dart';
 import '../../../core/state/ui_view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_search_bar.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/buttons.dart';
@@ -18,25 +15,50 @@ import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/station_tile.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
 enum StationPickerKind { departure, arrival }
 
 /// Departure / arrival station picker (one widget, two routes).
-class StationPickerScreen extends ConsumerWidget {
+class StationPickerScreen extends ConsumerStatefulWidget {
   const StationPickerScreen({super.key, required this.kind, this.viewState});
 
   final StationPickerKind kind;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StationPickerScreen> createState() =>
+      _StationPickerScreenState();
+}
+
+class _StationPickerScreenState extends ConsumerState<StationPickerScreen> {
+  static const _popularCodes = ['FOT', 'KDT', 'ELL', 'GLE', 'NOA', 'JFN'];
+
+  String _query = '';
+  String? _picked;
+
+  bool get _departure => widget.kind == StationPickerKind.departure;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final title = kind == StationPickerKind.departure
-        ? l10n.departureStation
-        : l10n.arrivalStation;
-    final popularId = '${UiSelections.popularStation}.${kind.name}';
-    final popular = ref.watch(uiSelectionProvider(popularId));
+    final title = _departure ? l10n.departureStation : l10n.arrivalStation;
+    final journey = ref.watch(journeyProvider);
+    final current = _picked ?? (_departure ? journey.fromCode : journey.toCode);
+    final stations = ref.watch(stationsProvider);
+    final all = stations.value ?? const <Station>[];
+    final popular = [
+      for (final c in _popularCodes)
+        ...all.where((s) => s.code == c),
+    ];
+
+    void confirm() {
+      final n = ref.read(journeyProvider.notifier);
+      _departure ? n.setFrom(current) : n.setTo(current);
+      popOrGo(context, AppRoutes.home)();
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -47,37 +69,41 @@ class StationPickerScreen extends ConsumerWidget {
               child: PageScroll(
                 spacing: AppSpacing.md,
                 children: [
-                  AppSearchBar(hint: l10n.searchStationsHint),
-                  _UseLocationRow(
-                    title: l10n.useMyLocation,
-                    subtitle: l10n.nearestStation('Colombo Fort', '0.8 km'),
+                  AppSearchBar(
+                    hint: l10n.searchStationsHint,
+                    onChanged: (v) => setState(() => _query = v.trim()),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  SectionLabel(l10n.popular),
-                  // Design preview content.
-                  ChoicePillRow(
-                    wrap: true,
-                    padding: EdgeInsets.zero,
-                    labels: const [
-                      'Colombo Fort',
-                      'Kandy',
-                      'Galle',
-                      'Nanu Oya',
-                    ],
-                    selectedIndex: popular,
-                    onSelected: (i) => ref
-                        .read(uiSelectionProvider(popularId).notifier)
-                        .select(i),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
+                  if (popular.isNotEmpty && _query.isEmpty) ...[
+                    SectionLabel(l10n.popular),
+                    ChoicePillRow(
+                      wrap: true,
+                      padding: EdgeInsets.zero,
+                      labels: [for (final s in popular) s.name.of(context)],
+                      selectedIndex: popular.indexWhere(
+                        (s) => s.code == current,
+                      ),
+                      onSelected: (i) =>
+                          setState(() => _picked = popular[i].code),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                  ],
                   SectionLabel(l10n.allStations),
-                  UiStateView(
-                    state: viewState,
-                    content: (_) => _StationsContent(kind: kind),
+                  AsyncView<List<Station>>(
+                    value: stations,
+                    state: widget.viewState,
+                    onRetry: () => ref.invalidate(stationsProvider),
+                    isEmpty: (list) => _filter(list).isEmpty,
+                    content: (_, list) => _StationsContent(
+                      stations: _filter(list),
+                      selectedCode: current,
+                      onPick: (code) => setState(() => _picked = code),
+                    ),
                     empty: (_) => EmptyState(
                       icon: Icons.search_off_rounded,
                       title: l10n.emptyStationsTitle,
-                      message: l10n.emptyStationsBody,
+                      message: _query.isEmpty
+                          ? l10n.emptyStationsBody
+                          : l10n.noStationsMatch,
                     ),
                     loading: (_) => const ShimmerList(
                       itemCount: 5,
@@ -88,91 +114,57 @@ class StationPickerScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            _ConfirmBar(
-              label: l10n.confirmStation,
-              onPressed: () => popOrGo(context, AppRoutes.home)(),
-            ),
+            _ConfirmBar(label: l10n.confirmStation, onPressed: confirm),
           ],
         ),
       ),
     );
   }
+
+  List<Station> _filter(List<Station> list) {
+    if (_query.isEmpty) return list;
+    final q = _query.toLowerCase();
+    return list
+        .where(
+          (s) =>
+              s.name.en.toLowerCase().contains(q) ||
+              (s.name.si ?? '').contains(_query) ||
+              s.code.toLowerCase() == q,
+        )
+        .toList();
+  }
 }
 
-class _StationsContent extends ConsumerWidget {
-  const _StationsContent({required this.kind});
+class _StationsContent extends StatelessWidget {
+  const _StationsContent({
+    required this.stations,
+    required this.selectedCode,
+    required this.onPick,
+  });
 
-  final StationPickerKind kind;
+  final List<Station> stations;
+  final String selectedCode;
+  final ValueChanged<String> onPick;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final id = '${UiSelections.stationPick}.${kind.name}';
-    final selected = ref.watch(uiSelectionProvider(id));
-    void pick(int i) => ref.read(uiSelectionProvider(id).notifier).select(i);
-    // Design preview content — pass real stations through StationTile.
-    const stations = <(String, String, String)>[
-      ('FOT', 'Colombo Fort', 'Main · Coastal · Northern · Puttalam'),
-      ('MDA', 'Maradana', 'Main · Kelani Valley'),
-      ('KDT', 'Kandy', 'Main Line branch · Matale Line'),
-      ('PDA', 'Peradeniya Junction', 'Main Line'),
-      ('GLE', 'Galle', 'Coastal Line'),
-      ('NOA', 'Nanu Oya', 'Main Line · for Nuwara Eliya'),
-    ];
+  Widget build(BuildContext context) {
     return Column(
       children: [
         for (var i = 0; i < stations.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.sm),
           StationTile(
-            code: stations[i].$1,
-            name: stations[i].$2,
-            subtitle: stations[i].$3,
-            selected: i == selected,
-            onTap: () => pick(i),
+            code: stations[i].code,
+            name: stations[i].name.en,
+            nativeName: stations[i].name.si,
+            subtitle: [
+              stations[i].lineName?.of(context),
+              stations[i].district,
+            ].whereType<String>().join(' · '),
+            selected: stations[i].code == selectedCode,
+            onTap: () => onPick(stations[i].code),
           ),
         ],
       ],
-    );
-  }
-}
-
-class _UseLocationRow extends StatelessWidget {
-  const _UseLocationRow({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    return AppCard(
-      onTap: () {},
-      padding: const EdgeInsets.all(AppSpacing.s14),
-      child: Row(
-        children: [
-          const IconTile(icon: Icons.my_location_rounded, size: 40),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTextStyles.cardTitle.copyWith(
-                    color: palette.textPrimary,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.caption.copyWith(
-                    color: palette.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right_rounded, color: palette.textMuted),
-        ],
-      ),
     );
   }
 }

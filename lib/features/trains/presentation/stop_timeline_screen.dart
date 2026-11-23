@@ -15,30 +15,42 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 import 'widgets/timeline_stop_tile.dart';
 
 /// Every station on a train's run with times (All / Major toggle).
 class StopTimelineScreen extends ConsumerWidget {
-  const StopTimelineScreen({super.key, this.viewState});
+  const StopTimelineScreen({super.key, this.trainId, this.viewState});
 
+  final String? trainId;
   final UiViewState? viewState;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final filter = ref.watch(uiSelectionProvider(UiSelections.stopFilter));
+    final id = ref.watch(trainIdProvider(trainId));
+    final train = resolved(ref, id, (v) => ref.watch(trainProvider(v))).value;
+    final stops = resolved(ref, id, (v) => ref.watch(trainStopsProvider(v)));
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             AppTopBar(
               title: l10n.stopTimeline,
-              subtitle: 'Podi Menike · #1005',
+              subtitle: train == null
+                  ? null
+                  : '${train.name.of(context)} · #${train.number}',
               trailing: CircleIconButton(
                 icon: Icons.map_outlined,
                 semanticLabel: l10n.routeMap,
-                onPressed: () => context.push(AppRoutes.routeMap),
+                onPressed: train == null
+                    ? null
+                    : () => context.push(
+                        AppRoutes.withId(AppRoutes.routeMap, train.id),
+                      ),
               ),
             ),
             Padding(
@@ -56,9 +68,19 @@ class StopTimelineScreen extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<List<TrainStop>?>(
+                value: stops,
                 state: viewState,
-                content: (_) => const _TimelineContent(),
+                isEmpty: (s) => s == null || s.isEmpty,
+                onRetry: id.value == null
+                    ? null
+                    : () => ref.invalidate(trainStopsProvider(id.value!)),
+                content: (_, s) => _TimelineContent(
+                  stops: filter == 1
+                      ? s!.where((x) => x.isMajor).toList()
+                      : s!,
+                  source: train?.source,
+                ),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.timeline_rounded,
@@ -80,13 +102,14 @@ class StopTimelineScreen extends ConsumerWidget {
 }
 
 class _TimelineContent extends StatelessWidget {
-  const _TimelineContent();
+  const _TimelineContent({required this.stops, this.source});
+
+  final List<TrainStop> stops;
+  final String? source;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void station() => context.push(AppRoutes.stationDetails);
-    // Design preview content.
     return PageScroll(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.gutter,
@@ -105,77 +128,45 @@ class _TimelineContent extends StatelessWidget {
           ),
           child: Column(
             children: [
-              TimelineStopTile(
-                time: '05:55',
-                station: 'Colombo Fort',
-                note: 'Platform 6 · departs',
-                isEndpoint: true,
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '06:03',
-                station: 'Maradana',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '07:42',
-                station: 'Polgahawela',
-                note: 'Junction for Northern Line',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '09:22',
-                station: 'Peradeniya Jn',
-                note: 'Change here for Kandy',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '11:52',
-                station: 'Hatton',
-                note: 'Tea country begins',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '12:35',
-                station: 'Nanu Oya',
-                tag: l10n.touristStop,
-                note: 'For Nuwara Eliya · 8 km',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '13:20',
-                station: 'Pattipola',
-                tag: l10n.highestPoint,
-                tagTone: StatusTone.neutral,
-                note: 'Highest station · 1,898 m',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '14:10',
-                station: 'Haputale',
-                note: 'Lipton’s Seat',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '15:15',
-                station: 'Ella',
-                tag: l10n.touristStop,
-                note: 'Nine Arch Bridge · Little Adam’s Peak',
-                onTap: station,
-              ),
-              TimelineStopTile(
-                time: '16:20',
-                station: 'Badulla',
-                tag: l10n.terminus,
-                tagTone: StatusTone.neutral,
-                isEndpoint: true,
-                isLast: true,
-                onTap: station,
-              ),
+              for (var i = 0; i < stops.length; i++)
+                TimelineStopTile(
+                  time: stops[i].displayTime,
+                  station: stops[i].station.name.of(context),
+                  note: _note(context, stops[i], i),
+                  tag: i == stops.length - 1 ? l10n.terminus : null,
+                  tagTone: StatusTone.neutral,
+                  isEndpoint: i == 0 || i == stops.length - 1,
+                  isLast: i == stops.length - 1,
+                  onTap: () => context.push(
+                    AppRoutes.withId(
+                      AppRoutes.stationDetails,
+                      stops[i].station.id,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
+        Text(
+          l10n.timetableSourceNote(source ?? 'seat61.com'),
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
       ],
     );
+  }
+
+  String? _note(BuildContext context, TrainStop s, int i) {
+    final l10n = context.l10n;
+    final parts = <String>[];
+    if (s.arriveTime != null &&
+        s.departTime != null &&
+        s.arriveTime != s.departTime) {
+      parts.add('${s.arriveTime} → ${s.departTime}');
+    }
+    if (s.dayOffset > 0) parts.add(l10n.nextDayShort);
+    if (s.station.lineName != null && i == 0) {
+      parts.add(s.station.lineName!.of(context));
+    }
+    return parts.isEmpty ? null : parts.join(' · ');
   }
 }

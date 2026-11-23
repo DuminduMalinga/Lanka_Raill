@@ -1,10 +1,8 @@
 {
   "@@locale": "en",
-
   "appName": "CeylonGO",
   "appTagline": "Explore Sri Lanka. Travel by Train.",
   "appSubtitle": "Sri Lanka Railway Companion",
-
   "back": "Back",
   "share": "Share",
   "save": "Save",
@@ -28,17 +26,20 @@
   "km": "km",
   "arrow": "→",
   "openItem": "Open {name}",
-  "@openItem": { "placeholders": { "name": { "type": "String" } } },
-
+  "@openItem": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "navHome": "Home",
   "navTrains": "Trains",
   "navExplore": "Explore",
   "navSaved": "Saved",
   "navProfile": "Profile",
   "mainNavigation": "Main",
-
   "loading": "Loading",
-
   "emptyTrainsTitle": "No direct trains for this choice",
   "emptyTrainsBody": "Try another date or time, or change at Colombo Fort or Polgahawela.",
   "emptyStationsTitle": "No stations found",
@@ -59,9 +60,7 @@
   "emptyRecentBody": "Your last journeys will show up here.",
   "emptyStopsTitle": "No stops to show",
   "emptyStopsBody": "Stop times for this train will appear here.",
-
   "splashContinue": "Continue to welcome",
-
   "welcomePhotoPlace": "Nine Arch Bridge, Ella",
   "welcomePhotoLine": "Main Line",
   "welcomeLanguageChip": "EN · සිං",
@@ -70,7 +69,6 @@
   "getStarted": "Get started",
   "welcomeImageAlt": "Blue train crossing the Nine Arch Bridge near Ella",
   "mistyImageAlt": "Misty hill-country railway with a train waiting beside curving tracks",
-
   "onboardingTitle1": "Every train, every station",
   "onboardingBody1": "Search timetables across Sri Lanka’s railway lines — from Colombo Fort to Badulla, Jaffna and Matara.",
   "onboardingTitle2": "Ride the scenic routes",
@@ -81,9 +79,17 @@
   "onboardingImageAlt2": "Hill-country railway station beside a misty pine forest",
   "onboardingImageAlt3": "Passenger train curving through green tea country",
   "onboardingStep": "Step {current} of {total}",
-  "@onboardingStep": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "@onboardingStep": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "chooseLanguage": "Choose language",
-
   "languageTitle": "Choose your language",
   "languageTitleAlt": "ඔබේ භාෂාව තෝරන්න",
   "languageBody": "Station names, timetables and announcements will appear in this language. Change it any time in Settings.",
@@ -95,7 +101,6 @@
   "languageTamilSub": "Tamil",
   "languageTamilNote": "Tamil support is planned for a future release",
   "appLanguage": "App language",
-
   "signInTitle": "Welcome back",
   "signInBody": "Sign in to sync your saved trains, places and alerts.",
   "google": "Google",
@@ -112,7 +117,6 @@
   "createAccount": "Create account",
   "errUsernameOrEmail": "Enter your username or email",
   "errPassword": "Enter your password",
-
   "signUpTitle": "Create your account",
   "signUpBody": "Save trains and get verified railway alerts.",
   "signUpDivider": "or sign up with email",
@@ -130,7 +134,6 @@
   "pwAddNumber": "Add a number to make it stronger",
   "haveAccount": "Already have an account?",
   "backToSignIn": "Back to sign in",
-
   "resetTitle": "Reset your password",
   "resetBody": "Enter your username or email, then choose a new password.",
   "newPassword": "New password",
@@ -139,7 +142,6 @@
   "remembered": "Remembered it?",
   "passwordUpdated": "Password updated",
   "passwordUpdatedBody": "You can now sign in with your new password.",
-
   "greeting": "Ayubowan,",
   "homeTitle": "Where to next?",
   "findTrains": "Find trains",
@@ -150,12 +152,29 @@
   "quickStations": "Stations",
   "quickExplore": "Explore",
   "departingFrom": "Departing {station}",
-  "@departingFrom": { "placeholders": { "station": { "type": "String" } } },
+  "@departingFrom": {
+    "placeholders": {
+      "station": {
+        "type": "String"
+      }
+    }
+  },
   "platformShort": "Plat. {number}",
-  "@platformShort": { "placeholders": { "number": { "type": "String" } } },
+  "@platformShort": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
   "travelDateLabel": "Travel date: {date}",
-  "@travelDateLabel": { "placeholders": { "date": { "type": "String" } } },
-
+  "@travelDateLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "planJourney": "Plan a journey",
   "travelDate": "Travel date",
   "departureTime": "Departure time",
@@ -172,40 +191,72 @@
   "pickDate": "Pick a date",
   "searchTrains": "Search trains",
   "recentSearches": "Recent searches",
-
   "departureStation": "Departure station",
   "arrivalStation": "Arrival station",
   "searchStationsHint": "Search 400+ stations",
   "useMyLocation": "Use my location",
   "nearestStation": "Nearest: {name} · {distance}",
-  "@nearestStation": { "placeholders": { "name": { "type": "String" }, "distance": { "type": "String" } } },
+  "@nearestStation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
   "popular": "Popular",
   "allStations": "All stations",
   "confirmStation": "Confirm station",
-
   "filters": "Filters",
   "sortEarliest": "Earliest",
   "sortFastest": "Fastest",
   "sortScenic": "Most scenic",
   "sortObservation": "Observation",
   "trainsCount": "{count, plural, =1{1 train} other{{count} trains}}",
-  "@trainsCount": { "placeholders": { "count": { "type": "int" } } },
+  "@trainsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dateAndCount": "{date} · {count}",
-  "@dateAndCount": { "placeholders": { "date": { "type": "String" }, "count": { "type": "String" } } },
-
+  "@dateAndCount": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "trainsEyebrow": "Trains",
   "findAvailableTrains": "Find available trains",
   "fromYourStation": "From · your station",
   "toDestination": "To · destination",
   "departed": "Departed",
   "direct": "Direct",
-  "stopsCount": "{count, plural, =1{1 stop} other{{count} stops}}",
-  "@stopsCount": { "placeholders": { "count": { "type": "int" } } },
+  "stopsCount": "{count, plural, =0{Direct} =1{1 stop} other{{count} stops}}",
+  "@stopsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "nextDay": "+1 day",
   "sameStationError": "Choose a destination different from your station.",
   "stillToDepart": "{count} still to depart today",
-  "@stillToDepart": { "placeholders": { "count": { "type": "int" } } },
-
+  "@stillToDepart": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "saveTrain": "Save train",
   "duration": "Duration",
   "distance": "Distance",
@@ -216,12 +267,10 @@
   "routeMap": "Route map",
   "classesFacilities": "Classes & facilities",
   "scenicHighlights": "Scenic highlights",
-
   "allStops": "All stops",
   "touristStop": "Tourist stop",
   "highestPoint": "Highest point",
   "terminus": "Terminus",
-
   "mapLayers": "Map layers",
   "scenicStretch": "Scenic stretch",
   "journeyLower": "journey",
@@ -232,7 +281,6 @@
   "recenterMap": "Re-centre map",
   "mapAttribution": "© OpenStreetMap contributors",
   "mapLabel": "Map of Sri Lanka",
-
   "onThisTrain": "On this train",
   "notOnThisTrain": "Not on this train",
   "facilitiesOnBoard": "Facilities on board",
@@ -243,10 +291,8 @@
   "facilityCharging": "Charging",
   "facilityStepFree": "Step-free",
   "facilityAirCon": "Air-con",
-
   "railwayLines": "Railway lines",
   "linesIntro": "Every line starts from the Colombo network. Tap a line for its stations and trains.",
-
   "saveLine": "Save line",
   "lineLength": "Length",
   "firstSection": "First section",
@@ -254,7 +300,6 @@
   "trainsOnLine": "Trains on this line",
   "placesAlongLine": "Places along this line",
   "mostScenic": "Most scenic",
-
   "stationDirectory": "Station directory",
   "searchByNameOrCode": "Search by name or code",
   "filterAll": "All",
@@ -263,20 +308,35 @@
   "filterNorthern": "Northern",
   "filterTouristStops": "Tourist stops",
   "jumpToLetter": "Jump to {letter}",
-  "@jumpToLetter": { "placeholders": { "letter": { "type": "String" } } },
-
+  "@jumpToLetter": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    }
+  },
   "saveStation": "Save station",
   "nextDepartures": "Next departures",
   "toStation": "To {station}",
-  "@toStation": { "placeholders": { "station": { "type": "String" } } },
+  "@toStation": {
+    "placeholders": {
+      "station": {
+        "type": "String"
+      }
+    }
+  },
   "nearbyPlaces": "Nearby places",
   "timetable": "Timetable",
   "directions": "Directions",
-
   "nearPlace": "Near {place}",
-  "@nearPlace": { "placeholders": { "place": { "type": "String" } } },
+  "@nearPlace": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
   "nearbyRailwayStations": "Nearby railway stations",
-
   "exploreEyebrow": "Explore",
   "exploreTitle": "Places worth the journey",
   "searchPlaces": "Search places",
@@ -287,26 +347,40 @@
   "featured": "Featured",
   "planTrip": "Plan trip",
   "easyByTrain": "Easy by train from Colombo",
-
   "destinationCategories": "Destination categories",
-
   "savePlace": "Save place",
   "gallery": "Gallery",
   "nearestStationLabel": "Nearest station",
   "moreCount": "{count} more",
-  "@moreCount": { "placeholders": { "count": { "type": "int" } } },
+  "@moreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "trainsTo": "Trains to {station}",
-  "@trainsTo": { "placeholders": { "station": { "type": "String" } } },
-
+  "@trainsTo": {
+    "placeholders": {
+      "station": {
+        "type": "String"
+      }
+    }
+  },
   "galleryCount": "Gallery · {count, plural, =1{1 photo} other{{count} photos}}",
-  "@galleryCount": { "placeholders": { "count": { "type": "int" } } },
+  "@galleryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "galleryAll": "All",
   "galleryTrains": "Trains",
   "galleryViews": "Views",
   "galleryTravellers": "Travellers",
   "yourPhoto": "Your photo",
   "addYourPhoto": "Add your photo",
-
   "savedTitle": "Saved",
   "savedSubtitle": "Your trains, routes and places in one spot",
   "statTrains": "Trains",
@@ -316,22 +390,37 @@
   "savedTrains": "Saved trains",
   "savedPlaces": "Saved places",
   "nextDeparture": "Next departure",
-
   "favoriteTrainsTitle": "Favorite trains & routes",
   "tabTrainsCount": "Trains · {count}",
-  "@tabTrainsCount": { "placeholders": { "count": { "type": "int" } } },
+  "@tabTrainsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tabRoutesCount": "Routes · {count}",
-  "@tabRoutesCount": { "placeholders": { "count": { "type": "int" } } },
+  "@tabRoutesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "savedAlertsBody": "Get verified alerts when a saved train is delayed or rescheduled",
   "alertsForSavedTrains": "Alerts for saved trains",
-
   "favoriteDestinationsTitle": "Favorite destinations",
   "gridView": "Grid view",
   "allCount": "All · {count}",
-  "@allCount": { "placeholders": { "count": { "type": "int" } } },
+  "@allCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "catCoast": "Coast",
   "planTripSaved": "Plan a trip to saved places",
-
   "notificationSettings": "Notification settings",
   "filterDelays": "Delays",
   "filterSchedule": "Schedule changes",
@@ -340,7 +429,6 @@
   "typeScheduleChange": "Schedule change",
   "typeDelay": "Delay",
   "typeService": "Service",
-
   "announcement": "Announcement",
   "verifiedFromOfficial": "Verified from the Sri Lanka Railways official notice",
   "detailDates": "Dates",
@@ -349,27 +437,43 @@
   "detailExpectedDelay": "Expected delay",
   "viewOriginalNotice": "View original notice",
   "notifyMe": "Notify me",
-
   "settings": "Settings",
   "editProfile": "Edit profile",
   "homeStationLabel": "Home station · {station}",
-  "@homeStationLabel": { "placeholders": { "station": { "type": "String" } } },
+  "@homeStationLabel": {
+    "placeholders": {
+      "station": {
+        "type": "String"
+      }
+    }
+  },
   "statSavedTrains": "Saved trains",
   "statSavedPlaces": "Saved places",
   "savedRowSub": "Trains, routes and places",
   "unreadCount": "{count} unread",
-  "@unreadCount": { "placeholders": { "count": { "type": "int" } } },
+  "@unreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsRowSub": "Language, theme, notifications",
   "helpFeedback": "Help & feedback",
   "aboutApp": "About CeylonGO",
   "signOut": "Sign out",
-
   "sectionPreferences": "Preferences",
   "language": "Language",
   "theme": "Theme",
   "notifications": "Notifications",
   "notificationsOnCount": "{count} on",
-  "@notificationsOnCount": { "placeholders": { "count": { "type": "int" } } },
+  "@notificationsOnCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sectionTravel": "Travel",
   "homeStation": "Home station",
   "preferredClass": "Preferred class",
@@ -379,26 +483,28 @@
   "clearSearchHistory": "Clear search history",
   "sectionSupport": "Support",
   "versionShort": "v{version}",
-  "@versionShort": { "placeholders": { "version": { "type": "String" } } },
-
+  "@versionShort": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "themeLight": "Light",
   "themeDark": "Dark",
   "themeSystem": "System",
-
   "sectionDisplay": "Display",
   "bilingualNames": "Show station names in both languages",
   "bilingualNamesSub": "e.g. Ella · ඇල්ල",
   "translateAnnouncements": "Translate announcements",
   "translateAnnouncementsSub": "Show official notices in your app language",
   "officialNamesNote": "Official station names follow Sri Lanka Railways signage.",
-
   "themeNote": "System follows your phone’s setting. Maps and route views always use the dark forest palette for contrast outdoors.",
   "sectionComfort": "Comfort",
   "largerText": "Larger text",
   "largerTextSub": "Bigger timetable times and station names",
   "highContrast": "High-contrast mode",
   "highContrastSub": "Stronger colours for bright platforms",
-
   "sectionRailwayUpdates": "Railway updates",
   "notifyVerified": "Verified announcements",
   "notifyVerifiedSub": "Official notices from Sri Lanka Railways",
@@ -415,7 +521,6 @@
   "quietHoursRange": "22:00 – 06:00",
   "quietHoursSub": "Urgent delays still come through",
   "quietHours": "Quiet hours",
-
   "searchHelp": "Search help articles",
   "faq1Q": "How accurate are the timetables?",
   "faq1A": "Times come from the official railway timetable. Delays and changes appear under Announcements once verified.",
@@ -426,19 +531,147 @@
   "sendFeedback": "Send feedback",
   "rating": "Rating",
   "rateStars": "Rate {count} out of 5",
-  "@rateStars": { "placeholders": { "count": { "type": "int" } } },
+  "@rateStars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "yourMessage": "Your message",
   "messageHint": "Tell us what to improve, or report a timetable error",
   "emailUs": "Email us",
   "chat": "Chat",
-
   "versionLabel": "Version {version}",
-  "@versionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "aboutBody": "CeylonGO helps locals and visitors find trains, understand routes and discover the places each station opens up — with announcements checked against official railway notices.",
   "dataSource": "Timetable data source",
   "dataSourceValue": "[OFFICIAL SOURCE]",
   "privacyPolicy": "Privacy policy",
   "termsOfUse": "Terms of use",
   "rateApp": "Rate CeylonGO",
-  "notOfficial": "Not an official Sri Lanka Railways app · © 2026 CeylonGO"
+  "notOfficial": "Not an official Sri Lanka Railways app · © 2026 CeylonGO",
+  "loadErrorTitle": "Couldn't load this",
+  "loadErrorBody": "Check your internet connection and try again.",
+  "retry": "Try again",
+  "timetableSourceNote": "Times from {source}. Always check at the station.",
+  "@timetableSourceNote": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "photoCredit": "Photo: {credit}",
+  "@photoCredit": {
+    "placeholders": {
+      "credit": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToSave": "Sign in to save trains, stations and places.",
+  "savedToast": "Saved",
+  "removedToast": "Removed from saved",
+  "runsOn": "Runs {days}",
+  "@runsOn": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "nextDayShort": "+1 day",
+  "notRunningOnDate": "Doesn't run on this day",
+  "stationsCount": "{count, plural, =1{1 station} other{{count} stations}}",
+  "@stationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placesCount": "{count, plural, =1{1 place} other{{count} places}}",
+  "@placesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "approxKm": "≈{km} km",
+  "@approxKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "facilitiesNotListed": "Facilities for this station aren't listed yet.",
+  "noDeparturesTitle": "No departures listed",
+  "noDeparturesBody": "No trains in our timetable depart from this station.",
+  "authFailed": "Couldn't sign in: {message}",
+  "@authFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "checkEmailConfirm": "Account created. Check your email to confirm it, then sign in.",
+  "resetLinkSent": "If an account exists for {email}, a reset link is on its way.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "guest": "Guest",
+  "signInForSaved": "Sign in to keep your saved trains and places on every device.",
+  "classesNotListed": "Seat classes aren't listed for this train.",
+  "reservedSeats": "Reserved",
+  "unreservedSeats": "Unreserved",
+  "noStationsMatch": "No stations match your search",
+  "enterEmailPassword": "Enter your email and password.",
+  "passwordsDontMatch": "Passwords don't match.",
+  "passwordTooShort": "Use at least 6 characters.",
+  "trainNumber": "Train #{number}",
+  "@trainNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "viewOnMap": "View on map",
+  "dataSourceTitle": "Data and photos",
+  "dataSourceBody": "Timetables: seat61.com (updated 10 June 2026), main stations only. Photos: Wikimedia Commons, credited on each photo. Station coordinates are approximate.",
+  "destinationsCount": "{count, plural, =1{1 destination} other{{count} destinations}}",
+  "@destinationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fromTo": "{from} → {to}",
+  "@fromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "locationUnavailable": "Showing all stations — location isn't available.",
+  "allCategories": "All"
 }

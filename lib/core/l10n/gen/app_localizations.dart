@@ -1145,7 +1145,7 @@ abstract class AppLocalizations {
   /// No description provided for @stopsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 stop} other{{count} stops}}'**
+  /// **'{count, plural, =0{Direct} =1{1 stop} other{{count} stops}}'**
   String stopsCount(int count);
 
   /// No description provided for @nextDay.
@@ -2335,6 +2335,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not an official Sri Lanka Railways app · © 2026 CeylonGO'**
   String get notOfficial;
+
+  /// No description provided for @loadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this'**
+  String get loadErrorTitle;
+
+  /// No description provided for @loadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get loadErrorBody;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retry;
+
+  /// No description provided for @timetableSourceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Times from {source}. Always check at the station.'**
+  String timetableSourceNote(String source);
+
+  /// No description provided for @photoCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo: {credit}'**
+  String photoCredit(String credit);
+
+  /// No description provided for @signInToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to save trains, stations and places.'**
+  String get signInToSave;
+
+  /// No description provided for @savedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedToast;
+
+  /// No description provided for @removedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved'**
+  String get removedToast;
+
+  /// No description provided for @runsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs {days}'**
+  String runsOn(String days);
+
+  /// No description provided for @nextDayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'+1 day'**
+  String get nextDayShort;
+
+  /// No description provided for @notRunningOnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Doesn\'t run on this day'**
+  String get notRunningOnDate;
+
+  /// No description provided for @stationsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 station} other{{count} stations}}'**
+  String stationsCount(int count);
+
+  /// No description provided for @placesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 place} other{{count} places}}'**
+  String placesCount(int count);
+
+  /// No description provided for @approxKm.
+  ///
+  /// In en, this message translates to:
+  /// **'≈{km} km'**
+  String approxKm(String km);
+
+  /// No description provided for @facilitiesNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Facilities for this station aren\'t listed yet.'**
+  String get facilitiesNotListed;
+
+  /// No description provided for @noDeparturesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No departures listed'**
+  String get noDeparturesTitle;
+
+  /// No description provided for @noDeparturesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No trains in our timetable depart from this station.'**
+  String get noDeparturesBody;
+
+  /// No description provided for @authFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t sign in: {message}'**
+  String authFailed(String message);
+
+  /// No description provided for @checkEmailConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created. Check your email to confirm it, then sign in.'**
+  String get checkEmailConfirm;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists for {email}, a reset link is on its way.'**
+  String resetLinkSent(String email);
+
+  /// No description provided for @guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guest;
+
+  /// No description provided for @signInForSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to keep your saved trains and places on every device.'**
+  String get signInForSaved;
+
+  /// No description provided for @classesNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Seat classes aren\'t listed for this train.'**
+  String get classesNotListed;
+
+  /// No description provided for @reservedSeats.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get reservedSeats;
+
+  /// No description provided for @unreservedSeats.
+  ///
+  /// In en, this message translates to:
+  /// **'Unreserved'**
+  String get unreservedSeats;
+
+  /// No description provided for @noStationsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No stations match your search'**
+  String get noStationsMatch;
+
+  /// No description provided for @enterEmailPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and password.'**
+  String get enterEmailPassword;
+
+  /// No description provided for @passwordsDontMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match.'**
+  String get passwordsDontMatch;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 6 characters.'**
+  String get passwordTooShort;
+
+  /// No description provided for @trainNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Train #{number}'**
+  String trainNumber(String number);
+
+  /// No description provided for @viewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View on map'**
+  String get viewOnMap;
+
+  /// No description provided for @dataSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data and photos'**
+  String get dataSourceTitle;
+
+  /// No description provided for @dataSourceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Timetables: seat61.com (updated 10 June 2026), main stations only. Photos: Wikimedia Commons, credited on each photo. Station coordinates are approximate.'**
+  String get dataSourceBody;
+
+  /// No description provided for @destinationsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 destination} other{{count} destinations}}'**
+  String destinationsCount(int count);
+
+  /// No description provided for @fromTo.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} → {to}'**
+  String fromTo(String from, String to);
+
+  /// No description provided for @locationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing all stations — location isn\'t available.'**
+  String get locationUnavailable;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allCategories;
 }
 
 class _AppLocalizationsDelegate

@@ -580,6 +580,7 @@ class AppLocalizationsSi extends AppLocalizations {
       locale: localeName,
       other: 'නැවතුම් $count',
       one: 'නැවතුම් 1',
+      zero: 'සෘජු',
     );
     return '$_temp0';
   }
@@ -1229,4 +1230,161 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get notOfficial =>
       'ශ්‍රී ලංකා දුම්රිය සේවයේ නිල යෙදුමක් නොවේ · © 2026 CeylonGO';
+
+  @override
+  String get loadErrorTitle => 'මෙය පූරණය කළ නොහැක';
+
+  @override
+  String get loadErrorBody =>
+      'ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get retry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String timetableSourceNote(String source) {
+    return 'වේලාවන් $source වෙතින්. සෑම විටම දුම්රිය ස්ථානයේදී තහවුරු කරගන්න.';
+  }
+
+  @override
+  String photoCredit(String credit) {
+    return 'ඡායාරූපය: $credit';
+  }
+
+  @override
+  String get signInToSave => 'දුම්රිය, ස්ථාන සහ ගමනාන්ත සුරැකීමට පුරනය වන්න.';
+
+  @override
+  String get savedToast => 'සුරැකිණි';
+
+  @override
+  String get removedToast => 'සුරැකි ලැයිස්තුවෙන් ඉවත් කළා';
+
+  @override
+  String runsOn(String days) {
+    return 'ධාවනය: $days';
+  }
+
+  @override
+  String get nextDayShort => '+දින 1';
+
+  @override
+  String get notRunningOnDate => 'මෙම දිනයේ ධාවනය නොවේ';
+
+  @override
+  String stationsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ස්ථාන $count',
+      one: 'ස්ථාන 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String placesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ගමනාන්ත $count',
+      one: 'ගමනාන්ත 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String approxKm(String km) {
+    return '≈කි.මී. $km';
+  }
+
+  @override
+  String get facilitiesNotListed =>
+      'මෙම දුම්රිය ස්ථානයේ පහසුකම් තවම ලැයිස්තුගත කර නැත.';
+
+  @override
+  String get noDeparturesTitle => 'පිටත්වීම් ලැයිස්තුගත කර නැත';
+
+  @override
+  String get noDeparturesBody =>
+      'අපගේ කාලසටහනේ මෙම ස්ථානයෙන් පිටත් වන දුම්රිය නැත.';
+
+  @override
+  String authFailed(String message) {
+    return 'පුරනය විය නොහැක: $message';
+  }
+
+  @override
+  String get checkEmailConfirm =>
+      'ගිණුම සෑදුවා. තහවුරු කිරීමට ඔබේ ඊමේල් පරීක්ෂා කර පසුව පුරනය වන්න.';
+
+  @override
+  String resetLinkSent(String email) {
+    return '$email සඳහා ගිණුමක් ඇත්නම්, යළි සැකසීමේ සබැඳියක් එවනු ලැබේ.';
+  }
+
+  @override
+  String get guest => 'අමුත්තා';
+
+  @override
+  String get signInForSaved =>
+      'ඔබ සුරැකි දුම්රිය සහ ගමනාන්ත සෑම උපාංගයකම තබා ගැනීමට පුරනය වන්න.';
+
+  @override
+  String get classesNotListed => 'මෙම දුම්රියේ ආසන පන්ති ලැයිස්තුගත කර නැත.';
+
+  @override
+  String get reservedSeats => 'වෙන්කළ';
+
+  @override
+  String get unreservedSeats => 'වෙන් නොකළ';
+
+  @override
+  String get noStationsMatch => 'ඔබේ සෙවුමට ගැළපෙන ස්ථාන නැත';
+
+  @override
+  String get enterEmailPassword => 'ඔබේ ඊමේල් සහ මුරපදය ඇතුළත් කරන්න.';
+
+  @override
+  String get passwordsDontMatch => 'මුරපද නොගැළපේ.';
+
+  @override
+  String get passwordTooShort => 'අවම වශයෙන් අක්ෂර 6ක් භාවිත කරන්න.';
+
+  @override
+  String trainNumber(String number) {
+    return 'දුම්රිය #$number';
+  }
+
+  @override
+  String get viewOnMap => 'සිතියමේ බලන්න';
+
+  @override
+  String get dataSourceTitle => 'දත්ත සහ ඡායාරූප';
+
+  @override
+  String get dataSourceBody =>
+      'කාලසටහන්: seat61.com (2026 ජූනි 10 යාවත්කාලීන), ප්‍රධාන ස්ථාන පමණි. ඡායාරූප: Wikimedia Commons, එක් එක් ඡායාරූපයේ හිමිකම් දක්වා ඇත. ස්ථාන ඛණ්ඩාංක ආසන්න අගයන් වේ.';
+
+  @override
+  String destinationsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ගමනාන්ත $count',
+      one: 'ගමනාන්ත 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String fromTo(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get locationUnavailable => 'සියලු ස්ථාන පෙන්වයි — ස්ථානය ලබාගත නොහැක.';
+
+  @override
+  String get allCategories => 'සියල්ල';
 }

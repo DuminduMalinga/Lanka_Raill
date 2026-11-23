@@ -10,6 +10,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/date_labels.dart';
+import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/choice_pills.dart';
 import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -17,7 +18,9 @@ import '../../../core/widgets/journey_stations_card.dart';
 import '../../../core/widgets/shimmer_list.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/train_card.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
 /// Trains tab: pick stations, day and time slot, then browse departures.
 class AllTrainsScreen extends ConsumerWidget {
@@ -30,6 +33,23 @@ class AllTrainsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final palette = context.palette;
     final slot = ref.watch(uiSelectionProvider(UiSelections.trainsSlot));
+    final dayIndex = ref.watch(uiSelectionProvider(UiSelections.trainsDate));
+    final day = DateLabels.upcomingDays(7)[dayIndex.clamp(0, 6)];
+    final journey = ref.watch(journeyProvider);
+    final from = ref.watch(stationByCodeProvider(journey.fromCode)).value;
+    final to = ref.watch(stationByCodeProvider(journey.toCode)).value;
+    final trains = ref.watch(trainsProvider).whenData(
+      (all) => all.where((t) {
+        if (!runsOnDay(t.runsOn, day.weekday)) return false;
+        final m = t.departMinutes;
+        return switch (slot) {
+          1 => m < 12 * 60,
+          2 => m >= 12 * 60 && m < 17 * 60,
+          3 => m >= 17 * 60,
+          _ => true,
+        };
+      }).toList(),
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -44,15 +64,35 @@ class AllTrainsScreen extends ConsumerWidget {
                 AppSpacing.gutter,
                 0,
               ),
-              // Design preview content — stations come from user selection.
               sliver: SliverToBoxAdapter(
-                child: JourneyStationsCard(
-                  fromLabel: l10n.fromYourStation,
-                  from: 'Colombo Fort',
-                  toLabel: l10n.toDestination,
-                  to: 'Ella',
-                  onFromTap: () => context.push(AppRoutes.departureStation),
-                  onToTap: () => context.push(AppRoutes.arrivalStation),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    JourneyStationsCard(
+                      fromLabel: l10n.fromYourStation,
+                      from: from?.name.of(context) ?? journey.fromCode,
+                      fromCode: journey.fromCode,
+                      toLabel: l10n.toDestination,
+                      to: to?.name.of(context) ?? journey.toCode,
+                      toCode: journey.toCode,
+                      onFromTap: () => context.push(AppRoutes.departureStation),
+                      onToTap: () => context.push(AppRoutes.arrivalStation),
+                      onSwap: () => ref.read(journeyProvider.notifier).swap(),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    PrimaryButton(
+                      label: l10n.searchTrains,
+                      icon: Icons.search_rounded,
+                      tone: PrimaryButtonTone.dark,
+                      onPressed: () {
+                        ref.read(journeyProvider.notifier).setDate(day);
+                        ref
+                            .read(recentSearchesProvider.notifier)
+                            .add(journey.fromCode, journey.toCode);
+                        context.push(AppRoutes.searchResults);
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -79,9 +119,12 @@ class AllTrainsScreen extends ConsumerWidget {
                 AppSpacing.navClearance,
               ),
               sliver: SliverToBoxAdapter(
-                child: UiStateView(
+                child: AsyncView<List<TrainSummary>>(
+                  value: trains,
                   state: viewState,
-                  content: (_) => const _TrainsContent(),
+                  isEmpty: (t) => t.isEmpty,
+                  onRetry: () => ref.invalidate(trainsProvider),
+                  content: (_, t) => _TrainsContent(trains: t, day: day),
                   empty: (_) => EmptyState(
                     icon: Icons.train_outlined,
                     title: l10n.emptyTrainsTitle,
@@ -196,75 +239,65 @@ class _DayStrip extends ConsumerWidget {
 }
 
 class _TrainsContent extends StatelessWidget {
-  const _TrainsContent();
+  const _TrainsContent({required this.trains, required this.day});
+
+  final List<TrainSummary> trains;
+  final DateTime day;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
     final locale = Localizations.localeOf(context).toLanguageTag();
-    final date = DateLabels.weekdayDayMonth(DateTime.now(), locale);
-    void open() => context.push(AppRoutes.trainDetails);
-    // Design preview content.
+    final date = DateLabels.weekdayDayMonth(day, locale);
+    final now = DateTime.now();
+    final isToday = DateUtils.isSameDay(day, now);
+    final nowMin = now.hour * 60 + now.minute;
+    final remaining = isToday
+        ? trains.where((t) => t.departMinutes >= nowMin).length
+        : trains.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Semantics(
           header: true,
           child: Text(
-            l10n.dateAndCount(l10n.trainsCount(3), date),
+            l10n.dateAndCount(l10n.trainsCount(trains.length), date),
             style: AppTextStyles.sectionTitle.copyWith(
               color: palette.textPrimary,
             ),
           ),
         ),
         Text(
-          l10n.stillToDepart(2),
+          l10n.stillToDepart(remaining),
           style: AppTextStyles.caption.copyWith(color: palette.textMuted),
         ),
         const SizedBox(height: AppSpacing.md),
-        TrainCard(
-          dimmed: true,
-          trainName: 'Podi Menike',
-          trainMeta: '#1005 · Express',
-          tag: TrainTag(l10n.departed, tone: StatusTone.neutral),
-          departTime: '05:55',
-          from: 'Colombo Fort',
-          duration: '9h 20m',
-          stopsLabel: l10n.stopsCount(8),
-          arriveTime: '15:15',
-          to: 'Ella',
-          footer: 'Main Line · 2nd · 3rd',
-          onTap: open,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        TrainCard(
-          trainName: 'Udarata Menike',
-          trainMeta: '#1015 · Express',
-          tag: TrainTag(l10n.scenic, tone: StatusTone.lime),
-          departTime: '08:30',
-          from: 'Colombo Fort',
-          duration: '9h 25m',
-          stopsLabel: l10n.stopsCount(8),
-          arriveTime: '17:55',
-          to: 'Ella',
-          footer: 'Main Line · 1st Obs. · 2nd · 3rd',
-          onTap: open,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        TrainCard(
-          trainName: 'Night Mail',
-          trainMeta: '#1045 · Mail',
-          departTime: '20:00',
-          from: 'Colombo Fort',
-          duration: '10h 40m',
-          stopsLabel: l10n.stopsCount(7),
-          arriveTime: '06:40',
-          arriveNote: l10n.nextDay,
-          to: 'Ella',
-          footer: 'Main Line · 1st Sleeper · 2nd · 3rd',
-          onTap: open,
-        ),
+        for (final t in trains) ...[
+          TrainCard(
+            dimmed: isToday && t.departMinutes < nowMin,
+            trainName: t.name.of(context),
+            trainMeta: '#${t.number} · ${t.type}',
+            tag: isToday && t.departMinutes < nowMin
+                ? TrainTag(l10n.departed, tone: StatusTone.neutral)
+                : switch (t.type) {
+                    'Express' => TrainTag(t.type, tone: StatusTone.lime),
+                    'Night Mail' => TrainTag(t.type, tone: StatusTone.blue),
+                    _ => null,
+                  },
+            departTime: t.departTime,
+            from: t.originName.of(context),
+            duration: formatDuration(t.durationMinutes),
+            stopsLabel: l10n.stopsCount((t.stopCount - 2).clamp(0, 99)),
+            arriveTime: t.arriveTime,
+            arriveNote: t.arriveDay > 0 ? l10n.nextDay : null,
+            to: t.destinationName.of(context),
+            footer: l10n.runsOn(t.runsOn),
+            onTap: () =>
+                context.push(AppRoutes.withId(AppRoutes.trainDetails, t.id)),
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
       ],
     );
   }

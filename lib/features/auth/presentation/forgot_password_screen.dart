@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/app_routes.dart';
@@ -7,14 +8,22 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
+import '../data/auth_service.dart';
 import 'widgets/auth_scaffold.dart';
 
-/// Reset-password form and its success state (UI only).
+/// Reset password: email a link, then (opened from the link) set a new one.
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key, this.showSuccess = false});
+  const ForgotPasswordScreen({
+    super.key,
+    this.showSuccess = false,
+    this.updateMode = false,
+  });
 
-  /// Start on the "Password updated" state (previews / tests).
+  /// Start on the success state (previews / tests).
   final bool showSuccess;
+
+  /// Opened from the reset email: ask for the new password.
+  final bool updateMode;
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -25,7 +34,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
   bool _submitted = false;
+  bool _busy = false;
   late bool _done = widget.showSuccess;
+  String? _sentTo;
 
   @override
   void dispose() {
@@ -35,16 +46,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  bool get _userOk => _user.text.trim().length >= 3;
+  bool get _userOk => RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(_user.text.trim());
   bool get _passwordOk => _password.text.length >= 8;
   bool get _matches =>
       _confirm.text.isNotEmpty && _confirm.text == _password.text;
 
-  void _reset() {
-    setState(() {
-      _submitted = true;
-      _done = _userOk && _passwordOk && _matches;
-    });
+  Future<void> _reset() async {
+    setState(() => _submitted = true);
+    final ok = widget.updateMode ? _passwordOk && _matches : _userOk;
+    if (!ok || _busy) return;
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    try {
+      if (widget.updateMode) {
+        await AuthService.updatePassword(_password.text);
+      } else {
+        await AuthService.sendPasswordReset(_user.text.trim());
+        _sentTo = _user.text.trim();
+      }
+      if (mounted) setState(() => _done = true);
+    } on AuthException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.authFailed(e.message))));
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.loadErrorBody)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -64,15 +92,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return [
       AuthHeading(title: l10n.resetTitle, body: l10n.resetBody),
       const SizedBox(height: AppSpacing.lg),
-      AppTextField(
-        label: l10n.usernameOrEmail,
-        icon: Icons.person_outline_rounded,
-        controller: _user,
-        onChanged: refresh,
-        autofillHints: const [AutofillHints.username],
-        errorText: _submitted && !_userOk ? l10n.errUsernameOrEmail : null,
-      ),
-      const SizedBox(height: AppSpacing.md),
+      if (!widget.updateMode)
+        AppTextField(
+          label: l10n.usernameOrEmail,
+          icon: Icons.person_outline_rounded,
+          controller: _user,
+          onChanged: refresh,
+          keyboardType: TextInputType.emailAddress,
+          autofillHints: const [AutofillHints.email],
+          errorText: _submitted && !_userOk ? l10n.errEmail : null,
+        ),
+      if (widget.updateMode) ...[
       AppTextField(
         label: l10n.newPassword,
         icon: Icons.lock_outline_rounded,
@@ -94,8 +124,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ? l10n.errPasswordMatch
             : null,
       ),
+      ],
       const SizedBox(height: AppSpacing.lg),
-      PrimaryButton(label: l10n.resetPassword, onPressed: _reset),
+      PrimaryButton(
+        label: l10n.resetPassword,
+        onPressed: _busy ? null : _reset,
+      ),
       AuthSwitchPrompt(
         prompt: l10n.remembered,
         action: l10n.signIn,
@@ -127,14 +161,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         header: true,
         liveRegion: true,
         child: Text(
-          l10n.passwordUpdated,
+          widget.updateMode || _sentTo == null
+              ? l10n.passwordUpdated
+              : l10n.resetPassword,
           textAlign: TextAlign.center,
           style: AppTextStyles.h2.copyWith(color: AppColors.white),
         ),
       ),
       const SizedBox(height: AppSpacing.s14),
       Text(
-        l10n.passwordUpdatedBody,
+        _sentTo != null ? l10n.resetLinkSent(_sentTo!) : l10n.passwordUpdatedBody,
         textAlign: TextAlign.center,
         style: AppTextStyles.body.copyWith(color: AppColors.softOnDark),
       ),

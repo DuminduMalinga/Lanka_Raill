@@ -1,4 +1,7 @@
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
@@ -9,26 +12,44 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_map.dart';
-import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../core/widgets/map_layers.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 import 'widgets/map_top_bar.dart';
 
 /// Map of stations near a destination with a distance-sorted list.
-class NearbyStationsScreen extends StatelessWidget {
-  const NearbyStationsScreen({super.key, this.viewState});
+class NearbyStationsScreen extends ConsumerWidget {
+  const NearbyStationsScreen({super.key, this.destinationId, this.viewState});
 
+  final String? destinationId;
   final UiViewState? viewState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final id = ref.watch(destinationIdProvider(destinationId));
+    final dest = resolved(ref, id, (v) => ref.watch(destinationProvider(v)));
+    final d = dest.value;
     final mapHeight = (MediaQuery.sizeOf(context).height * 0.44).clamp(
       260.0,
       420.0,
     );
+    final stationPoints = [
+      for (final n in d?.nearestStations ?? const <NearbyStation>[])
+        if (n.station.hasLocation)
+          (LatLng(n.station.lat!, n.station.lng!), n.station.code),
+    ];
+    final destPoint = d?.lat != null && d?.lng != null
+        ? LatLng(d!.lat!, d.lng!)
+        : null;
+    final (center, zoom) = fitPoints([
+      for (final p in stationPoints) p.$1,
+      ?destPoint,
+    ]);
     return Scaffold(
       body: Column(
         children: [
@@ -36,25 +57,45 @@ class NearbyStationsScreen extends StatelessWidget {
             height: mapHeight,
             child: Stack(
               children: [
-                const Positioned.fill(
+                Positioned.fill(
                   child: AppMap(
-                    zoom: 12,
+                    key: ValueKey('${center.latitude},${center.longitude}'),
+                    center: center,
+                    zoom: zoom,
                     controlsAlignment: Alignment.bottomRight,
+                    children: [
+                      MarkerLayer(
+                        markers: [
+                          for (final p in stationPoints)
+                            Marker(
+                              point: p.$1,
+                              width: 56,
+                              height: 46,
+                              alignment: Alignment.topCenter,
+                              child: MapPin(label: p.$2),
+                            ),
+                          if (destPoint != null)
+                            Marker(
+                              point: destPoint,
+                              width: 40,
+                              height: 40,
+                              child: const Icon(
+                                Icons.location_on_rounded,
+                                color: AppColors.lime,
+                                size: 36,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 SafeArea(
                   bottom: false,
                   child: MapTopBar(
-                    // Design preview content.
-                    title: l10n.nearPlace('Nine Arch Bridge'),
+                    title: l10n.nearPlace(d?.name.of(context) ?? ''),
                     titleIcon: Icons.location_on_outlined,
                     fallbackRoute: AppRoutes.explore,
-                    trailing: CircleIconButton(
-                      icon: Icons.near_me_outlined,
-                      tone: CircleIconTone.accent,
-                      semanticLabel: l10n.useMyLocation,
-                      onPressed: () {},
-                    ),
                   ),
                 ),
               ],
@@ -70,9 +111,11 @@ class NearbyStationsScreen extends StatelessWidget {
                     top: Radius.circular(AppRadii.sheet),
                   ),
                 ),
-                child: UiStateView(
+                child: AsyncView<Destination?>(
+                  value: dest,
                   state: viewState,
-                  content: (_) => const _NearbyContent(),
+                  isEmpty: (v) => v == null || v.nearestStations.isEmpty,
+                  content: (_, v) => _NearbyContent(stations: v!.nearestStations),
                   empty: (_) => SingleChildScrollView(
                     child: EmptyState(
                       icon: Icons.location_off_outlined,
@@ -95,14 +138,14 @@ class NearbyStationsScreen extends StatelessWidget {
 }
 
 class _NearbyContent extends StatelessWidget {
-  const _NearbyContent();
+  const _NearbyContent({required this.stations});
+
+  final List<NearbyStation> stations;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
-    void open() => context.push(AppRoutes.stationDetails);
-    // Design preview content.
     return PageScroll(
       spacing: AppSpacing.md,
       padding: const EdgeInsets.fromLTRB(
@@ -119,28 +162,19 @@ class _NearbyContent extends StatelessWidget {
             style: AppTextStyles.h4.copyWith(color: palette.textPrimary),
           ),
         ),
-        NearbyStationTile(
-          name: 'Ella',
-          subtitle: 'Main Line · tourist stop',
-          distance: '2.5 km',
-          travelTime: '≈35 min walk',
-          highlighted: true,
-          onTap: open,
-        ),
-        NearbyStationTile(
-          name: 'Demodara',
-          subtitle: 'Main Line · famous loop',
-          distance: '3.8 km',
-          travelTime: '≈15 min by tuk-tuk',
-          onTap: open,
-        ),
-        NearbyStationTile(
-          name: 'Kital Ella',
-          subtitle: 'Main Line · small halt',
-          distance: '4.1 km',
-          travelTime: '≈15 min by tuk-tuk',
-          onTap: open,
-        ),
+        for (var i = 0; i < stations.length; i++)
+          NearbyStationTile(
+            name: stations[i].station.name.of(context),
+            subtitle: stations[i].station.lineName?.of(context) ?? '',
+            distance: stations[i].km == null
+                ? ''
+                : l10n.approxKm(stations[i].km!.toStringAsFixed(1)),
+            travelTime: stations[i].station.code,
+            highlighted: i == 0,
+            onTap: () => context.push(
+              AppRoutes.withId(AppRoutes.stationDetails, stations[i].station.id),
+            ),
+          ),
       ],
     );
   }

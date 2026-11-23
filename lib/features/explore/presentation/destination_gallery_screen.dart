@@ -1,65 +1,49 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/constants/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
-import '../../../core/state/app_preferences.dart';
 import '../../../core/state/ui_view_state.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_photo.dart';
 import '../../../core/widgets/app_top_bar.dart';
-import '../../../core/widgets/buttons.dart';
-import '../../../core/widgets/choice_pills.dart';
-import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
-/// Photo gallery for a destination with filters and an upload CTA.
+/// Photo gallery for a destination (Wikimedia Commons, credited).
 class DestinationGalleryScreen extends ConsumerWidget {
-  const DestinationGalleryScreen({super.key, this.viewState});
+  const DestinationGalleryScreen({
+    super.key,
+    this.destinationId,
+    this.viewState,
+  });
 
+  final String? destinationId;
   final UiViewState? viewState;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final filter = ref.watch(uiSelectionProvider(UiSelections.galleryFilter));
+    final id = ref.watch(destinationIdProvider(destinationId));
+    final dest = resolved(ref, id, (v) => ref.watch(destinationProvider(v)));
+    final d = dest.value;
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // Design preview content.
             AppTopBar(
-              title: 'Nine Arch Bridge',
-              subtitle: l10n.galleryCount(6),
-              trailing: CircleIconButton(
-                icon: Icons.ios_share_rounded,
-                semanticLabel: l10n.share,
-                onPressed: () {},
-              ),
-            ),
-            ChoicePillRow(
-              labels: [
-                l10n.galleryAll,
-                l10n.galleryTrains,
-                l10n.galleryViews,
-                l10n.galleryTravellers,
-              ],
-              selectedIndex: filter,
-              onSelected: (i) => ref
-                  .read(
-                    uiSelectionProvider(UiSelections.galleryFilter).notifier,
-                  )
-                  .select(i),
+              title: d?.name.of(context) ?? l10n.gallery,
+              subtitle: d == null ? null : l10n.galleryCount(d.photos.length),
             ),
             Expanded(
-              child: UiStateView(
+              child: AsyncView<Destination?>(
+                value: dest,
                 state: viewState,
-                content: (_) => const _GalleryContent(),
+                isEmpty: (v) => v == null || v.photos.isEmpty,
+                content: (_, v) => _GalleryContent(photos: v!.photos),
                 empty: (_) => SingleChildScrollView(
                   child: EmptyState(
                     icon: Icons.photo_library_outlined,
@@ -70,21 +54,6 @@ class DestinationGalleryScreen extends ConsumerWidget {
                 loading: (_) => const _GalleryLoading(),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.sm,
-                AppSpacing.gutter,
-                AppSpacing.md,
-              ),
-              child: MaxWidth(
-                child: PrimaryButton(
-                  label: l10n.addYourPhoto,
-                  icon: Icons.add_a_photo_outlined,
-                  onPressed: () {},
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -93,12 +62,56 @@ class DestinationGalleryScreen extends ConsumerWidget {
 }
 
 class _GalleryContent extends StatelessWidget {
-  const _GalleryContent();
+  const _GalleryContent({required this.photos});
+
+  final List<Photo> photos;
+
+  Widget _photo(BuildContext context, int i, {Alignment? alignment}) {
+    final p = photos[i];
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => _PhotoViewer(photos: photos, initial: i),
+        ),
+      ),
+      child: AppPhoto(
+        imageUrl: p.url,
+        semanticLabel: p.credit,
+        alignment: alignment ?? Alignment.center,
+        radius: AppRadii.card,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    // Design preview content.
+    final rows = <Widget>[];
+    for (var i = 0; i < photos.length; i += 3) {
+      final left = photos.length - i;
+      if (left >= 3) {
+        rows.add(
+          _GalleryRow(
+            reverse: (i ~/ 3).isOdd,
+            large: _photo(context, i),
+            small: [_photo(context, i + 1), _photo(context, i + 2)],
+          ),
+        );
+      } else {
+        rows.add(
+          SizedBox(
+            height: 180,
+            child: Row(
+              children: [
+                for (var j = i; j < photos.length; j++) ...[
+                  if (j > i) const SizedBox(width: AppSpacing.s10),
+                  Expanded(child: _photo(context, j)),
+                ],
+              ],
+            ),
+          ),
+        );
+      }
+    }
     return PageScroll(
       spacing: AppSpacing.s10,
       padding: const EdgeInsets.fromLTRB(
@@ -107,41 +120,47 @@ class _GalleryContent extends StatelessWidget {
         AppSpacing.gutter,
         AppSpacing.lg,
       ),
-      children: [
-        _GalleryRow(
-          large: AppPhoto(
-            asset: AppAssets.nineArchBridge,
-            semanticLabel: l10n.welcomeImageAlt,
-            radius: AppRadii.card,
-          ),
-          small: [
-            AppPhoto(
-              asset: AppAssets.nineArchBridge,
-              semanticLabel: l10n.welcomeImageAlt,
-              alignment: Alignment.centerRight,
-              radius: AppRadii.card,
+      children: rows,
+    );
+  }
+}
+
+/// Full-screen swipeable photo with its credit.
+class _PhotoViewer extends StatelessWidget {
+  const _PhotoViewer({required this.photos, required this.initial});
+
+  final List<Photo> photos;
+  final int initial;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      body: PageView.builder(
+        controller: PageController(initialPage: initial),
+        itemCount: photos.length,
+        itemBuilder: (context, i) => Column(
+          children: [
+            Expanded(
+              child: InteractiveViewer(
+                child: AppPhoto(
+                  imageUrl: photos[i].url,
+                  semanticLabel: photos[i].credit,
+                  radius: 0,
+                ),
+              ),
             ),
-            _YourPhotoSlot(label: l10n.yourPhoto),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: PhotoCredit(photos[i].credit, onDark: true),
+            ),
           ],
         ),
-        _GalleryRow(
-          reverse: true,
-          large: AppPhoto(
-            asset: AppAssets.mistyHillTrain,
-            semanticLabel: l10n.mistyImageAlt,
-            radius: AppRadii.card,
-          ),
-          small: [
-            AppPhoto(
-              asset: AppAssets.nineArchBridge,
-              semanticLabel: l10n.welcomeImageAlt,
-              alignment: Alignment.bottomLeft,
-              radius: AppRadii.card,
-            ),
-            _YourPhotoSlot(label: l10n.yourPhoto),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }
@@ -179,45 +198,6 @@ class _GalleryRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: reverse ? children.reversed.toList() : children,
-      ),
-    );
-  }
-}
-
-class _YourPhotoSlot extends StatelessWidget {
-  const _YourPhotoSlot({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    return Semantics(
-      button: true,
-      label: label,
-      excludeSemantics: true,
-      child: Material(
-        color: palette.tint,
-        borderRadius: BorderRadius.circular(AppRadii.card),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppRadii.card),
-          onTap: () {},
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.add_photo_alternate_outlined, color: palette.onTint),
-                const SizedBox(height: AppSpacing.s6),
-                Text(
-                  label,
-                  style: AppTextStyles.captionStrong.copyWith(
-                    color: palette.onTint,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

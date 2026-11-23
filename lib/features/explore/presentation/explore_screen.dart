@@ -17,7 +17,9 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/shimmer_list.dart';
-import '../../../core/widgets/ui_state_view.dart';
+import '../../../core/widgets/async_view.dart';
+import '../../../data/models.dart';
+import '../../../data/providers.dart';
 
 /// Explore tab: categories, featured place, easy trips from Colombo.
 class ExploreScreen extends ConsumerWidget {
@@ -32,6 +34,12 @@ class ExploreScreen extends ConsumerWidget {
     final category = ref.watch(
       uiSelectionProvider(UiSelections.exploreCategory),
     );
+    final categories = ref.watch(categoriesProvider).value ?? const [];
+    final cats = categories.where((c) => c.count > 0).toList();
+    final selectedCat = category > 0 && category <= cats.length
+        ? cats[category - 1]
+        : null;
+    final destinations = ref.watch(destinationsProvider(selectedCat?.id));
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -84,18 +92,14 @@ class ExploreScreen extends ConsumerWidget {
             ChoicePillRow(
               height: 40,
               labels: [
-                l10n.catHillCountry,
-                l10n.catBeaches,
-                l10n.catHeritage,
-                l10n.catWildlife,
+                l10n.allCategories,
+                for (final c in cats) c.name.of(context),
               ],
-              icons: const [
-                Icons.terrain_outlined,
-                Icons.beach_access_outlined,
-                Icons.account_balance_outlined,
-                Icons.pets_outlined,
+              icons: [
+                Icons.explore_outlined,
+                for (final c in cats) c.iconData,
               ],
-              selectedIndex: category,
+              selectedIndex: category.clamp(0, cats.length),
               onSelected: (i) => ref
                   .read(
                     uiSelectionProvider(UiSelections.exploreCategory).notifier,
@@ -110,9 +114,13 @@ class ExploreScreen extends ConsumerWidget {
                 0,
               ),
               child: MaxWidth(
-                child: UiStateView(
+                child: AsyncView<List<Destination>>(
+                  value: destinations,
                   state: viewState,
-                  content: (_) => const _ExploreContent(),
+                  isEmpty: (d) => d.isEmpty,
+                  onRetry: () =>
+                      ref.invalidate(destinationsProvider(selectedCat?.id)),
+                  content: (_, d) => _ExploreContent(destinations: d),
                   empty: (_) => EmptyState(
                     icon: Icons.explore_outlined,
                     title: l10n.emptyPlacesTitle,
@@ -133,49 +141,79 @@ class ExploreScreen extends ConsumerWidget {
   }
 }
 
-class _ExploreContent extends StatelessWidget {
-  const _ExploreContent();
+class _ExploreContent extends ConsumerWidget {
+  const _ExploreContent({required this.destinations});
+
+  final List<Destination> destinations;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    void open() => context.push(AppRoutes.destinationDetails);
-    // Design preview content.
+    final featured = destinations.firstWhere(
+      (d) => d.name.en == 'Nine Arch Bridge',
+      orElse: () => destinations.firstWhere(
+        (d) => d.coverUrl != null,
+        orElse: () => destinations.first,
+      ),
+    );
+    final rest = destinations.where((d) => d.id != featured.id).toList();
+    String stationLine(Destination d) {
+      final n = d.nearest;
+      if (n == null) return d.categoryName?.of(context) ?? '';
+      return [
+        n.station.name.of(context),
+        n.station.lineName?.of(context),
+        if (n.km != null) l10n.approxKm(n.km!.toStringAsFixed(1)),
+      ].whereType<String>().join(' · ');
+    }
+
+    void open(Destination d) =>
+        context.push(AppRoutes.withId(AppRoutes.destinationDetails, d.id));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FeaturedDestinationCard(
-          imageAsset: AppAssets.nineArchBridge,
-          semanticLabel: l10n.welcomeImageAlt,
+          imageAsset: featured.coverUrl == null ? AppAssets.nineArchBridge : null,
+          imageUrl: featured.coverUrl,
+          semanticLabel: featured.name.of(context),
           tagLabel: l10n.featured,
-          title: 'Nine Arch Bridge',
-          subtitle: 'Ella · Main Line · ≈2.5 km from station',
+          title: featured.name.of(context),
+          subtitle: stationLine(featured),
           ctaLabel: l10n.planTrip,
-          onTap: open,
-          onCta: () => context.push(AppRoutes.searchResults),
+          onTap: () => open(featured),
+          onCta: () {
+            final n = featured.nearest;
+            if (n != null) {
+              final journey = ref.read(journeyProvider.notifier);
+              journey.setTo(n.station.code);
+              context.push(AppRoutes.searchResults);
+            } else {
+              open(featured);
+            }
+          },
         ),
+        PhotoCredit(featured.coverCredit),
         const SizedBox(height: AppSpacing.s14),
-        SectionHeader(
-          title: l10n.easyByTrain,
-          actionLabel: l10n.viewAll,
-          onAction: () => context.push(AppRoutes.destinationCategories),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        DestinationCard(
-          title: 'Kandy',
-          description: 'Temple of the Sacred Tooth Relic',
-          stationLabel: 'Kandy station · Main Line',
-          placeholderColor: AppColors.photoEarth,
-          onTap: open,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        DestinationCard(
-          title: 'Galle Fort',
-          description: 'UNESCO-listed ramparts by the sea',
-          stationLabel: 'Galle station · Coastal Line',
-          placeholderColor: AppColors.photoSea,
-          onTap: open,
-        ),
+        if (rest.isNotEmpty) ...[
+          SectionHeader(
+            title: l10n.easyByTrain,
+            actionLabel: l10n.viewAll,
+            onAction: () => context.push(AppRoutes.destinationCategories),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          for (final d in rest) ...[
+            DestinationCard(
+              title: d.name.of(context),
+              description: d.description?.of(context) ?? '',
+              stationLabel: stationLine(d),
+              imageUrl: d.coverUrl,
+              placeholderColor: AppColors.photoEarth,
+              onTap: () => open(d),
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+        ],
       ],
     );
   }
