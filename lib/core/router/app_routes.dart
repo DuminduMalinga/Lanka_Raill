@@ -50,6 +50,7 @@ abstract final class AppRoutes {
 
   // Settings
   static const String settings = '/settings';
+  static const String homeStationPicker = '/settings/home-station';
   static const String languageSettings = '/settings/language';
   static const String themeSettings = '/settings/theme';
   static const String notificationSettings = '/settings/notifications';

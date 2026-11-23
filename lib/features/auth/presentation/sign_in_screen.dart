@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/state/prefs.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -117,7 +118,10 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         Center(
           child: TextButton(
-            onPressed: () => context.go(AppRoutes.home),
+            onPressed: () {
+              Prefs.markOnboarded();
+              context.go(AppRoutes.home);
+            },
             style: TextButton.styleFrom(
               foregroundColor: AppColors.softOnDark,
               minimumSize: const Size(AppSizes.tapTarget, AppSizes.tapTarget),

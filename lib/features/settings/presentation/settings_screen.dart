@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/settings_tiles.dart';
+import '../../../data/providers.dart';
 
 /// Settings hub: preferences, travel, data, support.
 class SettingsScreen extends ConsumerWidget {
@@ -21,6 +22,19 @@ class SettingsScreen extends ConsumerWidget {
     final language = ref.watch(appLanguageProvider);
     final themeMode = ref.watch(themeModeProvider);
     final offline = ref.watch(uiToggleProvider(UiToggles.offlineTimetables));
+    final homeCode = ref.watch(homeStationProvider);
+    final homeName =
+        ref.watch(stationByCodeProvider(homeCode)).value?.name.of(context) ??
+        homeCode;
+    final classLabels = [
+      l10n.classAll,
+      l10n.class1stObservation,
+      l10n.class2nd,
+      l10n.class3rd,
+    ];
+    final travelClass = ref.watch(
+      uiSelectionProvider(UiSelections.travelClass),
+    );
     final notificationsOn = [
       UiToggles.notifyVerified,
       UiToggles.notifyDelays,
@@ -65,19 +79,23 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   SettingsSection(
                     title: l10n.sectionTravel,
-                    // Design preview values — replace with saved preferences.
                     children: [
                       SettingsTile(
                         icon: Icons.home_outlined,
                         title: l10n.homeStation,
-                        value: 'Colombo Fort',
-                        onTap: () => context.push(AppRoutes.departureStation),
+                        value: homeName,
+                        onTap: () => context.push(AppRoutes.homeStationPicker),
                       ),
                       SettingsTile(
                         icon: Icons.event_seat_outlined,
                         title: l10n.preferredClass,
-                        value: l10n.class2nd,
-                        onTap: () => context.push(AppRoutes.classesFacilities),
+                        value: classLabels[travelClass.clamp(0, 3)],
+                        onTap: () => _pickClass(
+                          context,
+                          ref,
+                          classLabels,
+                          travelClass,
+                        ),
                       ),
                     ],
                   ),
@@ -100,7 +118,15 @@ class SettingsScreen extends ConsumerWidget {
                         icon: Icons.history_rounded,
                         title: l10n.clearSearchHistory,
                         showChevron: false,
-                        onTap: () {},
+                        onTap: () async {
+                          await ref
+                              .read(recentSearchesProvider.notifier)
+                              .clear();
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.searchHistoryCleared)),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -128,6 +154,34 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _pickClass(
+  BuildContext context,
+  WidgetRef ref,
+  List<String> labels,
+  int selected,
+) async {
+  final picked = await showModalBottomSheet<int>(
+    context: context,
+    showDragHandle: true,
+    builder: (sheet) => SafeArea(
+      child: RadioGroup<int>(
+        groupValue: selected,
+        onChanged: (v) => Navigator.of(sheet).pop(v),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < labels.length; i++)
+              RadioListTile<int>(value: i, title: Text(labels[i])),
+          ],
+        ),
+      ),
+    ),
+  );
+  if (picked != null) {
+    ref.read(uiSelectionProvider(UiSelections.travelClass).notifier).select(picked);
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/state/app_preferences.dart';
 import 'ceylon_repository.dart';
 import 'models.dart';
 
@@ -134,9 +135,10 @@ class JourneyNotifier extends Notifier<JourneyQuery> {
   @override
   JourneyQuery build() {
     final now = DateTime.now();
+    final home = ref.read(homeStationProvider);
     return JourneyQuery(
-      fromCode: 'FOT',
-      toCode: 'ELL',
+      fromCode: home,
+      toCode: home == 'ELL' ? 'FOT' : 'ELL',
       date: DateTime(now.year, now.month, now.day),
     );
   }
@@ -203,6 +205,16 @@ class RecentSearchesNotifier extends AsyncNotifier<List<RecentSearch>> {
           .toList();
     } catch (_) {
       return const [];
+    }
+  }
+
+  Future<void> clear() async {
+    state = const AsyncData([]);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_key);
+    } catch (_) {
+      // Nothing to clear if storage is unavailable.
     }
   }
 

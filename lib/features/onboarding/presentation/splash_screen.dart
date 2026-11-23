@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/photo_backdrop.dart';
+import '../../../core/state/prefs.dart';
 import '../../auth/data/auth_service.dart';
 import 'widgets/page_dots.dart';
 
@@ -41,7 +42,9 @@ class _SplashScreenState extends State<SplashScreen> {
     _timer?.cancel();
     if (!mounted) return;
     final signedIn = AuthService.currentSession != null;
-    context.go(signedIn ? AppRoutes.home : AppRoutes.welcome);
+    context.go(
+      signedIn || Prefs.onboarded ? AppRoutes.home : AppRoutes.welcome,
+    );
   }
 
   @override

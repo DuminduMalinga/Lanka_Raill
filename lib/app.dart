@@ -9,6 +9,7 @@ import 'core/l10n/l10n.dart';
 import 'core/router/app_router.dart';
 import 'core/router/app_routes.dart';
 import 'core/state/app_preferences.dart';
+import 'core/state/prefs.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/data/auth_service.dart';
 
@@ -41,6 +42,7 @@ class _CeylonGoAppState extends ConsumerState<CeylonGoApp> {
           return;
         }
         if (state.event == AuthChangeEvent.signedIn && state.session != null) {
+          Prefs.markOnboarded();
           final here = _router.routerDelegate.currentConfiguration.uri.path;
           if (here != AppRoutes.home) _router.go(AppRoutes.home);
         }

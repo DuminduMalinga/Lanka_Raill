@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/state/app_preferences.dart';
 import '../../../core/state/ui_view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -19,9 +20,9 @@ import '../../../core/widgets/async_view.dart';
 import '../../../data/models.dart';
 import '../../../data/providers.dart';
 
-enum StationPickerKind { departure, arrival }
+enum StationPickerKind { departure, arrival, home }
 
-/// Departure / arrival station picker (one widget, two routes).
+/// Departure / arrival / home station picker (one widget, three routes).
 class StationPickerScreen extends ConsumerStatefulWidget {
   const StationPickerScreen({super.key, required this.kind, this.viewState});
 
@@ -44,9 +45,20 @@ class _StationPickerScreenState extends ConsumerState<StationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final title = _departure ? l10n.departureStation : l10n.arrivalStation;
+    final home = widget.kind == StationPickerKind.home;
+    final title = home
+        ? l10n.homeStation
+        : _departure
+        ? l10n.departureStation
+        : l10n.arrivalStation;
     final journey = ref.watch(journeyProvider);
-    final current = _picked ?? (_departure ? journey.fromCode : journey.toCode);
+    final String current =
+        _picked ??
+        (home
+            ? ref.watch(homeStationProvider)
+            : _departure
+            ? journey.fromCode
+            : journey.toCode);
     final stations = ref.watch(stationsProvider);
     final all = stations.value ?? const <Station>[];
     final popular = [
@@ -55,6 +67,12 @@ class _StationPickerScreenState extends ConsumerState<StationPickerScreen> {
     ];
 
     void confirm() {
+      if (home) {
+        ref.read(homeStationProvider.notifier).select(current);
+        ref.read(journeyProvider.notifier).setFrom(current);
+        popOrGo(context, AppRoutes.settings)();
+        return;
+      }
       final n = ref.read(journeyProvider.notifier);
       _departure ? n.setFrom(current) : n.setTo(current);
       popOrGo(context, AppRoutes.home)();

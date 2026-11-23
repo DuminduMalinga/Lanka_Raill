@@ -65,6 +65,7 @@ const Map<String, Type> _screens = {
   AppRoutes.journeySearch: JourneySearchScreen,
   AppRoutes.departureStation: StationPickerScreen,
   AppRoutes.arrivalStation: StationPickerScreen,
+  AppRoutes.homeStationPicker: StationPickerScreen,
   AppRoutes.searchResults: SearchResultsScreen,
   AppRoutes.trainDetails: TrainDetailsScreen,
   AppRoutes.stopTimeline: StopTimelineScreen,

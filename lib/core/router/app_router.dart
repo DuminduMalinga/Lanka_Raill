@@ -62,6 +62,8 @@ final Map<String, RouteScreenBuilder> fullScreenRoutes = {
       const StationPickerScreen(kind: StationPickerKind.departure),
   AppRoutes.arrivalStation: (_, s) =>
       const StationPickerScreen(kind: StationPickerKind.arrival),
+  AppRoutes.homeStationPicker: (_, s) =>
+      const StationPickerScreen(kind: StationPickerKind.home),
   AppRoutes.searchResults: (_, s) => const SearchResultsScreen(),
   AppRoutes.trainDetails: (_, s) => TrainDetailsScreen(trainId: s.uri.queryParameters['id']),
   AppRoutes.stopTimeline: (_, s) => StopTimelineScreen(trainId: s.uri.queryParameters['id']),

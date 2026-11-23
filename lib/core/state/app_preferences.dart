@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'prefs.dart';
+
 /// Supported app languages (Tamil is planned per the design).
 enum AppLanguage {
   english(Locale('en')),
@@ -10,16 +12,24 @@ enum AppLanguage {
   final Locale locale;
 }
 
-/// Selected app language. UI state only — persistence is added later.
+/// Selected app language, saved on the device.
 final appLanguageProvider = NotifierProvider<AppLanguageNotifier, AppLanguage>(
   AppLanguageNotifier.new,
 );
 
 class AppLanguageNotifier extends Notifier<AppLanguage> {
-  @override
-  AppLanguage build() => AppLanguage.english;
+  static const _key = 'pref.language';
 
-  void select(AppLanguage language) => state = language;
+  @override
+  AppLanguage build() => AppLanguage.values.firstWhere(
+    (l) => l.name == Prefs.getString(_key),
+    orElse: () => AppLanguage.english,
+  );
+
+  void select(AppLanguage language) {
+    state = language;
+    Prefs.setString(_key, language.name);
+  }
 }
 
 /// Selected theme mode (Light / Dark / System).
@@ -28,10 +38,18 @@ final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
 );
 
 class ThemeModeNotifier extends Notifier<ThemeMode> {
-  @override
-  ThemeMode build() => ThemeMode.system;
+  static const _key = 'pref.theme';
 
-  void select(ThemeMode mode) => state = mode;
+  @override
+  ThemeMode build() => ThemeMode.values.firstWhere(
+    (m) => m.name == Prefs.getString(_key),
+    orElse: () => ThemeMode.system,
+  );
+
+  void select(ThemeMode mode) {
+    state = mode;
+    Prefs.setString(_key, mode.name);
+  }
 }
 
 /// Generic on/off UI toggle keyed by a stable id (switches, checkboxes).
@@ -59,11 +77,19 @@ class UiToggleNotifier extends Notifier<bool> {
     UiToggles.agreeTerms,
   };
 
-  @override
-  bool build() => _onByDefault.contains(id);
+  /// Toggles that are per-screen UI state rather than saved settings.
+  static const Set<String> _transient = {UiToggles.agreeTerms};
 
-  void toggle() => state = !state;
-  void set(bool value) => state = value;
+  String get _key => 'pref.toggle.$id';
+
+  @override
+  bool build() => Prefs.getBool(_key) ?? _onByDefault.contains(id);
+
+  void toggle() => set(!state);
+  void set(bool value) {
+    state = value;
+    if (!_transient.contains(id)) Prefs.setBool(_key, value);
+  }
 }
 
 /// Index of the selected option in a chip row / segmented control.
@@ -82,10 +108,38 @@ class UiSelectionNotifier extends Notifier<int> {
     UiSelections.feedbackRating: 4,
   };
 
-  @override
-  int build() => _defaults[id] ?? 0;
+  /// Selections remembered between launches.
+  static const Set<String> _saved = {UiSelections.travelClass};
 
-  void select(int index) => state = index;
+  String get _key => 'pref.selection.$id';
+
+  @override
+  int build() =>
+      (_saved.contains(id) ? Prefs.getInt(_key) : null) ?? _defaults[id] ?? 0;
+
+  void select(int index) {
+    state = index;
+    if (_saved.contains(id)) Prefs.setInt(_key, index);
+  }
+}
+
+/// The user's home station (station code), saved on the device. Used as the
+/// default departure station in the journey planner.
+final homeStationProvider = NotifierProvider<HomeStationNotifier, String>(
+  HomeStationNotifier.new,
+);
+
+class HomeStationNotifier extends Notifier<String> {
+  static const _key = 'pref.homeStation';
+  static const fallback = 'FOT';
+
+  @override
+  String build() => Prefs.getString(_key) ?? fallback;
+
+  void select(String code) {
+    state = code;
+    Prefs.setString(_key, code);
+  }
 }
 
 /// Stable ids for [uiToggleProvider].
