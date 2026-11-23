@@ -1,89 +1,81 @@
 # CeylonGO data (Supabase)
 
-Project: **Lanka_Rail** (`prcmausakhaswaidsamz`).
+Project: **Lanka_Rail** (`prcmausakhaswaidsamz`). The Flutter app reads it
+through `lib/data/` (`SupabaseCeylonRepository` + Riverpod providers).
 
 ```
 supabase/
   migrations/   schema, in the order applied to the live project
-  seed/         reference data (stations, destinations, …) — safe to re-run
+  seed/         reference data, timetable, photos, notices — safe to re-run
+  data/         source files + build_seed.py that generates seed/02_*.sql
   templates/    empty CSVs with the right headers for Table Editor imports
 ```
 
-## What is already loaded
+Run order on a fresh project: all `migrations/` in order, then
+`seed/01_reference_data.sql`, `seed/02_timetable_and_photos.sql`,
+`seed/03_announcements.sql`.
 
-| Data | Status |
-|---|---|
-| Railway lines, facilities, destination categories | Loaded, English + Sinhala |
-| 36 stations (codes, Sinhala names, coordinates) | Loaded, `source = 'seed-unverified'` — **check codes and coordinates** |
-| Trains 1005/1006 Podi Menike, 1015/1016 Udarata Menike | Identity only, no times |
-| 13 destinations with tags and nearest stations | Loaded, `seed-unverified` |
-| **Timetable (`train_stops`)** | **Empty** — must come from an official source |
-| Photos | None uploaded yet |
+## What is loaded
 
-## Entering the timetable
+| Data | Rows | Source |
+|---|---|---|
+| Railway lines, facilities, destination categories | 9 / 9 / 8 | Seed, English + Sinhala |
+| Stations | 42 | Seed; coordinates approximate (`source = 'seed-unverified'`) |
+| Trains | 65 | seat61.com timetable tables (page updated 10 June 2026) |
+| Stop times (`train_stops`) | 321 | Same; **main stations only**, `verified_at` null |
+| Seat classes | 189 | Same (reserved / unreserved classes per train) |
+| Destinations, tags, nearest stations | 13 / 18 / 15 | Seed |
+| Photos | 13 destination covers, 32 stations, 10 trains, 49 gallery | Wikimedia Commons (CC BY / BY-SA / CC0 / Free Art License), credit stored per photo |
+| Announcements | 2 | Based on seat61.com's service notes |
 
-Times must come from an official Sri Lanka Railways source (printed
-timetable, station notice, or the SLR schedule site once it is back). Do not
-copy from booking or blog sites — they disagree with each other.
+Not loaded (no reliable source found): station facilities, fares, on-board
+facilities, distances. The app hides those sections or says they're not listed.
 
-1. Make sure every train exists in `trains` (Table Editor, or import
-   `templates/trains.csv`).
-2. Fill in `templates/timetable_import.csv`, one row per stop:
+## Why the timetable is from seat61
 
-   | column | example | notes |
-   |---|---|---|
-   | `train_number` | `1005` | must match `trains.number` |
-   | `station_code` | `ELL` | must match `stations.code` |
-   | `stop_order` | `1`, `2`, `3` … | origin is 1 |
-   | `arrive_time` | `14:05` | empty at the origin |
-   | `depart_time` | `14:08` | empty at the destination |
-   | `day_offset` | `0` | `1` for stops after midnight on overnight trains |
-   | `is_major` | `true` | shown in the short stop list |
-   | `source` | `SLR timetable 2025-12-02, p.14` | where you read it |
+The official sources were unavailable when this was built (23 Nov 2026):
+- railway.gov.lk "Train Schedule" page: "Page Under Development".
+- eservices.railway.gov.lk schedule search: TLS certificate invalid.
+- seatreservation.railway.gov.lk only lists trains with seats left and is
+  bot-protected.
 
-3. Dashboard → Table Editor → `timetable_import` → **Insert → Import data
-   from CSV**.
-4. SQL Editor:
-
-   ```sql
-   select * from import_timetable();   -- replaces the stops of each imported train
-   select * from timetable_issues;     -- must return no rows before publishing
-   ```
-
-   `import_timetable()` refuses unknown train numbers or station codes and
-   changes nothing in that case.
-5. After a second person has checked the times against the source:
-
-   ```sql
-   update train_stops set verified_at = now()
-   where train_id = (select id from trains where number = '1005');
-   ```
-
-## Verifying stations and destinations
+seat61.com's tables were copied exactly (`data/seat61_timetable_2026-06-10.json`).
+Train **6** was left out because the source lists it leaving Elle (10:25)
+before Badulla (10:45). seat61 also notes hill-country services are still
+affected by 2025 cyclone damage — e.g. Podi Menike (#1005) is shown ending at
+Ella. **Check against an official SLR timetable before relying on it**, then:
 
 ```sql
--- what still needs checking
-select code, name_en, lat, lng from stations where verified_at is null order by code;
-
--- after checking one
-update stations set verified_at = now(), source = 'checked on map' where code = 'ELL';
+update train_stops set verified_at = now() where train_id = (select id from trains where number = '1005');
+select * from timetable_issues;   -- soft warnings: long gaps where only main stations are listed
 ```
+
+## Updating the timetable
+
+Edit `data/seat61_timetable_*.json` (or add another source file), then:
+
+```
+python supabase/data/build_seed.py      # regenerates seed/02_timetable_and_photos.sql
+```
+
+and run the generated SQL in the SQL editor. For one-off corrections use the
+CSV path: fill `templates/timetable_import.csv`, import it into
+`timetable_import`, then `select * from import_timetable();`.
 
 ## Photos
 
-Buckets (public read, uploads from the dashboard only):
-`destination-photos`, `station-photos`, `train-photos`.
-
-1. Storage → bucket → upload (JPEG/PNG/WebP, max 5 MB). Use paths like
-   `nine-arch-bridge/01.jpg`.
-2. Copy the public URL and add it:
-
-   ```sql
-   insert into destination_photos (destination_id, url, sort)
-   select id, '<public url>', 1 from destinations where name_en = 'Nine Arch Bridge';
-   update destinations set cover_photo_url = '<public url>' where name_en = 'Nine Arch Bridge';
-   ```
-
-Only upload photos you took or have the rights to use.
+Photos are linked from Wikimedia Commons (`upload.wikimedia.org`) rather than
+copied into Storage, so the licence page stays one tap away
+(`*_source_url`). The app shows each photo's credit (author · licence). To use
+your own photos instead, upload to the `destination-photos`,
+`station-photos` or `train-photos` buckets and update the URL columns.
 
 The empty `photos` bucket is a leftover and can be deleted from Storage.
+
+## Auth
+
+Email/password, Google and Facebook sign-in use Supabase Auth. Redirect URL
+`lk.hashtag.lankarail://login-callback/` must be listed under
+Authentication → URL Configuration (it is used for sign-up confirmation and
+password reset links too). Favourites (`favorite_*`) and `profiles` are
+per-user with RLS.
