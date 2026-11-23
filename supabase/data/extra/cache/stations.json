@@ -1,0 +1,898 @@
+{
+ "Aluthgama": {
+  "elev": null,
+  "lat": 6.43219444,
+  "lng": 80.0005,
+  "qid": "Q20717422",
+  "si": "අලුත්ගම දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Ambalangoda": {
+  "elev": null,
+  "lat": 6.2353754,
+  "lng": 80.0549325,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Ambanpola": {
+  "elev": null,
+  "lat": 7.9188843,
+  "lng": 80.2461079,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Ambewela": {
+  "elev": null,
+  "lat": 6.8773347,
+  "lng": 80.8143421,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Anuradhapura": {
+  "elev": null,
+  "lat": 8.344415,
+  "lng": 80.410963,
+  "qid": "Q4777886",
+  "si": null,
+  "source": "wikidata"
+ },
+ "Ariviyal Nagar": {
+  "elev": null,
+  "lat": 9.3187473,
+  "lng": 80.4076622,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Avissawella": {
+  "elev": null,
+  "lat": 6.954549,
+  "lng": 80.2070547,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Badulla": {
+  "elev": null,
+  "lat": 6.9798,
+  "lng": 81.0598,
+  "qid": "Q25038796",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Bambalapitiya": {
+  "elev": null,
+  "lat": 6.8939771,
+  "lng": 79.8529609,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Bandarawela": {
+  "elev": null,
+  "lat": 6.82888889,
+  "lng": 80.9875,
+  "qid": "Q25038821",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Batticaloa": {
+  "elev": null,
+  "lat": 7.72438889,
+  "lng": 81.69883333,
+  "qid": "Q4869914",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Beliatta": {
+  "elev": null,
+  "lat": 6.1301928,
+  "lng": 80.7084692,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Bentota": {
+  "elev": null,
+  "lat": 6.4221454,
+  "lng": 79.9967106,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Beruwala": {
+  "elev": null,
+  "lat": 6.4769437,
+  "lng": 79.983632,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Chavakachcheri": {
+  "elev": null,
+  "lat": 9.65711111,
+  "lng": 80.15847222,
+  "qid": "Q5088454",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Chilaw": {
+  "elev": null,
+  "lat": 7.5757856,
+  "lng": 79.7909316,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "China Bay": {
+  "elev": null,
+  "lat": 8.55647222,
+  "lng": 81.19041667,
+  "qid": "Q5099590",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Chunnakam": {
+  "elev": null,
+  "lat": 9.74591667,
+  "lng": 80.03333333,
+  "qid": "Q18756196",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Colombo Fort": {
+  "elev": null,
+  "lat": 6.93361111,
+  "lng": 79.85083333,
+  "qid": "Q5471883",
+  "si": "කොටුව දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Dehiwala": {
+  "elev": null,
+  "lat": 6.8509258,
+  "lng": 79.8620907,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Demodara": {
+  "elev": null,
+  "lat": 6.9028736,
+  "lng": 81.0629186,
+  "qid": "Q25038814",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Diyatalawa": {
+  "elev": null,
+  "lat": 6.8019954,
+  "lng": 80.9592705,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Elephant Pass": {
+  "elev": null,
+  "lat": 9.53141667,
+  "lng": 80.39977778,
+  "qid": "Q15964648",
+  "si": "අලිමංකඩ දුම්රිය පොළ",
+  "source": "wikipedia"
+ },
+ "Ella": {
+  "elev": null,
+  "lat": 6.876147,
+  "lng": 81.0474878,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Eluthumadduval": {
+  "elev": null,
+  "lat": 9.6521856,
+  "lng": 80.2808064,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Eravur": {
+  "elev": null,
+  "lat": 7.78561111,
+  "lng": 81.60441667,
+  "qid": "Q5385076",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Gal Oya": {
+  "elev": null,
+  "lat": 8.1378,
+  "lng": 80.8657,
+  "qid": null,
+  "si": null,
+  "source": "wikidata"
+ },
+ "Galgamuwa": {
+  "elev": null,
+  "lat": 8.0021361,
+  "lng": 80.2715284,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Galle": {
+  "elev": null,
+  "lat": 6.034564,
+  "lng": 80.214143,
+  "qid": "Q5518912",
+  "si": "ගාල්ල දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Gampaha": {
+  "elev": null,
+  "lat": 7.09355556,
+  "lng": 79.99369444,
+  "qid": "Q20717391",
+  "si": "ගම්පහ දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Gampola": {
+  "elev": null,
+  "lat": 7.1621488,
+  "lng": 80.5670341,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Great Western": {
+  "elev": null,
+  "lat": 6.9558333333333335,
+  "lng": 80.6875,
+  "qid": "Q113499476",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Habarana": {
+  "elev": null,
+  "lat": 8.0573101,
+  "lng": 80.7695893,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Hali Ela": {
+  "elev": null,
+  "lat": 6.9539582,
+  "lng": 81.0334492,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Haputale": {
+  "elev": null,
+  "lat": 6.7683,
+  "lng": 80.9576,
+  "qid": "Q56277165",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Hatton": {
+  "elev": null,
+  "lat": 6.8933541,
+  "lng": 80.59804,
+  "qid": "Q5682169",
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Heel Oya": {
+  "elev": null,
+  "lat": 6.8442745,
+  "lng": 81.0257116,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Hikkaduwa": {
+  "elev": null,
+  "lat": 6.1422304,
+  "lng": 80.1000888,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Homagama": {
+  "elev": null,
+  "lat": 6.8456046,
+  "lng": 80.0042414,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Idalgashinna": {
+  "elev": null,
+  "lat": 6.779413,
+  "lng": 80.896857,
+  "qid": "Q55614281",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Inuvil": {
+  "elev": null,
+  "lat": 9.72672222,
+  "lng": 80.02952778,
+  "qid": "Q18756231",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Irattaperiyakulam": {
+  "elev": null,
+  "lat": 8.709278,
+  "lng": 80.480778,
+  "qid": null,
+  "si": null,
+  "source": "wikidata"
+ },
+ "Ja-Ela": {
+  "elev": null,
+  "lat": 7.0777984,
+  "lng": 79.8921473,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Jaffna": {
+  "elev": null,
+  "lat": 9.66516667,
+  "lng": 80.02066667,
+  "qid": "Q140666",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Kadugannawa": {
+  "elev": null,
+  "lat": 7.2577827,
+  "lng": 80.5207503,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kalutara South": {
+  "elev": null,
+  "lat": 6.5840691,
+  "lng": 79.9590253,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kandy": {
+  "elev": null,
+  "lat": 7.2888,
+  "lng": 80.63151,
+  "qid": "Q6361715",
+  "si": "මහනුවර දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Kankesanthurai": {
+  "elev": null,
+  "lat": 9.81447222,
+  "lng": 80.04836111,
+  "qid": "Q18756239",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Kantale": {
+  "elev": null,
+  "lat": 8.35627778,
+  "lng": 81.00619444,
+  "qid": "Q6365418",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Katugastota": {
+  "elev": null,
+  "lat": 7.3304714,
+  "lng": 80.6329636,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Katunayake": {
+  "elev": null,
+  "lat": 7.167461,
+  "lng": 79.8718675,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kilinochchi": {
+  "elev": null,
+  "lat": 9.39038889,
+  "lng": 80.40658333,
+  "qid": "Q15964651",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Kochchikade": {
+  "elev": null,
+  "lat": 7.2642602,
+  "lng": 79.8571485,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kodikamam": {
+  "elev": null,
+  "lat": 9.681388888888888,
+  "lng": 80.21944444444445,
+  "qid": "Q130365699",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Kokuvil": {
+  "elev": null,
+  "lat": 9.6964321,
+  "lng": 80.0145414,
+  "qid": "Q18756248",
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kollupitiya": {
+  "elev": null,
+  "lat": 6.9113228,
+  "lng": 79.8481929,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kondavil": {
+  "elev": null,
+  "lat": 9.7037815,
+  "lng": 80.0246931,
+  "qid": "Q18756252",
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Kurunegala": {
+  "elev": null,
+  "lat": 7.4767,
+  "lng": 80.374,
+  "qid": "Q55616295",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Maharagama": {
+  "elev": null,
+  "lat": 6.8480166,
+  "lng": 79.9271848,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Maho": {
+  "elev": null,
+  "lat": 7.8231,
+  "lng": 80.2751,
+  "qid": "Q38251592",
+  "si": "මහව දුම්රිය මංසන්ධිය",
+  "source": "wikipedia"
+ },
+ "Mallakam": {
+  "elev": null,
+  "lat": 9.76291667,
+  "lng": 80.0325,
+  "qid": "Q18756268",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Mankulam": {
+  "elev": null,
+  "lat": 9.13002778,
+  "lng": 80.44447222,
+  "qid": "Q15964654",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Maradana": {
+  "elev": 12,
+  "lat": 6.92916667,
+  "lng": 79.86555556,
+  "qid": "Q6754588",
+  "si": "මරදාන දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Matale": {
+  "elev": null,
+  "lat": 7.468,
+  "lng": 80.6248,
+  "qid": "Q30621471",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Matara": {
+  "elev": null,
+  "lat": 5.951844,
+  "lng": 80.543298,
+  "qid": "Q17012222",
+  "si": "මාතර දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Maviddapuram": {
+  "elev": null,
+  "lat": 9.798388,
+  "lng": 80.038437,
+  "qid": "Q18756277",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Medawachchiya": {
+  "elev": null,
+  "lat": 8.5545098,
+  "lng": 80.4581661,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Meesalai": {
+  "elev": null,
+  "lat": 9.6735961,
+  "lng": 80.1889621,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Mirigama": {
+  "elev": null,
+  "lat": 7.2425912,
+  "lng": 80.1265584,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Mirusuvil": {
+  "elev": null,
+  "lat": 9.6741668,
+  "lng": 80.2432739,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Moratuwa": {
+  "elev": null,
+  "lat": 6.7743504,
+  "lng": 79.8817806,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Mount Lavinia": {
+  "elev": null,
+  "lat": 6.8317254,
+  "lng": 79.8628396,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Murukandi": {
+  "elev": null,
+  "lat": 9.2697408,
+  "lng": 80.4017936,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Nanu Oya": {
+  "elev": null,
+  "lat": 6.9424,
+  "lng": 80.7437,
+  "qid": "Q25038820",
+  "si": "නානුඔය දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Navatkuli": {
+  "elev": null,
+  "lat": 9.6616561,
+  "lng": 80.0814724,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Nawalapitiya": {
+  "elev": null,
+  "lat": 7.0575475,
+  "lng": 80.5350753,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Negombo": {
+  "elev": null,
+  "lat": 7.2102061,
+  "lng": 79.8418364,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Nugegoda": {
+  "elev": null,
+  "lat": 6.8720787,
+  "lng": 79.8906944,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Ohiya": {
+  "elev": null,
+  "lat": 6.8177121,
+  "lng": 80.8430198,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Omanthai": {
+  "elev": null,
+  "lat": 8.8705,
+  "lng": 80.50097222,
+  "qid": "Q7089584",
+  "si": "ඕමන්තෙයි දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Padukka": {
+  "elev": null,
+  "lat": 6.8428411,
+  "lng": 80.0911617,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Palai": {
+  "elev": null,
+  "lat": 9.608,
+  "lng": 80.32963889,
+  "qid": "Q15917849",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Panadura": {
+  "elev": null,
+  "lat": 6.7124813,
+  "lng": 79.9045725,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Paranthan": {
+  "elev": null,
+  "lat": 9.43752778,
+  "lng": 80.40727778,
+  "qid": "Q15964649",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Parasangaswewa": {
+  "elev": null,
+  "lat": 8.4453692,
+  "lng": 80.4315165,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Pattipola": {
+  "elev": null,
+  "lat": 6.8559,
+  "lng": 80.8306,
+  "qid": "Q19714127",
+  "si": "පට්ටිපොල දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Peradeniya Junction": {
+  "elev": null,
+  "lat": 7.25727,
+  "lng": 80.590202,
+  "qid": "Q17514310",
+  "si": "පේරාදෙණිය හංදිය දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Polgahawela": {
+  "elev": null,
+  "lat": 7.3308,
+  "lng": 80.3006,
+  "qid": "Q48733676",
+  "si": "පොල්ගහවෙල දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Polonnaruwa": {
+  "elev": null,
+  "lat": 7.9301686,
+  "lng": 81.0333406,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Puliyankulam": {
+  "elev": null,
+  "lat": 8.961,
+  "lng": 80.5229,
+  "qid": "Q15964656",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Punewa": {
+  "elev": null,
+  "lat": 8.6130857,
+  "lng": 80.462864,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Pungankulam": {
+  "elev": null,
+  "lat": 9.6593443,
+  "lng": 80.0382963,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Puttalam": {
+  "elev": null,
+  "lat": 8.0227,
+  "lng": 79.8379,
+  "qid": "Q38250533",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Ragama": {
+  "elev": null,
+  "lat": 7.0299493,
+  "lng": 79.921428,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Rambukkana": {
+  "elev": null,
+  "lat": 7.3213,
+  "lng": 80.3902,
+  "qid": "Q30626642",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Sankathanai": {
+  "elev": null,
+  "lat": 9.6637506,
+  "lng": 80.1757037,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Seeduwa": {
+  "elev": null,
+  "lat": 7.1290399,
+  "lng": 79.8825353,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Senarathgama": {
+  "elev": null,
+  "lat": 8.0858711,
+  "lng": 80.2777096,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Shrawasthipura": {
+  "elev": null,
+  "lat": 8.2991416,
+  "lng": 80.3751422,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Talawa": {
+  "elev": null,
+  "lat": 8.231762,
+  "lng": 80.3483472,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Talawakele": {
+  "elev": null,
+  "lat": 6.9400481,
+  "lng": 80.6609908,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Tellippalai": {
+  "elev": null,
+  "lat": 9.7849805,
+  "lng": 80.0352383,
+  "qid": "Q18756300",
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Thachchanthoppu": {
+  "elev": null,
+  "lat": 9.660553,
+  "lng": 80.1084425,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Thambuttegama": {
+  "elev": null,
+  "lat": 8.1543184,
+  "lng": 80.3038834,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Thandikulam": {
+  "elev": null,
+  "lat": 8.77830556,
+  "lng": 80.48494444,
+  "qid": "Q7710212",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Trincomalee": {
+  "elev": null,
+  "lat": 8.58444444,
+  "lng": 81.22611111,
+  "qid": "Q7842325",
+  "si": "ත්‍රිකුණාමලය දුම්රිය ස්ථානය",
+  "source": "wikipedia"
+ },
+ "Unawatuna": {
+  "elev": null,
+  "lat": 6.0220651,
+  "lng": 80.2492172,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Valaichchenai": {
+  "elev": null,
+  "lat": 7.91027778,
+  "lng": 81.53194444,
+  "qid": "Q7909207",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Vavuniya": {
+  "elev": null,
+  "lat": 8.75427778,
+  "lng": 80.49377778,
+  "qid": "Q7917526",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Veyangoda": {
+  "elev": null,
+  "lat": 7.152674500000001,
+  "lng": 80.0584245,
+  "qid": "Q56277028",
+  "si": null,
+  "source": "wikipedia"
+ },
+ "Weligama": {
+  "elev": null,
+  "lat": 5.9756587,
+  "lng": 80.4294529,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ },
+ "Wellawatte": {
+  "elev": null,
+  "lat": 6.8750183,
+  "lng": 79.8574596,
+  "qid": null,
+  "si": null,
+  "source": "openstreetmap"
+ }
+}
