@@ -2438,12 +2438,6 @@ abstract class AppLocalizations {
   /// **'No trains in our timetable depart from this station.'**
   String get noDeparturesBody;
 
-  /// No description provided for @authFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'t sign in: {message}'**
-  String authFailed(String message);
-
   /// No description provided for @checkEmailConfirm.
   ///
   /// In en, this message translates to:
@@ -2587,6 +2581,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'ve sent a lot of feedback recently. Please try again in a little while.'**
   String get feedbackTooMany;
+
+  /// No description provided for @authErrInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get authErrInvalidCredentials;
+
+  /// No description provided for @authErrEmailNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your email first. Check your inbox for the link.'**
+  String get authErrEmailNotConfirmed;
+
+  /// No description provided for @authErrAccountExists.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists. Try signing in instead.'**
+  String get authErrAccountExists;
+
+  /// No description provided for @authErrWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'That password is too easy to guess. Use a longer one that isn\'t common.'**
+  String get authErrWeakPassword;
+
+  /// No description provided for @authErrRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a few minutes and try again.'**
+  String get authErrRateLimited;
+
+  /// No description provided for @authErrInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get authErrInvalidEmail;
+
+  /// No description provided for @authErrSamePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a password different from your current one.'**
+  String get authErrSamePassword;
+
+  /// No description provided for @authErrLinkExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'That sign-in link has expired. Please try again.'**
+  String get authErrLinkExpired;
+
+  /// No description provided for @authErrBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This account can\'t sign in right now.'**
+  String get authErrBlocked;
+
+  /// No description provided for @authErrOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach the server. Check your internet connection and try again.'**
+  String get authErrOffline;
+
+  /// No description provided for @authErrGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t sign you in. Please try again.'**
+  String get authErrGeneric;
 }
 
 class _AppLocalizationsDelegate

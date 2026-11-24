@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/l10n/l10n.dart';
@@ -11,6 +10,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
 import '../data/auth_service.dart';
+import '../data/auth_errors.dart';
 import 'widgets/auth_scaffold.dart';
 
 /// Email + password sign in (Supabase Auth), plus Google / Facebook.
@@ -46,10 +46,10 @@ class _SignInScreenState extends State<SignInScreen> {
     try {
       await AuthService.signInWithPassword(_user.text.trim(), _password.text);
       if (mounted) context.go(AppRoutes.home);
-    } on AuthException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.authFailed(e.message))));
-    } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.loadErrorBody)));
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(authErrorMessage(l10n, e))),
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }

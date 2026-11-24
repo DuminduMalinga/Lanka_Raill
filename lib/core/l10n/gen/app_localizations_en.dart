@@ -1308,11 +1308,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'No trains in our timetable depart from this station.';
 
   @override
-  String authFailed(String message) {
-    return 'Couldn\'t sign in: $message';
-  }
-
-  @override
   String get checkEmailConfirm =>
       'Account created. Check your email to confirm it, then sign in.';
 
@@ -1403,4 +1398,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get feedbackTooMany =>
       'You\'ve sent a lot of feedback recently. Please try again in a little while.';
+
+  @override
+  String get authErrInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get authErrEmailNotConfirmed =>
+      'Please confirm your email first. Check your inbox for the link.';
+
+  @override
+  String get authErrAccountExists =>
+      'An account with this email already exists. Try signing in instead.';
+
+  @override
+  String get authErrWeakPassword =>
+      'That password is too easy to guess. Use a longer one that isn\'t common.';
+
+  @override
+  String get authErrRateLimited =>
+      'Too many attempts. Please wait a few minutes and try again.';
+
+  @override
+  String get authErrInvalidEmail => 'Enter a valid email address.';
+
+  @override
+  String get authErrSamePassword =>
+      'Choose a password different from your current one.';
+
+  @override
+  String get authErrLinkExpired =>
+      'That sign-in link has expired. Please try again.';
+
+  @override
+  String get authErrBlocked => 'This account can\'t sign in right now.';
+
+  @override
+  String get authErrOffline =>
+      'Can\'t reach the server. Check your internet connection and try again.';
+
+  @override
+  String get authErrGeneric => 'Couldn\'t sign you in. Please try again.';
 }

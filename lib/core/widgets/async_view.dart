@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
+import '../../features/auth/data/auth_errors.dart';
 import '../../data/providers.dart';
 import '../l10n/l10n.dart';
 import '../router/app_routes.dart';
@@ -114,7 +115,7 @@ Future<void> toggleFavorite(
       SnackBar(content: Text(wasSaved ? l10n.removedToast : l10n.savedToast)),
     );
   } on AuthException catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    messenger.showSnackBar(SnackBar(content: Text(authErrorMessage(l10n, e))));
   } catch (_) {
     messenger.showSnackBar(SnackBar(content: Text(l10n.loadErrorBody)));
   }

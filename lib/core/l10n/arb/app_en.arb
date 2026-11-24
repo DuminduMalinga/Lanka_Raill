@@ -616,14 +616,6 @@
   "facilitiesNotListed": "Facilities for this station aren't listed yet.",
   "noDeparturesTitle": "No departures listed",
   "noDeparturesBody": "No trains in our timetable depart from this station.",
-  "authFailed": "Couldn't sign in: {message}",
-  "@authFailed": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "checkEmailConfirm": "Account created. Check your email to confirm it, then sign in.",
   "resetLinkSent": "If an account exists for {email}, a reset link is on its way.",
   "@resetLinkSent": {
@@ -678,5 +670,16 @@
   "feedbackSent": "Thanks — your feedback was sent.",
   "feedbackEmpty": "Write a message first.",
   "feedbackFailed": "Couldn't send feedback. Check your connection and try again.",
-  "feedbackTooMany": "You've sent a lot of feedback recently. Please try again in a little while."
+  "feedbackTooMany": "You've sent a lot of feedback recently. Please try again in a little while.",
+  "authErrInvalidCredentials": "Incorrect email or password.",
+  "authErrEmailNotConfirmed": "Please confirm your email first. Check your inbox for the link.",
+  "authErrAccountExists": "An account with this email already exists. Try signing in instead.",
+  "authErrWeakPassword": "That password is too easy to guess. Use a longer one that isn't common.",
+  "authErrRateLimited": "Too many attempts. Please wait a few minutes and try again.",
+  "authErrInvalidEmail": "Enter a valid email address.",
+  "authErrSamePassword": "Choose a password different from your current one.",
+  "authErrLinkExpired": "That sign-in link has expired. Please try again.",
+  "authErrBlocked": "This account can't sign in right now.",
+  "authErrOffline": "Can't reach the server. Check your internet connection and try again.",
+  "authErrGeneric": "Couldn't sign you in. Please try again."
 }

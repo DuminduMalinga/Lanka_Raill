@@ -1310,11 +1310,6 @@ class AppLocalizationsSi extends AppLocalizations {
       'අපගේ කාලසටහනේ මෙම ස්ථානයෙන් පිටත් වන දුම්රිය නැත.';
 
   @override
-  String authFailed(String message) {
-    return 'පුරනය විය නොහැක: $message';
-  }
-
-  @override
   String get checkEmailConfirm =>
       'ගිණුම සෑදුවා. තහවුරු කිරීමට ඔබේ ඊමේල් පරීක්ෂා කර පසුව පුරනය වන්න.';
 
@@ -1404,4 +1399,45 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get feedbackTooMany =>
       'ඔබ මෑතකදී ප්‍රතිචාර බොහොමයක් යවා ඇත. කරුණාකර ටික වේලාවකින් නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get authErrInvalidCredentials => 'ඊමේල් ලිපිනය හෝ මුරපදය වැරදියි.';
+
+  @override
+  String get authErrEmailNotConfirmed =>
+      'කරුණාකර පළමුව ඔබගේ ඊමේල් තහවුරු කරන්න. සබැඳිය සඳහා ඔබගේ එන ලිපි පරීක්ෂා කරන්න.';
+
+  @override
+  String get authErrAccountExists =>
+      'මෙම ඊමේල් ලිපිනය සහිත ගිණුමක් දැනටමත් පවතී. ඒ වෙනුවට පිවිසීමට උත්සාහ කරන්න.';
+
+  @override
+  String get authErrWeakPassword =>
+      'එම මුරපදය අනුමාන කිරීමට පහසුය. දිගු සහ සුලබ නොවන මුරපදයක් භාවිත කරන්න.';
+
+  @override
+  String get authErrRateLimited =>
+      'උත්සාහ කිරීම් වැඩියි. කරුණාකර මිනිත්තු කිහිපයක් රැඳී සිට නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get authErrInvalidEmail => 'වලංගු ඊමේල් ලිපිනයක් ඇතුළත් කරන්න.';
+
+  @override
+  String get authErrSamePassword =>
+      'ඔබගේ වත්මන් මුරපදයට වඩා වෙනස් මුරපදයක් තෝරන්න.';
+
+  @override
+  String get authErrLinkExpired =>
+      'එම පිවිසුම් සබැඳිය කල් ඉකුත් වී ඇත. කරුණාකර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get authErrBlocked => 'මෙම ගිණුමට දැනට පිවිසිය නොහැක.';
+
+  @override
+  String get authErrOffline =>
+      'සේවාදායකයට සම්බන්ධ විය නොහැක. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get authErrGeneric =>
+      'ඔබට පිවිසිය නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.';
 }

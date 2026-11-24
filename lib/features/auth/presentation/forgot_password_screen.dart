@@ -1,5 +1,4 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/app_routes.dart';
@@ -9,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
 import '../data/auth_service.dart';
+import '../data/auth_errors.dart';
 import 'widgets/auth_scaffold.dart';
 
 /// Reset password: email a link, then (opened from the link) set a new one.
@@ -66,10 +66,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         _sentTo = _user.text.trim();
       }
       if (mounted) setState(() => _done = true);
-    } on AuthException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.authFailed(e.message))));
-    } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.loadErrorBody)));
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(authErrorMessage(l10n, e))),
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }

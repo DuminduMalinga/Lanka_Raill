@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
-    show AuthChangeEvent, AuthException, AuthState, OAuthProvider;
+    show AuthChangeEvent, AuthState, OAuthProvider;
 
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -12,6 +12,7 @@ import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/page_scroll.dart';
 import '../../../../core/widgets/photo_backdrop.dart';
+import '../../data/auth_errors.dart';
 import '../../data/auth_service.dart';
 
 /// Misty-railway backdrop + back/brand bar + bottom-weighted scroll body.
@@ -151,9 +152,8 @@ class _SocialSignInRowState extends State<SocialSignInRow> {
     }, onError: (Object error) {
       if (!mounted) return;
       setState(() => _busy = false);
-      final message = error is AuthException ? error.message : '$error';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-in failed: $message')),
+        SnackBar(content: Text(authErrorMessage(context.l10n, error))),
       );
     });
   }
@@ -172,7 +172,7 @@ class _SocialSignInRowState extends State<SocialSignInRow> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-in failed: $e')),
+        SnackBar(content: Text(authErrorMessage(context.l10n, e))),
       );
     } finally {
       // The browser has opened; re-enable buttons in case the user backs out.
