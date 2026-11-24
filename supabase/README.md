@@ -57,6 +57,10 @@ timetable confirms it.
 `migrations/20261123165833_feedback.sql` adds `feedback` (Help & feedback
 screen): insert-only for app users, readable in the dashboard.
 
+`migrations/20261124102923_search_journeys_limits.sql` makes `search_journeys`
+reject codes outside 2-8 characters and return at most 50 options; its
+running time is capped by Supabase's role timeouts (3 s anon, 8 s signed in).
+
 ## Why the timetable is from seat61
 
 The official sources were unavailable when this was built (23 Nov 2026):
