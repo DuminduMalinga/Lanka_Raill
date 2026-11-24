@@ -46,3 +46,11 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Secrets: signing keys and local environment files. Never commit these.
+*.jks
+*.keystore
+key.properties
+.env
+.env.*
+!.env.example
