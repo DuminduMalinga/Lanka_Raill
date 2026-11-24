@@ -62,10 +62,11 @@ jobs:
         run: |
           nproc
           free -m
+          ls "$ANDROID_HOME/ndk" || true
 
       # android/gradle.properties asks Gradle for an 8 GB heap, which suits a
-      # developer PC but not a 7 GB runner (the build thrashed and hit the time
-      # limit). This user-level file overrides it for CI only.
+      # developer PC but is more than a 7 GB runner has. This user-level file
+      # overrides it for CI only.
       - name: Fit Gradle to the runner
         run: |
           mkdir -p ~/.gradle
@@ -74,6 +75,19 @@ jobs:
           org.gradle.daemon=false
           org.gradle.workers.max=2
           PROPS
+
+      # Flutter asks for a specific NDK that the runner does not have, and
+      # downloading it took over 30 minutes. Use the newest one that is
+      # already installed; this is only a smoke test of the build.
+      - name: Use the NDK installed on the runner
+        run: |
+          NDK_VERSION=$(ls "$ANDROID_HOME/ndk" | sort -V | tail -1)
+          if [ -z "$NDK_VERSION" ]; then
+            echo "::warning::no preinstalled NDK found; Gradle will download one"
+          else
+            echo "Using NDK $NDK_VERSION"
+            echo "ndkVersionOverride=$NDK_VERSION" >> ~/.gradle/gradle.properties
+          fi
 
       - uses: subosito/flutter-action@v2
         with:

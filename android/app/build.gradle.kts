@@ -18,7 +18,9 @@ val hasReleaseKey = keystoreProperties.getProperty("storeFile") != null
 android {
     namespace = "lk.hashtag.lankarail"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // CI sets ndkVersionOverride to the NDK already installed on the runner,
+    // so it does not download the (very large) NDK that Flutter asks for.
+    ndkVersion = (findProperty("ndkVersionOverride") as String?) ?: flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
