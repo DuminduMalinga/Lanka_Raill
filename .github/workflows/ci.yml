@@ -62,7 +62,6 @@ jobs:
         run: |
           nproc
           free -m
-          ls "$ANDROID_HOME/ndk" || true
 
       # android/gradle.properties asks Gradle for an 8 GB heap, which suits a
       # developer PC but is more than a 7 GB runner has. This user-level file
@@ -76,18 +75,16 @@ jobs:
           org.gradle.workers.max=2
           PROPS
 
-      # Flutter asks for a specific NDK that the runner does not have, and
-      # downloading it took over 30 minutes. Use the newest one that is
-      # already installed; this is only a smoke test of the build.
-      - name: Use the NDK installed on the runner
-        run: |
-          NDK_VERSION=$(ls "$ANDROID_HOME/ndk" | sort -V | tail -1)
-          if [ -z "$NDK_VERSION" ]; then
-            echo "::warning::no preinstalled NDK found; Gradle will download one"
-          else
-            echo "Using NDK $NDK_VERSION"
-            echo "ndkVersionOverride=$NDK_VERSION" >> ~/.gradle/gradle.properties
-          fi
+      # Android's build tools download the NDK and CMake that Flutter and its
+      # plugins ask for, which took about 9 minutes on every run. Keep them
+      # between runs. Change the key when a Flutter upgrade needs other versions.
+      - name: Cache Android NDK and CMake
+        uses: actions/cache@v5
+        with:
+          path: |
+            /usr/local/lib/android/sdk/ndk/28.2.13676358
+            /usr/local/lib/android/sdk/cmake/3.22.1
+          key: android-sdk-ndk-28.2.13676358-cmake-3.22.1
 
       - uses: subosito/flutter-action@v2
         with:
