@@ -3,6 +3,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models.dart';
 
 /// Everything the app reads from or writes to the backend.
+/// Thrown when the database refuses feedback because the sender has sent too
+/// much recently.
+class FeedbackRateLimitedException implements Exception {
+  const FeedbackRateLimitedException();
+}
+
 abstract class CeylonRepository {
   Future<List<RailwayLine>> lines();
   Future<List<Station>> stations();
@@ -247,11 +253,17 @@ class SupabaseCeylonRepository implements CeylonRepository {
     required String message,
     String? appVersion,
   }) async {
-    await _db.from('feedback').insert({
-      'rating': rating,
-      'message': message,
-      'app_version': ?appVersion,
-    });
+    try {
+      await _db.from('feedback').insert({
+        'rating': rating,
+        'message': message,
+        'app_version': ?appVersion,
+      });
+    } on PostgrestException catch (e) {
+      // The database limits how much one sender can send (SQLSTATE FB429).
+      if (e.code == 'FB429') throw const FeedbackRateLimitedException();
+      rethrow;
+    }
   }
 
   @override

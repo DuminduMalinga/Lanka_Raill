@@ -1400,4 +1400,8 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get feedbackFailed =>
       'ප්‍රතිචාරය යැවිය නොහැකි විය. සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get feedbackTooMany =>
+      'ඔබ මෑතකදී ප්‍රතිචාර බොහොමයක් යවා ඇත. කරුණාකර ටික වේලාවකින් නැවත උත්සාහ කරන්න.';
 }

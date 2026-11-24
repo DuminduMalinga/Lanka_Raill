@@ -57,6 +57,10 @@ timetable confirms it.
 `migrations/20261123165833_feedback.sql` adds `feedback` (Help & feedback
 screen): insert-only for app users, readable in the dashboard.
 
+`migrations/20261124102832_feedback_rate_limit.sql` limits feedback to 5 per
+hour per signed-in user and 30 per hour for anonymous senders (SQLSTATE
+`FB429`).
+
 `migrations/20261124102923_search_journeys_limits.sql` makes `search_journeys`
 reject codes outside 2-8 characters and return at most 50 options; its
 running time is capped by Supabase's role timeouts (3 s anon, 8 s signed in).

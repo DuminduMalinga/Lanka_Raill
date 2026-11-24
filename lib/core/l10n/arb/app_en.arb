@@ -677,5 +677,6 @@
   "searchHistoryCleared": "Search history cleared",
   "feedbackSent": "Thanks — your feedback was sent.",
   "feedbackEmpty": "Write a message first.",
-  "feedbackFailed": "Couldn't send feedback. Check your connection and try again."
+  "feedbackFailed": "Couldn't send feedback. Check your connection and try again.",
+  "feedbackTooMany": "You've sent a lot of feedback recently. Please try again in a little while."
 }

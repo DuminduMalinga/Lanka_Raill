@@ -14,6 +14,7 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/section_header.dart';
+import '../../../data/ceylon_repository.dart';
 import '../../../data/providers.dart';
 
 /// FAQ accordion, star rating and feedback form (UI only).
@@ -187,6 +188,8 @@ class _FeedbackCardState extends ConsumerState<_FeedbackCard> {
       );
       _message.clear();
       messenger.showSnackBar(SnackBar(content: Text(l10n.feedbackSent)));
+    } on FeedbackRateLimitedException {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.feedbackTooMany)));
     } catch (_) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.feedbackFailed)));
     } finally {

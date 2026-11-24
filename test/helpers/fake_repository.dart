@@ -160,12 +160,19 @@ class FakeCeylonRepository implements CeylonRepository {
 
   final sentFeedback = <String>[];
 
+  /// When set, [sendFeedback] throws it (to test the failure messages).
+  Object? feedbackError;
+
   @override
   Future<void> sendFeedback({
     required int rating,
     required String message,
     String? appVersion,
-  }) async => sentFeedback.add(message);
+  }) async {
+    final error = feedbackError;
+    if (error != null) throw error;
+    sentFeedback.add(message);
+  }
   @override
   Future<Set<String>> favoriteTrainIds() async => {};
   @override

@@ -2581,6 +2581,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t send feedback. Check your connection and try again.'**
   String get feedbackFailed;
+
+  /// No description provided for @feedbackTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent a lot of feedback recently. Please try again in a little while.'**
+  String get feedbackTooMany;
 }
 
 class _AppLocalizationsDelegate

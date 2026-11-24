@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lankarail/data/ceylon_repository.dart';
 import 'package:lankarail/core/router/app_routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,5 +38,19 @@ void main() {
     await tester.tap(send);
     await tester.pump();
     expect(repo.sentFeedback, ['Great app']);
+  });
+
+  testWidgets('says so when feedback is rate limited', (tester) async {
+    final repo = FakeCeylonRepository()
+      ..feedbackError = const FeedbackRateLimitedException();
+    await pumpRoute(tester, AppRoutes.helpFeedback, repository: repo);
+
+    await tester.enterText(find.byType(TextField).last, 'Another one');
+    final send = find.text('Send feedback').last;
+    await tester.ensureVisible(send);
+    await tester.tap(send);
+    await tester.pump();
+    expect(find.textContaining('sent a lot of feedback'), findsOneWidget);
+    expect(repo.sentFeedback, isEmpty);
   });
 }

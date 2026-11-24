@@ -1399,4 +1399,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get feedbackFailed =>
       'Couldn\'t send feedback. Check your connection and try again.';
+
+  @override
+  String get feedbackTooMany =>
+      'You\'ve sent a lot of feedback recently. Please try again in a little while.';
 }
