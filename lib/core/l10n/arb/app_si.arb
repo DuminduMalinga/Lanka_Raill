@@ -299,6 +299,7 @@
   "editProfile": "පැතිකඩ සංස්කරණය",
   "displayNameLabel": "ප්‍රදර්ශන නම",
   "changePhoto": "ඡායාරූපය වෙනස් කරන්න",
+  "photoPickFailed": "කැමරාව හෝ ගැලරිය විවෘත කළ නොහැකි විය. යෙදුමේ අවසර පරීක්ෂා කරන්න.",
   "takePhoto": "ඡායාරූපයක් ගන්න",
   "chooseFromGallery": "ගැලරියෙන් තෝරන්න",
   "cancel": "අවලංගු කරන්න",

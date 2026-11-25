@@ -369,11 +369,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         maxHeight: 512,
         imageQuality: 85,
       );
-    } catch (_) {
-      // Permission denied or no camera available.
+    } catch (e) {
+      // Permission denied, no camera, or the plugin isn't in this build.
+      debugPrint('Image picker failed: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profileSaveFailed)),
+          SnackBar(content: Text(l10n.photoPickFailed)),
         );
       }
       return;

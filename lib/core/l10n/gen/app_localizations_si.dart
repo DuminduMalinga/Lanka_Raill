@@ -987,6 +987,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get changePhoto => 'ඡායාරූපය වෙනස් කරන්න';
 
   @override
+  String get photoPickFailed =>
+      'කැමරාව හෝ ගැලරිය විවෘත කළ නොහැකි විය. යෙදුමේ අවසර පරීක්ෂා කරන්න.';
+
+  @override
   String get takePhoto => 'ඡායාරූපයක් ගන්න';
 
   @override

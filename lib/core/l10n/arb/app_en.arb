@@ -441,6 +441,7 @@
   "editProfile": "Edit profile",
   "displayNameLabel": "Display name",
   "changePhoto": "Change photo",
+  "photoPickFailed": "Couldn't open the camera or gallery. Check the app's photo/camera permission.",
   "takePhoto": "Take a photo",
   "chooseFromGallery": "Choose from gallery",
   "cancel": "Cancel",

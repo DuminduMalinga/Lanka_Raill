@@ -1892,6 +1892,12 @@ abstract class AppLocalizations {
   /// **'Change photo'**
   String get changePhoto;
 
+  /// No description provided for @photoPickFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the camera or gallery. Check the app\'s photo/camera permission.'**
+  String get photoPickFailed;
+
   /// No description provided for @takePhoto.
   ///
   /// In en, this message translates to:

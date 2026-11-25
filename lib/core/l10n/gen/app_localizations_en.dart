@@ -987,6 +987,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changePhoto => 'Change photo';
 
   @override
+  String get photoPickFailed =>
+      'Couldn\'t open the camera or gallery. Check the app\'s photo/camera permission.';
+
+  @override
   String get takePhoto => 'Take a photo';
 
   @override
