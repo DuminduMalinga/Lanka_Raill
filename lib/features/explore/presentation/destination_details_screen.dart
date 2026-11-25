@@ -9,6 +9,7 @@ import '../../../core/state/ui_view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/app_bottom_nav.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/buttons.dart';
@@ -45,6 +46,7 @@ class DestinationDetailsScreen extends ConsumerWidget {
                 ?.contains(d.id) ??
             false);
     return Scaffold(
+      bottomNavigationBar: const TabNavBar(currentIndex: 2),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

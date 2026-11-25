@@ -65,6 +65,7 @@ class HomeScreen extends ConsumerWidget {
               _Header(
                 userName: profile?.label ?? l10n.guest,
                 initials: profile?.initials ?? 'G',
+                avatarUrl: profile?.avatarUrl,
               ),
               Semantics(
                 header: true,
@@ -148,15 +149,27 @@ class _Departures extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.userName, required this.initials});
+  const _Header({
+    required this.userName,
+    required this.initials,
+    this.avatarUrl,
+  });
 
   final String userName;
   final String initials;
+  final String? avatarUrl;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
+    final initialsText = Text(
+      initials,
+      style: AppTextStyles.bodyStrong.copyWith(
+        color: AppColors.white,
+        fontWeight: FontWeight.w700,
+      ),
+    );
     return Row(
       children: [
         const AppLogoMark(size: 40),
@@ -187,13 +200,15 @@ class _Header extends StatelessWidget {
           tone: CircleIconTone.primary,
           semanticLabel: l10n.profile,
           onPressed: () => context.go(AppRoutes.profile),
-          child: Text(
-            initials,
-            style: AppTextStyles.bodyStrong.copyWith(
-              color: AppColors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: avatarUrl == null
+              ? initialsText
+              : Image.network(
+                  avatarUrl!,
+                  width: AppSizes.tapTarget,
+                  height: AppSizes.tapTarget,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => initialsText,
+                ),
         ),
       ],
     );

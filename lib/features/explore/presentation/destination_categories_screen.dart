@@ -9,6 +9,7 @@ import '../../../core/state/ui_view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/app_bottom_nav.dart';
 import '../../../core/widgets/app_photo.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -40,6 +41,7 @@ class DestinationCategoriesScreen extends ConsumerWidget {
       if (c.id == id) current = c;
     }
     return Scaffold(
+      bottomNavigationBar: const TabNavBar(currentIndex: 2),
       body: SafeArea(
         child: Column(
           children: [

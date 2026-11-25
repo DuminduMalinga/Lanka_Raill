@@ -1,5 +1,7 @@
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../router/app_routes.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
@@ -130,6 +132,31 @@ class _NavItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The bottom bar for full-screen pages that sit under a tab (e.g. places
+/// opened from Explore). Tapping a tab jumps straight to it, dropping the
+/// whole stack, so there is no need to press back repeatedly.
+class TabNavBar extends StatelessWidget {
+  const TabNavBar({super.key, required this.currentIndex});
+
+  final int currentIndex;
+
+  static const _paths = [
+    AppRoutes.home,
+    AppRoutes.trains,
+    AppRoutes.explore,
+    AppRoutes.saved,
+    AppRoutes.profile,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBottomNav(
+      currentIndex: currentIndex,
+      onSelected: (i) => context.go(_paths[i]),
     );
   }
 }
