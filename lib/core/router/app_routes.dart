@@ -56,6 +56,8 @@ abstract final class AppRoutes {
   static const String notificationSettings = '/settings/notifications';
   static const String helpFeedback = '/settings/help';
   static const String about = '/settings/about';
+  static const String privacy = '/settings/privacy';
+  static const String terms = '/settings/terms';
 
   /// Detail route for one item, e.g. `AppRoutes.withId(trainDetails, id)`.
   static String withId(String route, String id) =>

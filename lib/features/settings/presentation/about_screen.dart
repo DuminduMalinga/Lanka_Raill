@@ -1,5 +1,8 @@
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/router/app_routes.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
@@ -76,17 +79,31 @@ class AboutScreen extends StatelessWidget {
                       SettingsTile(
                         icon: Icons.privacy_tip_outlined,
                         title: l10n.privacyPolicy,
-                        onTap: () {},
+                        onTap: () => context.push(AppRoutes.privacy),
                       ),
                       SettingsTile(
                         icon: Icons.description_outlined,
                         title: l10n.termsOfUse,
-                        onTap: () {},
+                        onTap: () => context.push(AppRoutes.terms),
                       ),
                       SettingsTile(
                         icon: Icons.star_outline_rounded,
                         title: l10n.rateApp,
-                        onTap: () {},
+                        onTap: () async {
+                          const id = 'lk.hashtag.lankarail';
+                          final ok = await launchUrl(
+                            Uri.parse('market://details?id=$id'),
+                            mode: LaunchMode.externalApplication,
+                          ).catchError((_) => false);
+                          if (!ok) {
+                            await launchUrl(
+                              Uri.parse(
+                                'https://play.google.com/store/apps/details?id=$id',
+                              ),
+                              mode: LaunchMode.externalApplication,
+                            ).catchError((_) => false);
+                          }
+                        },
                       ),
                     ],
                   ),

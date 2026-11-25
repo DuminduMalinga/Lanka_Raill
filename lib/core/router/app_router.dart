@@ -27,6 +27,7 @@ import '../../features/saved/presentation/favorite_destinations_screen.dart';
 import '../../features/saved/presentation/favorite_trains_screen.dart';
 import '../../features/saved/presentation/saved_screen.dart';
 import '../../features/settings/presentation/about_screen.dart';
+import '../../features/settings/presentation/legal_screen.dart';
 import '../../features/settings/presentation/help_feedback_screen.dart';
 import '../../features/settings/presentation/language_settings_screen.dart';
 import '../../features/settings/presentation/notification_settings_screen.dart';
@@ -88,6 +89,8 @@ final Map<String, RouteScreenBuilder> fullScreenRoutes = {
   AppRoutes.notificationSettings: (_, s) => const NotificationSettingsScreen(),
   AppRoutes.helpFeedback: (_, s) => const HelpFeedbackScreen(),
   AppRoutes.about: (_, s) => const AboutScreen(),
+  AppRoutes.privacy: (_, s) => const LegalScreen(doc: LegalDoc.privacy),
+  AppRoutes.terms: (_, s) => const LegalScreen(doc: LegalDoc.terms),
 };
 
 /// Bottom-navigation tabs in display order: path → screen builder.

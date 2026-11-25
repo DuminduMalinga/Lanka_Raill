@@ -31,6 +31,7 @@ import 'package:lankarail/features/saved/presentation/favorite_destinations_scre
 import 'package:lankarail/features/saved/presentation/favorite_trains_screen.dart';
 import 'package:lankarail/features/saved/presentation/saved_screen.dart';
 import 'package:lankarail/features/settings/presentation/about_screen.dart';
+import 'package:lankarail/features/settings/presentation/legal_screen.dart';
 import 'package:lankarail/features/settings/presentation/help_feedback_screen.dart';
 import 'package:lankarail/features/settings/presentation/language_settings_screen.dart';
 import 'package:lankarail/features/settings/presentation/notification_settings_screen.dart';
@@ -89,6 +90,8 @@ const Map<String, Type> _screens = {
   AppRoutes.notificationSettings: NotificationSettingsScreen,
   AppRoutes.helpFeedback: HelpFeedbackScreen,
   AppRoutes.about: AboutScreen,
+  AppRoutes.privacy: LegalScreen,
+  AppRoutes.terms: LegalScreen,
 };
 
 /// Screens that expose content / empty / loading states.
