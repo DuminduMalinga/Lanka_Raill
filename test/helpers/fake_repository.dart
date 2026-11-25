@@ -161,7 +161,7 @@ class FakeCeylonRepository implements CeylonRepository {
   Future<void> updateProfile({String? displayName, String? language}) async {}
 
   @override
-  Future<void> uploadAvatar(Uint8List bytes, String extension) async {}
+  Future<void> uploadAvatar(Uint8List bytes) async {}
 
   final sentFeedback = <String>[];
 

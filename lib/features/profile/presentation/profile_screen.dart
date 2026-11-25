@@ -328,7 +328,6 @@ class _EditProfileSheet extends ConsumerStatefulWidget {
 class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   late final _name = TextEditingController(text: widget.profile.displayName ?? '');
   Uint8List? _photo;
-  String _photoExt = 'jpg';
   bool _saving = false;
 
   @override
@@ -381,13 +380,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     }
     if (file == null) return;
     final bytes = await file.readAsBytes();
-    final dot = file.name.lastIndexOf('.');
-    final ext = dot < 0 ? 'jpg' : file.name.substring(dot + 1).toLowerCase();
     if (!mounted) return;
-    setState(() {
-      _photo = bytes;
-      _photoExt = const {'png', 'webp'}.contains(ext) ? ext : 'jpg';
-    });
+    setState(() => _photo = bytes);
   }
 
   Future<void> _save() async {
@@ -401,7 +395,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       if (name != (widget.profile.displayName ?? '')) {
         await repo.updateProfile(displayName: name);
       }
-      if (_photo != null) await repo.uploadAvatar(_photo!, _photoExt);
+      if (_photo != null) await repo.uploadAvatar(_photo!);
       ref.invalidate(profileProvider);
       navigator.pop();
     } catch (_) {

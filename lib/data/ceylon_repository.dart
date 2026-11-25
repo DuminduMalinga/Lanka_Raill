@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'image_type.dart';
 import 'models.dart';
 
 /// Everything the app reads from or writes to the backend.
@@ -35,7 +36,7 @@ abstract class CeylonRepository {
   // Signed-in user data. All return empty / no-op when signed out.
   Future<Profile?> profile();
   Future<void> updateProfile({String? displayName, String? language});
-  Future<void> uploadAvatar(Uint8List bytes, String extension);
+  Future<void> uploadAvatar(Uint8List bytes);
   Future<Set<String>> favoriteTrainIds();
   Future<Set<String>> favoriteStationIds();
   Future<Set<String>> favoriteDestinationIds();
@@ -256,22 +257,42 @@ class SupabaseCeylonRepository implements CeylonRepository {
   static String? _nonEmpty(String? v) => (v == null || v.isEmpty) ? null : v;
 
   @override
-  Future<void> uploadAvatar(Uint8List bytes, String extension) async {
+  Future<void> uploadAvatar(Uint8List bytes) async {
     final uid = _uid;
     if (uid == null) throw const AuthException('Sign in to change your photo');
-    final ext = extension.toLowerCase().replaceAll('.', '');
-    final type = switch (ext) {
-      'png' => 'image/png',
-      'webp' => 'image/webp',
-      _ => 'image/jpeg',
-    };
-    final path = '$uid/avatar-${DateTime.now().millisecondsSinceEpoch}.$ext';
+    // Judge the file by its bytes, not its name or the type the picker reports.
+    final type = detectImageType(bytes);
+    if (type == null || bytes.length > maxAvatarBytes) {
+      throw const FormatException('Not a supported profile photo');
+    }
+    // One fixed file per user, overwritten on every change: the storage policy
+    // only allows this exact name, so an account can never pile up files.
+    final path = '$uid/avatar';
     final storage = _db.storage.from('avatars');
-    await storage.uploadBinary(path, bytes, fileOptions: FileOptions(contentType: type));
-    await _db.from('profiles').upsert({
-      'id': uid,
-      'avatar_url': storage.getPublicUrl(path),
-    });
+    await storage.uploadBinary(
+      path,
+      bytes,
+      fileOptions: FileOptions(contentType: type, upsert: true),
+    );
+    // The URL never changes, so add a version to make apps fetch the new photo.
+    final url = '${storage.getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
+    await _db.from('profiles').upsert({'id': uid, 'avatar_url': url});
+    await _removeOldAvatars(storage, uid);
+  }
+
+  /// Deletes pictures left in the user's folder by older versions of the app,
+  /// which named each upload with a timestamp. Best effort.
+  Future<void> _removeOldAvatars(StorageFileApi storage, String uid) async {
+    try {
+      final files = await storage.list(path: uid);
+      final old = [
+        for (final f in files)
+          if (f.name != 'avatar') '$uid/${f.name}',
+      ];
+      if (old.isNotEmpty) await storage.remove(old);
+    } catch (_) {
+      // Tidying up must never make saving the profile fail.
+    }
   }
 
   @override

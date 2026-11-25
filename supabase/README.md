@@ -66,6 +66,13 @@ anonymous pool with 5 per hour per sender (identified by Cloudflare's
 200 per hour overall cap, serialises parallel requests with an advisory lock,
 and limits `app_version` to 32 characters.
 
+`migrations/20261125113651_avatars_one_file_per_user.sql` lets a user write only
+`avatars/<uid>/avatar` (the app overwrites it and puts a version in the saved
+URL), so one account can no longer pile up files. The app also checks the
+photo's real type from its first bytes before uploading. Bucket-level limits
+(2 MB, JPEG/PNG/WebP) still rely on the type the client reports, which a
+modified client could forge for its own single file.
+
 `migrations/20261124102923_search_journeys_limits.sql` makes `search_journeys`
 reject codes outside 2-8 characters and return at most 50 options; its
 running time is capped by Supabase's role timeouts (3 s anon, 8 s signed in).
