@@ -55,6 +55,12 @@ class AsyncView<T> extends ConsumerWidget {
     }
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 180),
+      // The default layout centres the child vertically, which pushed short
+      // lists into the middle of the screen. Keep content at the top.
+      layoutBuilder: (current, previous) => Stack(
+        alignment: Alignment.topCenter,
+        children: [...previous, ?current],
+      ),
       child: KeyedSubtree(key: ValueKey(child.runtimeType), child: child),
     );
   }
