@@ -981,6 +981,22 @@ class AppLocalizationsSi extends AppLocalizations {
   String get editProfile => 'පැතිකඩ සංස්කරණය';
 
   @override
+  String get displayNameLabel => 'ප්‍රදර්ශන නම';
+
+  @override
+  String get changePhoto => 'ඡායාරූපය වෙනස් කරන්න';
+
+  @override
+  String get cancel => 'අවලංගු කරන්න';
+
+  @override
+  String get profileSaveFailed =>
+      'ඔබගේ පැතිකඩ සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get profileSignInToEdit => 'පැතිකඩ සංස්කරණයට පිවිසෙන්න';
+
+  @override
   String homeStationLabel(String station) {
     return 'නිවසට ආසන්න ස්ථානය · $station';
   }

@@ -1880,6 +1880,36 @@ abstract class AppLocalizations {
   /// **'Edit profile'**
   String get editProfile;
 
+  /// No description provided for @displayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get displayNameLabel;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get changePhoto;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your profile. Please try again.'**
+  String get profileSaveFailed;
+
+  /// No description provided for @profileSignInToEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to edit your profile'**
+  String get profileSignInToEdit;
+
   /// No description provided for @homeStationLabel.
   ///
   /// In en, this message translates to:

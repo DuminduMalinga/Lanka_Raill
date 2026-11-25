@@ -439,6 +439,11 @@
   "notifyMe": "Notify me",
   "settings": "Settings",
   "editProfile": "Edit profile",
+  "displayNameLabel": "Display name",
+  "changePhoto": "Change photo",
+  "cancel": "Cancel",
+  "profileSaveFailed": "Couldn't save your profile. Please try again.",
+  "profileSignInToEdit": "Sign in to edit your profile",
   "homeStationLabel": "Home station · {station}",
   "@homeStationLabel": {
     "placeholders": {

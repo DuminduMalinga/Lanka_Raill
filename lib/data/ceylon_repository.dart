@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'models.dart';
@@ -33,6 +35,7 @@ abstract class CeylonRepository {
   // Signed-in user data. All return empty / no-op when signed out.
   Future<Profile?> profile();
   Future<void> updateProfile({String? displayName, String? language});
+  Future<void> uploadAvatar(Uint8List bytes, String extension);
   Future<Set<String>> favoriteTrainIds();
   Future<Set<String>> favoriteStationIds();
   Future<Set<String>> favoriteDestinationIds();
@@ -243,8 +246,32 @@ class SupabaseCeylonRepository implements CeylonRepository {
           (meta['full_name'] as String?) ??
           (meta['name'] as String?),
       language: (row?['language'] as String?) ?? 'en',
-      avatarUrl: (row?['avatar_url'] as String?) ?? (meta['avatar_url'] as String?),
+      // Own upload first, then the Google/Facebook photo from sign-in.
+      avatarUrl: _nonEmpty(row?['avatar_url'] as String?) ??
+          _nonEmpty(meta['avatar_url'] as String?) ??
+          _nonEmpty(meta['picture'] as String?),
     );
+  }
+
+  static String? _nonEmpty(String? v) => (v == null || v.isEmpty) ? null : v;
+
+  @override
+  Future<void> uploadAvatar(Uint8List bytes, String extension) async {
+    final uid = _uid;
+    if (uid == null) throw const AuthException('Sign in to change your photo');
+    final ext = extension.toLowerCase().replaceAll('.', '');
+    final type = switch (ext) {
+      'png' => 'image/png',
+      'webp' => 'image/webp',
+      _ => 'image/jpeg',
+    };
+    final path = '$uid/avatar-${DateTime.now().millisecondsSinceEpoch}.$ext';
+    final storage = _db.storage.from('avatars');
+    await storage.uploadBinary(path, bytes, fileOptions: FileOptions(contentType: type));
+    await _db.from('profiles').upsert({
+      'id': uid,
+      'avatar_url': storage.getPublicUrl(path),
+    });
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:lankarail/data/ceylon_repository.dart';
 import 'package:lankarail/data/models.dart';
 
@@ -157,6 +159,9 @@ class FakeCeylonRepository implements CeylonRepository {
   Future<Profile?> profile() async => null;
   @override
   Future<void> updateProfile({String? displayName, String? language}) async {}
+
+  @override
+  Future<void> uploadAvatar(Uint8List bytes, String extension) async {}
 
   final sentFeedback = <String>[];
 

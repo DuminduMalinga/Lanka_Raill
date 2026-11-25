@@ -981,6 +981,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProfile => 'Edit profile';
 
   @override
+  String get displayNameLabel => 'Display name';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get profileSaveFailed =>
+      'Couldn\'t save your profile. Please try again.';
+
+  @override
+  String get profileSignInToEdit => 'Sign in to edit your profile';
+
+  @override
   String homeStationLabel(String station) {
     return 'Home station · $station';
   }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -12,6 +13,7 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/circle_icon_button.dart';
 import '../../../core/widgets/page_scroll.dart';
 import '../../../core/widgets/settings_tiles.dart';
+import '../../../data/models.dart';
 import '../../../data/providers.dart';
 import '../../auth/data/auth_service.dart';
 
@@ -41,6 +43,22 @@ class ProfileScreen extends ConsumerWidget {
             _ProfileHeader(
               name: profile?.label ?? l10n.guest,
               initials: profile?.initials ?? 'G',
+              avatarUrl: profile?.avatarUrl,
+              onEdit: () {
+                if (!signedIn || profile == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.profileSignInToEdit)),
+                  );
+                  context.push(AppRoutes.signIn);
+                  return;
+                }
+                showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  showDragHandle: true,
+                  builder: (_) => _EditProfileSheet(profile: profile),
+                );
+              },
               subtitle: signedIn
                   ? (profile?.email ??
                         l10n.homeStationLabel(home?.name.of(context) ?? ''))
@@ -147,8 +165,12 @@ class _ProfileHeader extends StatelessWidget {
     required this.initials,
     required this.subtitle,
     required this.stats,
+    required this.onEdit,
+    this.avatarUrl,
   });
 
+  final VoidCallback onEdit;
+  final String? avatarUrl;
   final String name;
   final String initials;
   final String subtitle;
@@ -204,7 +226,7 @@ class _ProfileHeader extends StatelessWidget {
                   const SizedBox(height: AppSpacing.s18),
                   Row(
                     children: [
-                      _Avatar(initials: initials),
+                      _Avatar(initials: initials, imageUrl: avatarUrl),
                       const SizedBox(width: AppSpacing.s14),
                       Expanded(
                         child: Column(
@@ -230,7 +252,7 @@ class _ProfileHeader extends StatelessWidget {
                         icon: Icons.edit_outlined,
                         tone: CircleIconTone.glass,
                         semanticLabel: l10n.editProfile,
-                        onPressed: () {},
+                        onPressed: onEdit,
                       ),
                     ],
                   ),
@@ -257,25 +279,180 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.initials});
+  const _Avatar({required this.initials, this.imageUrl, this.size = 68});
 
   final String initials;
+  final String? imageUrl;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
+    final url = imageUrl;
+    final fallback = Text(
+      initials,
+      style: AppTextStyles.h4.copyWith(fontSize: size / 2.8, color: AppColors.ink),
+    );
     return ExcludeSemantics(
       child: Container(
-        width: 68,
-        height: 68,
+        width: size,
+        height: size,
         alignment: Alignment.center,
+        clipBehavior: Clip.antiAlias,
         decoration: const BoxDecoration(
           color: AppColors.lime,
           shape: BoxShape.circle,
         ),
-        child: Text(
-          initials,
-          style: AppTextStyles.h4.copyWith(fontSize: 24, color: AppColors.ink),
-        ),
+        child: url == null
+            ? fallback
+            : Image.network(
+                url,
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => fallback,
+              ),
+      ),
+    );
+  }
+}
+
+class _EditProfileSheet extends ConsumerStatefulWidget {
+  const _EditProfileSheet({required this.profile});
+
+  final Profile profile;
+
+  @override
+  ConsumerState<_EditProfileSheet> createState() => _EditProfileSheetState();
+}
+
+class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
+  late final _name = TextEditingController(text: widget.profile.displayName ?? '');
+  Uint8List? _photo;
+  String _photoExt = 'jpg';
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pick() async {
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 85,
+    );
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    final dot = file.name.lastIndexOf('.');
+    final ext = dot < 0 ? 'jpg' : file.name.substring(dot + 1).toLowerCase();
+    if (!mounted) return;
+    setState(() {
+      _photo = bytes;
+      _photoExt = const {'png', 'webp'}.contains(ext) ? ext : 'jpg';
+    });
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    final repo = ref.read(repositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final failed = context.l10n.profileSaveFailed;
+    try {
+      final name = _name.text.trim();
+      if (name != (widget.profile.displayName ?? '')) {
+        await repo.updateProfile(displayName: name);
+      }
+      if (_photo != null) await repo.uploadAvatar(_photo!, _photoExt);
+      ref.invalidate(profileProvider);
+      navigator.pop();
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(failed)));
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final p = widget.profile;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.gutter,
+        AppSpacing.md,
+        AppSpacing.gutter,
+        MediaQuery.viewInsetsOf(context).bottom + AppSpacing.gutter,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.editProfile, style: AppTextStyles.h4),
+          const SizedBox(height: AppSpacing.s18),
+          Center(
+            child: GestureDetector(
+              onTap: _saving ? null : _pick,
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  if (_photo != null)
+                    ClipOval(
+                      child: Image.memory(_photo!, width: 96, height: 96, fit: BoxFit.cover),
+                    )
+                  else
+                    _Avatar(initials: p.initials, imageUrl: p.avatarUrl, size: 96),
+                  const CircleAvatar(
+                    radius: 15,
+                    backgroundColor: AppColors.ink,
+                    child: Icon(Icons.camera_alt_outlined, size: 16, color: AppColors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: _saving ? null : _pick,
+            child: Text(l10n.changePhoto),
+          ),
+          const SizedBox(height: AppSpacing.s14),
+          TextField(
+            controller: _name,
+            enabled: !_saving,
+            textCapitalization: TextCapitalization.words,
+            maxLength: 60,
+            decoration: InputDecoration(
+              labelText: l10n.displayNameLabel,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s14),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: _saving ? null : () => Navigator.of(context).pop(),
+                  child: Text(l10n.cancel),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s14),
+              Expanded(
+                child: FilledButton(
+                  onPressed: _saving ? null : _save,
+                  child: _saving
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.save),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
