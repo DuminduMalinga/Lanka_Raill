@@ -363,19 +363,20 @@ class AppLocalizationsSi extends AppLocalizations {
   String get errUsername => 'අවම වශයෙන් අක්ෂර 3ක් භාවිත කරන්න';
 
   @override
-  String get errPasswordLength => 'අවම වශයෙන් අක්ෂර 8ක් භාවිත කරන්න';
+  String get errPasswordLength =>
+      'අවම වශයෙන් අක්ෂර 10ක්, අකුරු සහ ඉලක්කම් සමඟ භාවිත කරන්න';
 
   @override
   String get errPasswordMatch => 'මුරපද නොගැළපේ';
 
   @override
-  String get pwTooShort => 'කෙටි වැඩියි · අවම අක්ෂර 8ක් භාවිත කරන්න';
+  String get pwTooShort => 'කෙටි වැඩියි · අවම අක්ෂර 10ක් භාවිත කරන්න';
 
   @override
   String get pwStrong => 'ශක්තිමත් මුරපදයක්';
 
   @override
-  String get pwAddNumber => 'වඩා ශක්තිමත් කිරීමට අංකයක් එක් කරන්න';
+  String get pwAddNumber => 'අංකයක් එක් කරන්න';
 
   @override
   String get haveAccount => 'දැනටමත් ගිණුමක් තිබේද?';
@@ -1370,7 +1371,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get passwordsDontMatch => 'මුරපද නොගැළපේ.';
 
   @override
-  String get passwordTooShort => 'අවම වශයෙන් අක්ෂර 6ක් භාවිත කරන්න.';
+  String get passwordTooShort => 'අවම වශයෙන් අක්ෂර 10ක් භාවිත කරන්න.';
 
   @override
   String trainNumber(String number) {
@@ -1486,4 +1487,7 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get deleteAccountFailed =>
       'ඔබගේ ගිණුම මැකිය නොහැකි විය. සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get pwAddLetter => 'අකුරක් එක් කරන්න';
 }

@@ -12,6 +12,7 @@ import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
 import '../data/auth_service.dart';
 import '../data/auth_errors.dart';
+import '../data/password_rules.dart';
 import 'widgets/auth_scaffold.dart';
 
 /// Account creation form with inline UI validation (no auth calls).
@@ -43,17 +44,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   bool get _emailOk => _emailPattern.hasMatch(_email.text.trim());
   bool get _userOk => _user.text.trim().length >= 3;
-  bool get _passwordOk => _password.text.length >= 8;
+  bool get _passwordOk => isAcceptablePassword(_password.text);
   bool get _matches =>
       _confirm.text.isNotEmpty && _confirm.text == _password.text;
 
   String? _strengthHint(AppLocalizations l10n) {
     final pw = _password.text;
     if (pw.isEmpty || (_submitted && !_passwordOk)) return null;
-    if (pw.length < 8) return l10n.pwTooShort;
-    final strong =
-        pw.contains(RegExp('[0-9]')) && pw.contains(RegExp('[A-Za-z]'));
-    return strong ? l10n.pwStrong : l10n.pwAddNumber;
+    return switch (passwordGap(pw)) {
+      PasswordGap.tooShort => l10n.pwTooShort,
+      PasswordGap.needsDigit => l10n.pwAddNumber,
+      PasswordGap.needsLetter => l10n.pwAddLetter,
+      PasswordGap.none => l10n.pwStrong,
+    };
   }
 
   Future<void> _submit(bool agreed) async {

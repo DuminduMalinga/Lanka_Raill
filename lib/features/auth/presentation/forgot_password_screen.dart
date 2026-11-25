@@ -9,6 +9,7 @@ import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/buttons.dart';
 import '../data/auth_service.dart';
 import '../data/auth_errors.dart';
+import '../data/password_rules.dart';
 import 'widgets/auth_scaffold.dart';
 
 /// Reset password: email a link, then (opened from the link) set a new one.
@@ -47,7 +48,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   bool get _userOk => RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(_user.text.trim());
-  bool get _passwordOk => _password.text.length >= 8;
+  bool get _passwordOk => isAcceptablePassword(_password.text);
   bool get _matches =>
       _confirm.text.isNotEmpty && _confirm.text == _password.text;
 

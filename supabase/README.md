@@ -132,6 +132,13 @@ The empty `photos` bucket is a leftover and can be deleted from Storage.
 
 ## Auth
 
+Password rules are set in Authentication > Providers > Email (not in SQL): minimum
+length 10 and "Letters and digits" required. The app applies the same rule
+(`lib/features/auth/data/password_rules.dart`); keep the two in step. Passwords
+themselves are hashed by Supabase Auth (bcrypt) and never stored by the app.
+Still off: leaked-password protection (Pro plan only) and CAPTCHA (needs hCaptcha
+or Turnstile keys).
+
 Email/password, Google and Facebook sign-in use Supabase Auth. Redirect URL
 `lk.hashtag.lankarail://login-callback/` must be listed under
 Authentication → URL Configuration (it is used for sign-up confirmation and

@@ -127,11 +127,11 @@
   "errAgree": "Please accept to continue",
   "errEmail": "Enter a valid email address",
   "errUsername": "Use at least 3 characters",
-  "errPasswordLength": "Use at least 8 characters",
+  "errPasswordLength": "Use at least 10 characters, with letters and numbers",
   "errPasswordMatch": "Passwords do not match",
-  "pwTooShort": "Too short · use at least 8 characters",
+  "pwTooShort": "Too short · use at least 10 characters",
   "pwStrong": "Strong password",
-  "pwAddNumber": "Add a number to make it stronger",
+  "pwAddNumber": "Add a number",
   "haveAccount": "Already have an account?",
   "backToSignIn": "Back to sign in",
   "resetTitle": "Reset your password",
@@ -641,7 +641,7 @@
   "noStationsMatch": "No stations match your search",
   "enterEmailPassword": "Enter your email and password.",
   "passwordsDontMatch": "Passwords don't match.",
-  "passwordTooShort": "Use at least 6 characters.",
+  "passwordTooShort": "Use at least 10 characters.",
   "trainNumber": "Train #{number}",
   "@trainNumber": {
     "placeholders": {
@@ -695,5 +695,6 @@
   "deleteAccountBody": "This permanently deletes your account, profile photo and your saved trains, places and stations. Feedback you sent is kept but no longer linked to you. This can't be undone.",
   "deleteAccountConfirm": "Delete",
   "accountDeleted": "Your account has been deleted.",
-  "deleteAccountFailed": "Couldn't delete your account. Check your connection and try again."
+  "deleteAccountFailed": "Couldn't delete your account. Check your connection and try again.",
+  "pwAddLetter": "Add a letter"
 }

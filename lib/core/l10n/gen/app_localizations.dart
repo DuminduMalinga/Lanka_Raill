@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @errPasswordLength.
   ///
   /// In en, this message translates to:
-  /// **'Use at least 8 characters'**
+  /// **'Use at least 10 characters, with letters and numbers'**
   String get errPasswordLength;
 
   /// No description provided for @errPasswordMatch.
@@ -773,7 +773,7 @@ abstract class AppLocalizations {
   /// No description provided for @pwTooShort.
   ///
   /// In en, this message translates to:
-  /// **'Too short · use at least 8 characters'**
+  /// **'Too short · use at least 10 characters'**
   String get pwTooShort;
 
   /// No description provided for @pwStrong.
@@ -785,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @pwAddNumber.
   ///
   /// In en, this message translates to:
-  /// **'Add a number to make it stronger'**
+  /// **'Add a number'**
   String get pwAddNumber;
 
   /// No description provided for @haveAccount.
@@ -2549,7 +2549,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordTooShort.
   ///
   /// In en, this message translates to:
-  /// **'Use at least 6 characters.'**
+  /// **'Use at least 10 characters.'**
   String get passwordTooShort;
 
   /// No description provided for @trainNumber.
@@ -2731,6 +2731,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t delete your account. Check your connection and try again.'**
   String get deleteAccountFailed;
+
+  /// No description provided for @pwAddLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a letter'**
+  String get pwAddLetter;
 }
 
 class _AppLocalizationsDelegate

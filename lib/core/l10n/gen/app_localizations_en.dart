@@ -361,19 +361,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errUsername => 'Use at least 3 characters';
 
   @override
-  String get errPasswordLength => 'Use at least 8 characters';
+  String get errPasswordLength =>
+      'Use at least 10 characters, with letters and numbers';
 
   @override
   String get errPasswordMatch => 'Passwords do not match';
 
   @override
-  String get pwTooShort => 'Too short · use at least 8 characters';
+  String get pwTooShort => 'Too short · use at least 10 characters';
 
   @override
   String get pwStrong => 'Strong password';
 
   @override
-  String get pwAddNumber => 'Add a number to make it stronger';
+  String get pwAddNumber => 'Add a number';
 
   @override
   String get haveAccount => 'Already have an account?';
@@ -1368,7 +1369,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsDontMatch => 'Passwords don\'t match.';
 
   @override
-  String get passwordTooShort => 'Use at least 6 characters.';
+  String get passwordTooShort => 'Use at least 10 characters.';
 
   @override
   String trainNumber(String number) {
@@ -1484,4 +1485,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountFailed =>
       'Couldn\'t delete your account. Check your connection and try again.';
+
+  @override
+  String get pwAddLetter => 'Add a letter';
 }
