@@ -441,6 +441,8 @@
   "editProfile": "Edit profile",
   "displayNameLabel": "Display name",
   "changePhoto": "Change photo",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
   "cancel": "Cancel",
   "profileSaveFailed": "Couldn't save your profile. Please try again.",
   "profileSignInToEdit": "Sign in to edit your profile",

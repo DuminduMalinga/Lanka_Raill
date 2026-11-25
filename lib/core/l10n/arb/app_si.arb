@@ -299,6 +299,8 @@
   "editProfile": "පැතිකඩ සංස්කරණය",
   "displayNameLabel": "ප්‍රදර්ශන නම",
   "changePhoto": "ඡායාරූපය වෙනස් කරන්න",
+  "takePhoto": "ඡායාරූපයක් ගන්න",
+  "chooseFromGallery": "ගැලරියෙන් තෝරන්න",
   "cancel": "අවලංගු කරන්න",
   "profileSaveFailed": "ඔබගේ පැතිකඩ සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.",
   "profileSignInToEdit": "පැතිකඩ සංස්කරණයට පිවිසෙන්න",

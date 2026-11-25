@@ -987,6 +987,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changePhoto => 'Change photo';
 
   @override
+  String get takePhoto => 'Take a photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

@@ -987,6 +987,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get changePhoto => 'ඡායාරූපය වෙනස් කරන්න';
 
   @override
+  String get takePhoto => 'ඡායාරූපයක් ගන්න';
+
+  @override
+  String get chooseFromGallery => 'ගැලරියෙන් තෝරන්න';
+
+  @override
   String get cancel => 'අවලංගු කරන්න';
 
   @override

@@ -1892,6 +1892,18 @@ abstract class AppLocalizations {
   /// **'Change photo'**
   String get changePhoto;
 
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get chooseFromGallery;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
