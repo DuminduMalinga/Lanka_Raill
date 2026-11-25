@@ -60,6 +60,11 @@ screen): insert-only for app users, readable in the dashboard.
 `migrations/20261124102832_feedback_rate_limit.sql` limits feedback to 5 per
 hour per signed-in user and 30 per hour for anonymous senders (SQLSTATE
 `FB429`).
+`migrations/20261125113328_feedback_fair_limits.sql` replaces the shared
+anonymous pool with 5 per hour per sender (identified by Cloudflare's
+`cf-connecting-ip`, stored only as a daily-changing one-way hash) plus a
+200 per hour overall cap, serialises parallel requests with an advisory lock,
+and limits `app_version` to 32 characters.
 
 `migrations/20261124102923_search_journeys_limits.sql` makes `search_journeys`
 reject codes outside 2-8 characters and return at most 50 options; its

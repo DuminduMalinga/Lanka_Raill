@@ -20,7 +20,10 @@ class LegalScreen extends StatelessWidget {
       'If you sign in, we store your email address, display name and profile '
           'photo (including the photo from your Google or Facebook account if '
           'you use it), plus the trains, stations and places you save. Any '
-          'feedback you send is stored with the rating and message you write.',
+          'feedback you send is stored with the rating and message you write. To '
+          'limit spam, feedback is also tagged with a one-way code made from '
+          'your network address; the code changes every day and your '
+          'address itself is not stored.',
     ),
     (
       'How we use it',
