@@ -1466,4 +1466,24 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get authErrGeneric =>
       'ඔබට පිවිසිය නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get deleteAccount => 'ගිණුම මකන්න';
+
+  @override
+  String get deleteAccountTitle => 'ඔබගේ ගිණුම මකන්නද?';
+
+  @override
+  String get deleteAccountBody =>
+      'මෙයින් ඔබගේ ගිණුම, පැතිකඩ ඡායාරූපය සහ ඔබ සුරකින ලද දුම්රිය, ස්ථාන සහ දුම්රිය ස්ථාන සදහටම මැකේ. ඔබ එවූ ප්‍රතිචාර තබා ගනු ලබන නමුත් ඔබ හා තවදුරටත් සම්බන්ධ නොවේ. මෙය අහෝසි කළ නොහැක.';
+
+  @override
+  String get deleteAccountConfirm => 'මකන්න';
+
+  @override
+  String get accountDeleted => 'ඔබගේ ගිණුම මකා දමන ලදී.';
+
+  @override
+  String get deleteAccountFailed =>
+      'ඔබගේ ගිණුම මැකිය නොහැකි විය. සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
 }

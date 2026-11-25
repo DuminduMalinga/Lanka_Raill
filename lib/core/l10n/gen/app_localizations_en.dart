@@ -1464,4 +1464,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authErrGeneric => 'Couldn\'t sign you in. Please try again.';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountBody =>
+      'This permanently deletes your account, profile photo and your saved trains, places and stations. Feedback you sent is kept but no longer linked to you. This can\'t be undone.';
+
+  @override
+  String get deleteAccountConfirm => 'Delete';
+
+  @override
+  String get accountDeleted => 'Your account has been deleted.';
+
+  @override
+  String get deleteAccountFailed =>
+      'Couldn\'t delete your account. Check your connection and try again.';
 }

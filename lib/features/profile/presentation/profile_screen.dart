@@ -17,6 +17,49 @@ import '../../../data/models.dart';
 import '../../../data/providers.dart';
 import '../../auth/data/auth_service.dart';
 
+/// Asks for confirmation, then deletes the account on the server and signs
+/// out. The app stores require that users can delete their data from inside
+/// the app.
+Future<void> _confirmDeleteAccount(BuildContext context, WidgetRef ref) async {
+  final l10n = context.l10n;
+  final messenger = ScaffoldMessenger.of(context);
+  final router = GoRouter.of(context);
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l10n.deleteAccountTitle),
+      content: Text(l10n.deleteAccountBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(true),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(ctx).colorScheme.error,
+          ),
+          child: Text(l10n.deleteAccountConfirm),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true) return;
+  try {
+    await ref.read(repositoryProvider).deleteAccount();
+  } catch (_) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.deleteAccountFailed)));
+    return;
+  }
+  try {
+    await AuthService.signOut();
+  } catch (_) {
+    // The account is gone; the local session is cleared regardless.
+  }
+  messenger.showSnackBar(SnackBar(content: Text(l10n.accountDeleted)));
+  router.go(AppRoutes.signIn);
+}
+
 /// Profile tab: identity header with stats, shortcuts, sign out.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -126,7 +169,7 @@ class ProfileScreen extends ConsumerWidget {
                           title: l10n.aboutApp,
                           onTap: () => context.push(AppRoutes.about),
                         ),
-                        if (signedIn)
+                        if (signedIn) ...[
                           SettingsTile(
                             icon: Icons.logout_rounded,
                             title: l10n.signOut,
@@ -139,8 +182,14 @@ class ProfileScreen extends ConsumerWidget {
                               }
                               if (context.mounted) context.go(AppRoutes.signIn);
                             },
-                          )
-                        else
+                          ),
+                          SettingsTile(
+                            icon: Icons.delete_outline_rounded,
+                            title: l10n.deleteAccount,
+                            destructive: true,
+                            onTap: () => _confirmDeleteAccount(context, ref),
+                          ),
+                        ] else
                           SettingsTile(
                             icon: Icons.login_rounded,
                             title: l10n.signIn,

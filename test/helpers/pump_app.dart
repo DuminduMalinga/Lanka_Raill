@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lankarail/app.dart';
 import 'package:lankarail/core/state/app_preferences.dart';
@@ -36,6 +37,7 @@ Future<void> pumpRoute(
   Size size = const Size(390, 844),
   double textScale = 1,
   FakeCeylonRepository? repository,
+  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = size * tester.view.devicePixelRatio;
   addTearDown(tester.view.resetPhysicalSize);
@@ -53,6 +55,7 @@ Future<void> pumpRoute(
         ),
         uiViewStateProvider.overrideWith(() => FixedViewState(state)),
         appLanguageProvider.overrideWith(() => FixedLanguage(language)),
+        ...overrides,
       ],
       child: CeylonGoApp(initialLocation: location),
     ),

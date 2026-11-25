@@ -37,6 +37,10 @@ abstract class CeylonRepository {
   Future<Profile?> profile();
   Future<void> updateProfile({String? displayName, String? language});
   Future<void> uploadAvatar(Uint8List bytes);
+
+  /// Permanently deletes the signed-in user's account and photo (server
+  /// side); the caller should then sign out locally.
+  Future<void> deleteAccount();
   Future<Set<String>> favoriteTrainIds();
   Future<Set<String>> favoriteStationIds();
   Future<Set<String>> favoriteDestinationIds();
@@ -278,6 +282,13 @@ class SupabaseCeylonRepository implements CeylonRepository {
     final url = '${storage.getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
     await _db.from('profiles').upsert({'id': uid, 'avatar_url': url});
     await _removeOldAvatars(storage, uid);
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    // The user's session token is sent automatically; the function only ever
+    // deletes the account that token belongs to. Throws on any failure.
+    await _db.functions.invoke('delete-account');
   }
 
   /// Deletes pictures left in the user's folder by older versions of the app,

@@ -77,6 +77,18 @@ modified client could forge for its own single file.
 reject codes outside 2-8 characters and return at most 50 options; its
 running time is capped by Supabase's role timeouts (3 s anon, 8 s signed in).
 
+## Edge functions
+
+`functions/delete-account` (deployed to the live project, JWT verification on)
+lets a signed-in user delete their own account from Profile > Delete account.
+It reads the caller from the session token, removes `avatars/<uid>/`, then
+deletes the auth user; foreign keys cascade to `profiles` and the favourites
+tables, and `feedback.user_id` is set to null (feedback is kept, unlinked).
+If removing the photo fails the account is left in place so the user can retry.
+Deploy changes with the Supabase CLI (`supabase functions deploy delete-account`)
+or the dashboard. It uses the `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+variables Supabase provides to every function; no secret needs to be added.
+
 ## Why the timetable is from seat61
 
 The official sources were unavailable when this was built (23 Nov 2026):

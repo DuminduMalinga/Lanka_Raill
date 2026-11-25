@@ -163,6 +163,18 @@ class FakeCeylonRepository implements CeylonRepository {
   @override
   Future<void> uploadAvatar(Uint8List bytes) async {}
 
+  int deleteAccountCalls = 0;
+
+  /// When set, [deleteAccount] throws it.
+  Object? deleteAccountError;
+
+  @override
+  Future<void> deleteAccount() async {
+    deleteAccountCalls++;
+    final error = deleteAccountError;
+    if (error != null) throw error;
+  }
+
   final sentFeedback = <String>[];
 
   /// When set, [sendFeedback] throws it (to test the failure messages).

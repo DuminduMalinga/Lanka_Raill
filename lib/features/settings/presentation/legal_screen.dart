@@ -45,8 +45,9 @@ class LegalScreen extends StatelessWidget {
     (
       'Your choices',
       'You can edit your name and photo in Profile at any time, and sign out '
-          'whenever you like. To delete your account and data, contact us '
-          'from Help & feedback.',
+          'whenever you like. To delete your account, open Profile and choose '
+          'Delete account. This permanently removes your profile, photo and '
+          'saved items; feedback you sent is kept but no longer linked to you.',
     ),
   ];
 

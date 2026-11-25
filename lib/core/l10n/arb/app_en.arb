@@ -689,5 +689,11 @@
   "authErrLinkExpired": "That sign-in link has expired. Please try again.",
   "authErrBlocked": "This account can't sign in right now.",
   "authErrOffline": "Can't reach the server. Check your internet connection and try again.",
-  "authErrGeneric": "Couldn't sign you in. Please try again."
+  "authErrGeneric": "Couldn't sign you in. Please try again.",
+  "deleteAccount": "Delete account",
+  "deleteAccountTitle": "Delete your account?",
+  "deleteAccountBody": "This permanently deletes your account, profile photo and your saved trains, places and stations. Feedback you sent is kept but no longer linked to you. This can't be undone.",
+  "deleteAccountConfirm": "Delete",
+  "accountDeleted": "Your account has been deleted.",
+  "deleteAccountFailed": "Couldn't delete your account. Check your connection and try again."
 }
