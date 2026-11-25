@@ -18,6 +18,24 @@ CeylonGO is a railway companion for Sri Lanka, built for both local passengers a
 - **Accounts are optional**: sign in or continue as a guest.
 - **Help & feedback**: send feedback from inside the app.
 
+## Future enhancements
+
+### Ticket booking through Sri Lanka Railways
+
+The main planned addition is booking tickets inside CeylonGO, connected to the Sri Lanka Railways reservation system, so a traveller can go from finding a train to holding a ticket without leaving the app.
+
+Planned scope:
+
+- **Book from search results**: pick a train, class and number of passengers, and reserve straight from the journey results or the train details screen.
+- **Live seat availability**: show real availability by class (such as 1st class, 2nd class reserved and observation car) instead of the static class list.
+- **Passenger details and payment**: collect passenger details once, and pay in the app with the payment methods Sri Lanka Railways supports.
+- **My tickets**: keep confirmed tickets in the app with a QR code or booking reference, available offline at the station.
+- **Changes and cancellations**: view a booking, cancel it or change the date, following the railway's own refund rules.
+- **Booking notifications**: booking confirmation, a reminder before departure, and alerts if the booked train is delayed or cancelled, reusing the existing service notices.
+- **Sinhala and English**: the whole booking flow in both languages, like the rest of the app.
+
+This depends on Sri Lanka Railways, because CeylonGO is not an official app today (see the note in the app's About screen). It needs an official partnership and API access to the reservation system, and booking will only be switched on once that exists. Until then, CeylonGO stays a schedule and travel guide, and the booking screens will not appear. Passenger and payment data must be handled under the railway's requirements and Sri Lankan data protection rules, with card details never stored by CeylonGO.
+
 ## Screenshots
 
 | Home | Search results | Train details |
