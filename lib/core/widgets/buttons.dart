@@ -28,14 +28,17 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAccent = tone == PrimaryButtonTone.accent;
+    final palette = context.palette;
+    // "Dark" is ink on light screens and lime on dark ones, so it never
+    // disappears into the background.
     return _PillButton(
       label: label,
       onPressed: onPressed,
       icon: icon,
       trailingIcon: trailingIcon,
       expand: expand,
-      background: isAccent ? AppColors.lime : AppColors.ink,
-      foreground: isAccent ? AppColors.ink : AppColors.white,
+      background: isAccent ? AppColors.lime : palette.selectedChip,
+      foreground: isAccent ? AppColors.ink : palette.onSelectedChip,
     );
   }
 }

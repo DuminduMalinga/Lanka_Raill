@@ -151,7 +151,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     segmentTrack: AppColors.forestRaised,
     selectedChip: AppColors.lime,
     onSelectedChip: AppColors.ink,
-    hero: AppColors.forestRaised,
+    hero: AppColors.forest,
     onHero: AppColors.white,
     onHeroMuted: AppColors.mutedOnDark,
   );
